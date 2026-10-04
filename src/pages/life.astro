@@ -2,6 +2,7 @@
 import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArtStudy from '../components/ArtStudy.astro';
+import HoverDisclosure from '../components/HoverDisclosure.astro';
 import { profile, interests, timeline } from '../data/profile';
 import { presentation } from '../data/presentation';
 import { getPublicNotes, formatDate } from '../lib/content';
@@ -21,7 +22,7 @@ const notes = await getPublicNotes();
   </section>
 
   <section class="profile-index container life-index" aria-label="更多个人背景" data-reveal>
-    <details class="index-disclosure" id="about"><summary><span class="index-number">01</span><span>工作之外</span><span class="index-hint">ABOUT ME</span><span class="disclosure-plus" aria-hidden="true">＋</span></summary><div class="index-body"><p class="profile-introduction">{profile.personalIntroduction}</p><div class="interest-grid">{interests.filter((item) => item.published).map((item) => <article class="interest-card"><span>{item.number}</span><h3>{item.title}</h3><p>{item.description}</p></article>)}</div></div></details>
-    <details class="index-disclosure" id="timeline"><summary><span class="index-number">02</span><span>一路走来</span><span class="index-hint">LITTLE MOMENTS</span><span class="disclosure-plus" aria-hidden="true">＋</span></summary><div class="index-body"><p class="profile-introduction">从项目路演、竞赛展示，到为日常写小工具，在尝试中慢慢认识自己。</p><div class="timeline">{timeline.filter((item) => item.published).map((item) => <div class="timeline-item"><span class="timeline-year">{item.year}</span><span class="timeline-marker"></span><div><h3>{item.title}</h3><p>{item.description}</p></div></div>)}</div></div></details>
+    <HoverDisclosure id="about" number="01" title="工作之外" hint="ABOUT ME"><div class="index-body"><p class="profile-introduction">{profile.personalIntroduction}</p><div class="interest-grid">{interests.filter((item) => item.published).map((item) => <article class="interest-card"><span>{item.number}</span><h3>{item.title}</h3><p>{item.description}</p></article>)}</div></div></HoverDisclosure>
+    <HoverDisclosure id="timeline" number="02" title="一路走来" hint="LITTLE MOMENTS"><div class="index-body"><p class="profile-introduction">从项目路演、竞赛展示，到为日常写小工具，在尝试中慢慢认识自己。</p><div class="timeline">{timeline.filter((item) => item.published).map((item) => <div class="timeline-item"><span class="timeline-year">{item.year}</span><span class="timeline-marker"></span><div><h3>{item.title}</h3><p>{item.description}</p></div></div>)}</div></div></HoverDisclosure>
   </section>
 </BaseLayout>

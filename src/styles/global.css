@@ -126,6 +126,10 @@ summary::-webkit-details-marker { display: none; }
 .project-detail-link { padding: 5px 0 10px; }
 .profile-index { border-top: 1px solid var(--line); padding-bottom: 70px; }
 .index-disclosure { border-bottom: 1px solid var(--line); scroll-margin-top: 100px; }
+.index-disclosure[data-expanded="false"] .disclosure-plus { transform: rotate(0); }
+.index-disclosure [data-disclosure-content] { transition: opacity .24s ease, transform .34s ease; }
+.index-disclosure[data-expanded="false"] [data-disclosure-content] { opacity: 0; transform: translateY(-6px); }
+.index-disclosure[data-expanded="true"] > summary > span:nth-child(2) { color: var(--accent); }
 .index-disclosure > summary { display: grid; grid-template-columns: 50px 1fr auto 40px; align-items: center; gap: 15px; padding: 28px 0; list-style: none; }
 .index-disclosure > summary > span:nth-child(2) { font: 27px var(--serif); }
 .index-number { font-size: 11px; color: var(--muted); }
@@ -147,8 +151,8 @@ summary::-webkit-details-marker { display: none; }
 .tags { display: flex; flex-wrap: wrap; gap: 7px; }
 .tags span { font-size: 11px; padding: 4px 9px; background: var(--tint); color: var(--muted); }
 .resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-.resume-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-.resume-qualification h3 { font-size: 25px; margin: 0 0 20px; }
+.academic-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 36px; }
+.academic-qualification h3 { font-size: 25px; margin: 0 0 20px; }
 .scholarship-list { padding: 0; margin: 0; list-style: none; }
 .scholarship-list li { display: flex; gap: 18px; padding-block: 14px; border-top: 1px solid var(--line); align-items: baseline; }
 .scholarship-list li > span { font-size: 11px; color: var(--muted); white-space: nowrap; }
@@ -347,7 +351,7 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
   .experience-row h3 { font-size: 23px; }
   .award-row { grid-template-columns: 44px 1fr 39px; gap: 12px; }
   .award-row h3 { font-size: 23px; }
-  .skill-grid, .resource-grid, .resume-overview { grid-template-columns: 1fr; }
+  .skill-grid, .resource-grid, .academic-overview { grid-template-columns: 1fr; }
   .note-row { grid-template-columns: 28px 1fr 38px; gap: 13px; padding-block: 28px; }
   .note-index { font-size: 23px; }
   .note-row-main strong { font-size: 25px; }

@@ -4,6 +4,7 @@ export const scholarships = [
   { published: true, period: '大一', title: '学习优秀特等奖学金' },
   { published: true, period: '大一', title: '综合奖学金' },
   { published: true, period: '大一', title: '精神文明专项奖学金' },
+  { published: true, period: '实习', title: '集萃实习一等奖学金 × 2' },
 ] as const;
 
 // Totals and examination months verified against the original score report images.

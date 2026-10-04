@@ -106,7 +106,7 @@ published: false
 - `src/data/presentation.ts`：首页及两个入口页的短标题、标签。
 - `src/data/skills.ts`：按场景分组的技术能力。
 - `src/data/achievements.ts`：已确认可公开的成果。
-- `src/data/resume.ts`：简历中的奖学金与四六级成绩。奖学金按现有笔记保留“大一”阶段；考试成绩与月份以成绩单为准，证明原图不放进 `public/`。
+- `src/data/resume.ts`：展示于 Professional「奖项与成果」的奖学金与四六级成绩。大学奖学金按笔记保留“大一”阶段；两次集萃实习一等奖学金按本人确认合并展示，未补写未经确认的获奖日期。考试成绩与月份以成绩单为准，证明原图不放进 `public/`。
 - `src/data/links.ts`：GitHub 链接。
 
 这些结构化记录同样有 `published` 字段，页面只渲染标记为 `true` 的列表项。单例 `profile` 和 `links` 如果未标记公开，会直接中止构建，防止误发布。修改后建议检查实际构建输出。
@@ -122,3 +122,5 @@ published: false
 ## 设计与实现
 
 使用 Astro 静态输出、TypeScript、Tailwind CSS 4、MDX 与 Lucide 图标。主题切换记住选择，`Motion.astro` 使用原生 IntersectionObserver 实现一次性滚动入场；悬停、雕塑浮动和植物轻摆由 CSS 实现，不使用动画库。`prefers-reduced-motion` 会关闭动态效果，JavaScript 未启用时内容仍可阅读。`ArtStudy.astro` 是可编辑的原生 SVG 装饰，不是项目实测图。深浅主题与移动端布局均由同一套样式支持。
+
+`HoverDisclosure.astro` 统一管理两个入口页下方的补充栏目：桌面鼠标移入展开、离开收回，使用原生 Web Animations API 平滑改变高度，并配合内容淡入、淡出与加号旋转。快速移入移出会从当前高度继续动画。触屏通过点击切换，键盘聚焦可展开并保持内部链接可用；系统开启减少动态效果时直接切换。未启用 JavaScript 时仍可使用原生 `details` 点击展开。
