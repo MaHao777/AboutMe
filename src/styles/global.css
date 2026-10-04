@@ -147,6 +147,19 @@ summary::-webkit-details-marker { display: none; }
 .tags { display: flex; flex-wrap: wrap; gap: 7px; }
 .tags span { font-size: 11px; padding: 4px 9px; background: var(--tint); color: var(--muted); }
 .resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.resume-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+.resume-qualification h3 { font-size: 25px; margin: 0 0 20px; }
+.scholarship-list { padding: 0; margin: 0; list-style: none; }
+.scholarship-list li { display: flex; gap: 18px; padding-block: 14px; border-top: 1px solid var(--line); align-items: baseline; }
+.scholarship-list li > span { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.scholarship-list strong { font-size: 14px; font-weight: 400; }
+.language-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 0; }
+.language-scores > div { padding-top: 12px; border-top: 1px solid var(--line); }
+.language-scores dt { font-size: 11px; color: var(--muted); }
+.language-scores dt > span { display: block; font-size: 10px; letter-spacing: .12em; color: var(--accent); margin-bottom: 5px; }
+.language-scores dd { display: flex; gap: 8px; align-items: baseline; margin: 12px 0 5px; }
+.language-scores dd > strong { font: 44px/1.2 var(--serif); color: var(--accent); }
+.language-scores dd > span, .language-scores time { font-size: 11px; color: var(--muted); }
 .resource-card { display: block; padding: 25px; border: 1px solid var(--line); }
 .resource-card h3 { font-size: 25px; margin: 13px 0; }
 .resource-card p { font-size: 13px; color: var(--muted); }
@@ -334,7 +347,7 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
   .experience-row h3 { font-size: 23px; }
   .award-row { grid-template-columns: 44px 1fr 39px; gap: 12px; }
   .award-row h3 { font-size: 23px; }
-  .skill-grid, .resource-grid { grid-template-columns: 1fr; }
+  .skill-grid, .resource-grid, .resume-overview { grid-template-columns: 1fr; }
   .note-row { grid-template-columns: 28px 1fr 38px; gap: 13px; padding-block: 28px; }
   .note-index { font-size: 23px; }
   .note-row-main strong { font-size: 25px; }

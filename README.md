@@ -106,6 +106,7 @@ published: false
 - `src/data/presentation.ts`：首页及两个入口页的短标题、标签。
 - `src/data/skills.ts`：按场景分组的技术能力。
 - `src/data/achievements.ts`：已确认可公开的成果。
+- `src/data/resume.ts`：简历中的奖学金与四六级成绩。奖学金按现有笔记保留“大一”阶段；考试成绩与月份以成绩单为准，证明原图不放进 `public/`。
 - `src/data/links.ts`：GitHub 链接。
 
 这些结构化记录同样有 `published` 字段，页面只渲染标记为 `true` 的列表项。单例 `profile` 和 `links` 如果未标记公开，会直接中止构建，防止误发布。修改后建议检查实际构建输出。

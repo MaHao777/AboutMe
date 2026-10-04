@@ -8,6 +8,7 @@ import { profile, experiences } from '../data/profile';
 import { presentation } from '../data/presentation';
 import { skillGroups } from '../data/skills';
 import { achievements } from '../data/achievements';
+import { scholarships, languageScores } from '../data/resume';
 import { links } from '../data/links';
 import { getPublicProjects } from '../lib/content';
 const projects = await getPublicProjects();
@@ -44,7 +45,13 @@ const projects = await getPublicProjects();
     </details>
     <details class="index-disclosure" id="resume">
       <summary><span class="index-number">04</span><span>简历与代码</span><span class="index-hint">MORE</span><span class="disclosure-plus" aria-hidden="true">＋</span></summary>
-      <div class="index-body resource-grid"><div class="resource-card"><Download size={22} stroke-width={1.5} /><h3>简历</h3>{profile.resumeUrl ? <a class="text-link" href={profile.resumeUrl} download>下载 PDF <ArrowUpRight size={16} /></a> : <p>PDF 版正在整理。</p>}</div><a class="resource-card" href={links.github} target="_blank" rel="noopener noreferrer"><GitBranch size={22} stroke-width={1.5} /><h3>GitHub</h3><span class="text-link">{links.githubLabel} <ArrowUpRight size={16} /></span></a></div>
+      <div class="index-body">
+        <div class="resume-overview">
+          <section class="resume-qualification" aria-labelledby="scholarship-heading"><h3 id="scholarship-heading">奖学金</h3><ul class="scholarship-list">{scholarships.filter((item) => item.published).map((item) => <li><span>{item.period}</span><strong>{item.title}</strong></li>)}</ul></section>
+          <section class="resume-qualification" aria-labelledby="language-heading"><h3 id="language-heading">英语成绩</h3><dl class="language-scores">{languageScores.filter((item) => item.published).map((item) => <div><dt><span>{item.code}</span>{item.title}</dt><dd><strong>{item.score}</strong><span>分</span></dd><time datetime={item.date}>{item.dateLabel}</time></div>)}</dl></section>
+        </div>
+        <div class="resource-grid"><div class="resource-card"><Download size={22} stroke-width={1.5} /><h3>简历</h3>{profile.resumeUrl ? <a class="text-link" href={profile.resumeUrl} download>下载 PDF <ArrowUpRight size={16} /></a> : <p>PDF 版正在整理。</p>}</div><a class="resource-card" href={links.github} target="_blank" rel="noopener noreferrer"><GitBranch size={22} stroke-width={1.5} /><h3>GitHub</h3><span class="text-link">{links.githubLabel} <ArrowUpRight size={16} /></span></a></div>
+      </div>
     </details>
   </section>
 </BaseLayout>
