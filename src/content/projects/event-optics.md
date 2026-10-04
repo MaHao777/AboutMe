@@ -1,10 +1,20 @@
 ---
-title: 极速视界
-description: 围绕事件相机与物理驱动神经网络，探索气动光学表征与波前重构。
+title: 事件视觉与波前数据平台
+description: 把大气湍流、哈特曼光斑与事件响应连接成可生成、录制和回放的数据工具。
 date: 2026-07-01
 role: 训练数据生成软件开发 · 展示与答辩
-technologies: [事件相机, Qt, 波前重构, 物理模型]
+category: 光电研究
+outcome: 光电设计竞赛 · 东部区赛一等奖
+order: 1
+highlights:
+  - title: 全链路数据生成
+    description: 湍流波前 → Shack-Hartmann 光斑 → 事件流
+  - title: 桌面软件交付
+    description: 五视图预览、HDF5 录制、批量参数扫描与回放
+technologies: [Python, PySide6, HDF5, 事件相机, 波前重构]
 cover: /images/project-optics.svg
+coverAlt: 从波前到哈特曼光斑再到事件流的三步示意图
+coverCaption: 物理数据链路示意；对应软件中的生成、预览与录制流程。
 featured: true
 status: completed
 published: true
@@ -30,6 +40,16 @@ published: true
 ## Results & Outputs
 
 作品《极速视界：基于物理驱动神经网络的事件基气动光学表征系统》获得第十四届全国大学生光电设计竞赛东部区赛一等奖。
+
+软件部分形成了独立的桌面应用：支持随机 Zernike 与分层大气湍流波前、光斑及斜率计算、事件响应模拟，以及五视图显示、HDF5 单文件与批量录制、数据回放。我的贡献集中于训练数据生成工具，竞赛奖项属于团队作品。
+
+## 工程实现
+
+数据从波前真值开始，经过 Shack-Hartmann 物理传播模型得到光斑，再由事件相机响应模型得到事件流。真值、光斑、事件、可选重构结果和残差按同一物理时间轴组织，生成参数与单位信息写入 HDF5，便于回放和复现实验。
+
+界面与后台任务分离，录制只提交完整计算的样本。批量任务支持单参数扫描与固定范围随机采样。
+
+目前实时监控已接通事件相机采集；实时重构等部分按钮尚未接入完整业务，这里展示的是已经实现的数据生成与回放能力。
 
 ## What I Learned
 

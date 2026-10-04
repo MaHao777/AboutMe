@@ -1,67 +1,54 @@
 ---
-import { ArrowRight, ArrowUpRight, Compass, FlaskConical, MoveDownRight } from '@lucide/astro';
+import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { profile } from '../data/profile';
+import { profile, featuredResults } from '../data/profile';
 import { getPublicProjects, getPublicNotes, formatDate } from '../lib/content';
 
-const projects = (await getPublicProjects()).filter((project) => project.data.featured).slice(0, 2);
+const projects = (await getPublicProjects()).filter((project) => project.data.featured).slice(0, 3);
 const notes = (await getPublicNotes()).slice(0, 2);
 ---
 
-<BaseLayout title="首页" description="马浩的个人网站：光电、事件视觉、软件开发，以及生活与思考。">
-  <section class="home-hero container">
-    <div class="hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow hero-kicker"><span class="live-dot"></span> HELLO, I'M MA HAO <span class="kicker-line"></span> SUZHOU, CN</p>
-        <h1>在研究与代码之间，<br /><span>保持好奇<span class="accent">.</span></span></h1>
-        <p class="hero-description">{profile.introduction}</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="/work">探索我的工作 <ArrowUpRight size={18} stroke-width={1.8} /></a>
-          <a class="button button-plain" href="/life">看看生活一面 <ArrowRight size={17} stroke-width={1.8} /></a>
-        </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="visual-corner visual-corner-top">FIG. 01 / SIGNAL & STORY</div>
-        <div class="orbit orbit-outer"></div><div class="orbit orbit-mid"></div><div class="orbit orbit-inner"></div>
-        <div class="orbit-axis orbit-axis-x"></div><div class="orbit-axis orbit-axis-y"></div>
-        <div class="orbit-dot orbit-dot-one"></div><div class="orbit-dot orbit-dot-two"></div>
-        <div class="orbit-core"><span>MH</span><small>RESEARCH<br />× CODE</small></div>
-        <span class="orbit-coordinate coord-a">31°18′ N</span><span class="orbit-coordinate coord-b">120°37′ E</span>
-        <div class="visual-corner visual-corner-bottom">ALWAYS IN PROGRESS <span>↗</span></div>
-      </div>
+<BaseLayout title="首页" description="马浩的研究、工程作品与生活笔记。波前数据平台、条纹锁定、事件目标检测与个人工具。">
+  <section class="home-intro container">
+    <div class="home-copy">
+      <p class="eyebrow">MA HAO · A PERSONAL COLLECTION</p>
+      <h1>认真做事，<br />也认真<span class="serif-italic">生活。</span></h1>
+      <p class="home-description">我是{profile.name}。{profile.introduction}</p>
+      <p class="home-signature">研究、作品，与一些日常拾页。<span>Ma Hao</span></p>
     </div>
-    <div class="hero-bottom"><span>SCROLL TO EXPLORE</span><MoveDownRight size={17} stroke-width={1.5} /><span>01 / 03</span></div>
-  </section>
-
-  <section class="paths-section section-space">
-    <div class="container">
-      <SectionHeading index="01" title="两个方向，同一个我" intro="你可以从项目和研究认识我，也可以从兴趣与文字开始。" />
-      <div class="path-grid">
-        <a class="path-card path-work" href="/work">
-          <span class="path-top"><span class="path-icon"><FlaskConical size={22} stroke-width={1.5} /></span><span>01 / EXPLORE</span></span>
-          <span class="path-body"><span class="path-overline">FOR RECRUITERS & COLLABORATORS</span><strong>Professional<span class="accent">.</span></strong><span class="path-description">项目、研究、工程实践与技能。看看我如何把想法做成可运行的东西。</span></span>
-          <span class="path-bottom">进入专业页面 <ArrowUpRight size={19} stroke-width={1.7} /></span>
-        </a>
-        <a class="path-card path-life" href="/life">
-          <span class="path-top"><span class="path-icon"><Compass size={22} stroke-width={1.5} /></span><span>02 / WANDER</span></span>
-          <span class="path-body"><span class="path-overline">FOR THE CURIOUS & KINDRED</span><strong>Personal<span class="accent">.</span></strong><span class="path-description">音乐、运动、影像和记录。在工作之外，也有值得认真生活的部分。</span></span>
-          <span class="path-bottom">进入生活页面 <ArrowUpRight size={19} stroke-width={1.7} /></span>
-        </a>
-      </div>
+    <div class="entry-spread">
+      <a href="/work" class="entry-paper entry-work">
+        <span class="paper-edition">01 / 研究与作品</span>
+        <span class="paper-title">Professional</span>
+        <span class="paper-subtitle">光电研究 · 模型开发 · 工程交付</span>
+        <span class="paper-preview">波前数据平台<br />干涉条纹锁定<br />微弱目标检测<br />智慧车辆通信</span>
+        <span class="paper-link">从成果开始了解 <ArrowUpRight size={19} /></span>
+      </a>
+      <a href="/life" class="entry-paper entry-life">
+        <span class="paper-edition">02 / 兴趣与文字</span>
+        <span class="paper-title">Personal</span>
+        <span class="paper-subtitle">琴键、球场，和想留下的瞬间</span>
+        <img src="/images/journal-leaf.svg" alt="" class="paper-leaf" />
+        <span class="paper-link">翻开生活这一页 <ArrowUpRight size={19} /></span>
+      </a>
     </div>
   </section>
 
-  <section class="section-space container home-projects">
-    <SectionHeading index="02" title="正在做的事" intro="一些让我投入时间、也让我不断学习的项目。" href="/work#projects" linkLabel="更多项目" />
-    <div class="project-grid">{projects.map((project, index) => <ProjectCard project={project} index={index} />)}</div>
+  <section class="home-results container" aria-label="代表成果">
+    {featuredResults.filter((item) => item.published).map((item) => <a href={item.href}><strong>{item.value}</strong><span>{item.label}</span><ArrowUpRight size={16} /></a>)}
   </section>
 
-  <section class="section-space notes-preview">
-    <div class="container">
-      <SectionHeading index="03" title="随手记，也认真想" intro="从生活和实践中挑出值得分享的片段。" href="/life#notes" linkLabel="阅读文章" />
-      <div class="note-list">{notes.map((note) => <a class="note-row" href={`/notes/${note.id}/`}><span class="note-date">{formatDate(note.data.date)}</span><span class="note-row-main"><strong>{note.data.title}</strong><small>{note.data.description}</small></span><span class="note-category">{note.data.category}</span><ArrowUpRight size={20} stroke-width={1.5} /></a>)}</div>
+  <section class="section-space container">
+    <SectionHeading index="01" title="做过的事，留下的作品" label="SELECTED WORK" intro="先看结果；感兴趣的话，再展开我的工作与项目细节。" href="/work#projects" linkLabel="全部研究与项目" />
+    <div class="project-grid home-project-grid">{projects.map((project) => <ProjectCard project={project} />)}</div>
+  </section>
+
+  <section class="home-journal section-space">
+    <div class="container journal-preview-grid">
+      <div><p class="eyebrow">A FEW PAGES FROM LIFE</p><h2>留一点位置，<br />给日常。</h2><p>音乐、运动、影像，还有整理后愿意分享的文字。</p><a class="text-link" href="/life">走进 Personal <ArrowUpRight size={16} /></a></div>
+      <div class="note-list">{notes.map((note) => <a class="note-row" href={`/notes/${note.id}/`}><span class="note-date">{formatDate(note.data.date)} · {note.data.category}</span><span class="note-row-main"><strong>{note.data.title}</strong><small>{note.data.description}</small></span><ArrowUpRight size={18} /></a>)}</div>
     </div>
   </section>
 </BaseLayout>

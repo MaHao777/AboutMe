@@ -14,8 +14,8 @@ const links = [
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="返回首页">
-      <span class="brand-mark">{profile.monogram}</span>
-      <span class="brand-name">MA HAO<span class="brand-dot">.</span></span>
+      <span class="brand-mark">{profile.name}</span>
+      <span class="brand-name">MA HAO</span>
     </a>
     <nav class="primary-nav" aria-label="主导航">
       {links.map((link) => <a href={link.href} class:list={['nav-link', { active: link.active }]} aria-current={link.active ? 'page' : undefined}>{link.label}</a>)}

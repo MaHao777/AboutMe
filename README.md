@@ -50,8 +50,16 @@ title: My Project
 description: 一句话介绍
 date: 2026-10-04
 role: 我的具体职责
+category: 研究与工程
+outcome: 最重要的一项已验证成果或交付
+order: 10
+highlights:
+  - title: 我的工作
+    description: 可展开查看的具体贡献
 technologies: [TypeScript, Astro]
 cover: /images/my-project.svg
+coverAlt: 说明图片的内容
+coverCaption: 标明这是实测图、软件截图还是流程示意
 github: https://github.com/your-name/my-project
 paper: https://example.com/paper
 demo: https://example.com/demo
@@ -61,7 +69,17 @@ published: false
 ---
 ```
 
-`cover`、`github`、`paper`、`demo` 可省略。正文建议包含 Problem、My Role、Approach、Technical Highlights、Results & Outputs、What I Learned。确认公开后改为 `published: true`；首页只显示同时设置 `featured: true` 的公开项目。
+`outcome` 必填，用于第一眼呈现项目结果；`order` 控制排序，数字小的靠前。`highlights` 用于卡片的原生展开区域。`cover`、`github`、`paper`、`demo` 可省略。正文建议包含问题、我的工作、解决方法、技术细节、成果与交付、学到的事。确认公开后改为 `published: true`；首页显示排序靠前的三个公开精选项目。
+
+需要放实际结果图时，可以增加 `gallery`，每项包含 `src`、`alt`、`caption`。每张图必须说明实验范围，概念图不要写成实测曲线。
+
+## 信息层次与视觉
+
+Professional 使用蓝白的编辑式排版，Personal 使用暖黄纸页。两者共用导航、字体、组件与深浅主题，但通过 `BaseLayout` 的 `section` 设置不同颜色。
+
+内容按三层呈现：第一层是成果与交付；第二层在项目卡片内展开个人工作；第三层跳转详情，解释问题、方法、限制和图片。展开使用 HTML `details`，不需要客户端脚本。代表成果摘要在 `src/data/profile.ts` 的 `featuredResults` 中管理。
+
+TraceFormer 的 `0.954117` 是冻结完整系统在 24 序列验证集上的独立复评结果，不能改写成官方测试成绩。其实际图保存在 `public/images/traceformer-*.png`。其余项目封面是流程或功能示意，并非软件截图或实测数据。原始证书未复制进发布目录。
 
 ## 新增文章
 

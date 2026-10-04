@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="#edf3f8"/>
+  <rect x="105" y="128" width="790" height="310" rx="5" fill="#fff" stroke="#cbd8e4" stroke-width="2"/>
+  <g fill="none" stroke-width="3"><path d="M151 285q38-76 76 0t76 0 76 0 76 0 76 0 76 0 76 0 76 0 76 0" stroke="#426f9e"/><path d="M151 303q38-76 76 0t76 0 76 0 76 0 76 0 76 0 76 0 76 0 76 0" stroke="#b6c8d9" stroke-dasharray="7 7"/></g>
+  <g font-family="Microsoft YaHei,sans-serif" font-size="19" fill="#5e7b97"><text x="151" y="186">参考条纹</text><text x="716" y="186" fill="#8da3b8">漂移条纹</text><text x="151" y="393">相位误差 → 反馈补偿 → 再次采集</text></g>
+  <path d="M396 465h209" fill="none" stroke="#87a3ba" stroke-width="2"/>
+  <text x="500" y="503" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="23" fill="#426b90">采集 · 解调 · 标定 · 补偿</text>
+  <text x="500" y="543" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="17" fill="#8a9caf">A closed loop, illustrated.</text>
+</svg>

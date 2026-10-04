@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="#edf3f7"/>
+  <g fill="#fff" stroke="#cbd9e4" stroke-width="2"><rect x="95" y="203" width="215" height="161" rx="5"/><rect x="392" y="203" width="215" height="161" rx="5"/><rect x="690" y="203" width="215" height="161" rx="5"/></g>
+  <g font-family="Microsoft YaHei,sans-serif" fill="#456b90" text-anchor="middle"><text x="202" y="275" font-size="29">网页端</text><text x="500" y="275" font-size="29">ROS 2</text><text x="798" y="275" font-size="29">CAN 端</text><text x="202" y="313" font-size="18" fill="#8295a8">操作消息</text><text x="500" y="313" font-size="18" fill="#8295a8">处理与转发</text><text x="798" y="313" font-size="18" fill="#8295a8">车辆通信</text></g>
+  <path d="M327 283h47m-11-9 11 9-11 9M625 283h47m-11-9 11 9-11 9" fill="none" stroke="#7695ae" stroke-width="2"/>
+  <path d="M201 389v62h597v-62" fill="none" stroke="#b2c6d5" stroke-width="2" stroke-dasharray="6 5"/>
+  <rect x="331" y="426" width="339" height="50" fill="#edf3f7"/>
+  <text x="500" y="458" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="22" fill="#6785a0">MQTT 双向模拟测试</text>
+  <text x="500" y="527" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="#8599ac" font-style="italic">From development to field validation.</text>
+</svg>

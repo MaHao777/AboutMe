@@ -5,13 +5,14 @@ interface Props {
   intro?: string;
   href?: string;
   linkLabel?: string;
+  label?: string;
 }
-const { index, title, intro, href, linkLabel } = Astro.props;
+const { index, title, intro, href, linkLabel, label } = Astro.props;
 ---
 
 <div class="section-heading">
   <div>
-    <p class="eyebrow"><span class="section-index">{index}</span> / {title.toUpperCase()}</p>
+    <p class="eyebrow"><span class="section-index">{index}</span> · {label ?? 'SELECTED STORIES'}</p>
     <h2>{title}</h2>
     {intro && <p class="section-intro">{intro}</p>}
   </div>

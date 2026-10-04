@@ -7,7 +7,7 @@ export const profile = {
   location: '苏州 · 中国',
   school: '苏州大学 · 本科在读',
   introduction:
-    '我关注光电与软件的交叉点，在事件视觉研究、工程开发和个人工具项目中持续动手解决问题。',
+    '苏州大学本科在读，关注光电与软件的交叉。做过波前数据生成、干涉条纹闭环锁定、事件流微弱目标检测，也在企业实习中开发过车辆通信与测试工具。',
   personalIntroduction:
     '喜欢弹琴、打篮球、拍照，也喜欢把日常里冒出的想法做成真正能用的小工具。',
   email: null as string | null,
@@ -22,9 +22,11 @@ export const experiences = [
   {
     published: true,
     period: '2026',
-    title: '光电与事件视觉项目实践',
+    title: '科研助理与光电项目实践',
     place: '苏州大学',
-    description: '参与事件相机与波前重构相关项目，负责训练数据生成软件开发，并参与展示与答辩。',
+    description: '围绕高速感知、精密控制与智能探测，开发波前数据平台、条纹锁定程序和事件小目标检测模型。',
+    outcomes: ['完成物理链路数据生成软件', '完成条纹标定与循环控制', '构建检测模型与独立评测流程'],
+    href: '/projects/event-optics/',
   },
   {
     published: true,
@@ -32,7 +34,15 @@ export const experiences = [
     title: '软件开发实践',
     place: '清华大学苏州汽车研究院相关企业',
     description: '参与智慧作业车辆项目，开发 MQTT 通信测试工具和 ROS 2 消息中转节点，协助联调与问题排查。',
+    outcomes: ['约四个月企业实践', '交付双向 MQTT 模拟测试工具', 'ROS 2 中转节点实测上线'],
+    href: '/projects/vehicle-communication/',
   },
+] as const;
+
+export const featuredResults = [
+  { published: true, value: '一等奖', label: '光电设计竞赛 · 东部区赛', detail: '团队作品「极速视界」，承担训练数据软件开发', href: '/projects/event-optics/' },
+  { published: true, value: '0.9541', label: '事件小目标检测 · 验证 Score', detail: '冻结完整系统，24 序列验证，非官方测试成绩', href: '/projects/traceformer/' },
+  { published: true, value: '实测上线', label: '智慧车辆 · ROS 2 通信节点', detail: '网页端与 CAN 端之间的消息处理与转发', href: '/projects/vehicle-communication/' },
 ] as const;
 
 export const interests = [

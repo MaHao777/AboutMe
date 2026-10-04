@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#0a1828"/>
-  <path d="M0 500h1200M0 400h1200M0 300h1200M0 200h1200M200 0v630M400 0v630M600 0v630M800 0v630M1000 0v630" stroke="#1c344b" stroke-width="1"/>
-  <circle cx="950" cy="290" r="185" fill="none" stroke="#2488f5" stroke-width="2"/>
-  <circle cx="950" cy="290" r="90" fill="none" stroke="#2488f5" stroke-opacity=".45"/>
-  <circle cx="950" cy="290" r="6" fill="#2488f5"/>
-  <text x="94" y="280" fill="#fff" font-family="Arial,sans-serif" font-size="88" font-weight="700">MA HAO.</text>
-  <text x="99" y="354" fill="#9bb0c3" font-family="Arial,sans-serif" font-size="28" letter-spacing="5">RESEARCH  /  CODE  /  LIFE</text>
-  <rect x="99" y="427" width="63" height="4" fill="#2488f5"/>
+  <rect width="1200" height="630" fill="#fbfaf7"/>
+  <rect x="770" y="100" width="290" height="360" fill="#e8f1fa" transform="rotate(-4 915 280)"/>
+  <rect x="850" y="225" width="240" height="310" fill="#f4e8ba" transform="rotate(5 970 380)"/>
+  <text x="92" y="145" fill="#56768f" font-family="Arial,sans-serif" font-size="18" letter-spacing="4">A PERSONAL COLLECTION</text>
+  <text x="90" y="285" fill="#243a4b" font-family="Georgia,serif" font-size="88">Ma Hao</text>
+  <text x="94" y="370" fill="#51616b" font-family="Georgia,serif" font-size="33">Research, work &amp; everyday stories.</text>
+  <path d="M94 430h520" stroke="#d6d8d5"/>
+  <text x="94" y="480" fill="#56768f" font-family="Arial,sans-serif" font-size="21">PROFESSIONAL  /  PERSONAL</text>
 </svg>

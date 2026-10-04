@@ -14,7 +14,7 @@ const { Content } = await render(note);
 const { title, description, date, category, readingMinutes } = note.data;
 ---
 
-<BaseLayout title={title} description={description} type="article">
+<BaseLayout title={title} description={description} type="article" section="life">
   <article class="detail-page note-detail container">
     <a href="/life#notes" class="back-link"><ArrowLeft size={17} /> 返回文章列表</a>
     <div class="note-head"><p class="eyebrow">FIELD NOTES / {category}</p><h1>{title}<span class="accent">.</span></h1><p>{description}</p><div class="note-meta"><span>{formatDate(date)}</span>{readingMinutes && <span>约 {readingMinutes} 分钟阅读</span>}</div></div>

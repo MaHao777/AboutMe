@@ -8,16 +8,17 @@ interface Props {
   description: string;
   image?: string;
   type?: 'website' | 'article';
+  section?: 'home' | 'work' | 'life';
 }
 
-const { title, description, image = '/og-default.svg', type = 'website' } = Astro.props;
+const { title, description, image = '/og-default.svg', type = 'website', section = 'home' } = Astro.props;
 const pageTitle = title === '首页' ? '马浩 — Research, Code & Life' : `${title} | 马浩`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 const ogImage = new URL(image, Astro.site ?? Astro.url);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-section={section}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,7 +27,7 @@ const ogImage = new URL(image, Astro.site ?? Astro.url);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#0a1828" />
+    <meta name="theme-color" content={section === 'life' ? '#f5edd8' : '#f5f8fc'} />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="Ma Hao" />
     <meta property="og:locale" content="zh_CN" />

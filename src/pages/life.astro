@@ -1,5 +1,5 @@
 ---
-import { ArrowUpRight, Asterisk, Heart, NotebookPen } from '@lucide/astro';
+import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import { profile, interests, timeline } from '../data/profile';
@@ -8,36 +8,35 @@ import { getPublicNotes, formatDate } from '../lib/content';
 const notes = await getPublicNotes();
 ---
 
-<BaseLayout title="Personal" description="马浩的生活、兴趣、文字与整理后的公开笔记。">
-  <section class="page-hero life-hero container">
-    <p class="eyebrow"><span class="live-dot"></span> PERSONAL / FIELD NOTES</p>
-    <div class="life-hero-layout"><div><h1>工作之外，<br />还有<span class="accent">生活</span>这件事。</h1><p>{profile.personalIntroduction}</p></div><div class="life-doodle" aria-hidden="true"><div class="doodle-ring"></div><div class="doodle-line"></div><Asterisk size={70} stroke-width={0.8} /><span>COLLECTING MOMENTS<br />& MAKING THINGS</span></div></div>
-    <div class="page-hero-bottom"><span>AN OPEN JOURNAL, EDITED WITH CARE.</span><span>SCROLL TO EXPLORE ↓</span></div>
+<BaseLayout title="Personal" description="马浩的生活拾页：音乐、运动、影像与经过整理的公开笔记。" section="life">
+  <section class="life-intro container">
+    <div><p class="eyebrow">PERSONAL · NOTES ON AN ORDINARY LIFE</p><h1>日子慢慢过，<br /><span class="serif-italic">故事慢慢写。</span></h1><p>{profile.personalIntroduction}</p><a class="text-link" href="#notes">读一点近来的文字 <ArrowUpRight size={17} /></a></div>
+    <div class="journal-page"><span class="journal-date">随手记 / 日常拾页</span><img src="/images/journal-leaf.svg" alt="植物线描插画" /><p>一首曲子，一场球。<br />一些想法，一些值得<br />留住的小事。</p><span class="journal-signature">Ma Hao</span></div>
   </section>
 
   <section class="section-space section-rule container" id="about">
-    <SectionHeading index="01" title="About Me" />
-    <div class="intro-grid"><p class="statement">白天在<span class="text-blue">代码与实验</span>里找答案，其他时间也愿意为一首曲子、一场球和一个小想法停留。</p><div class="intro-side"><p>这里更像一间慢慢布置的房间：放一些兴趣、经历，还有整理后愿意分享的文字。希望它能成为遇见同好的起点。</p><span class="handwritten">A little more human, a little less formal.</span></div></div>
+    <SectionHeading index="01" title="工作之外的我" label="ABOUT ME" />
+    <div class="intro-grid"><p class="statement">喜欢亲手做点东西，<br />也喜欢为<span class="accent">没什么目的的快乐</span>留一点时间。</p><div class="intro-side"><p>这里是一间慢慢布置的房间：放一些兴趣、经历，还有整理后愿意分享的文字。希望它能成为遇见同好的起点。</p><span class="handwritten">A few things that make a day a day.</span></div></div>
   </section>
 
   <section class="section-space section-rule container" id="interests">
-    <SectionHeading index="02" title="Interests" intro="一些持续让我有热情的事情。" />
-    <div class="interest-grid">{interests.filter((item) => item.published).map((item) => <article class="interest-card"><span>{item.number} / INTEREST</span><div><Heart size={20} stroke-width={1.4} /><h3>{item.title}</h3><p>{item.description}</p></div></article>)}</div>
-  </section>
-
-  <section class="section-space section-rule container" id="experiences">
-    <SectionHeading index="03" title="Experiences" intro="经历不只发生在履历表里，也藏在一次次尝试中。" />
-    <div class="life-experience"><div class="life-quote">“把有趣的想法<br />做成能用的东西。”<span>— A WORKING PRINCIPLE</span></div><div class="life-experience-copy"><p>从项目路演、竞赛展示，到为自己的日常写小工具，我逐渐发现表达与创造可以互相推动。</p><p>我也在练习更好地记录：把学习和生活中的片段，整理成以后仍愿意回看的文字。</p></div></div>
+    <SectionHeading index="02" title="喜欢的事情" label="SMALL JOYS" intro="持续让我有热情的，往往是这些小事。" />
+    <div class="interest-grid">{interests.filter((item) => item.published).map((item) => <article class="interest-card"><span>{item.number}</span><h3>{item.title}</h3><p>{item.description}</p></article>)}</div>
   </section>
 
   <section class="section-space section-rule container" id="notes">
-    <SectionHeading index="04" title="Thoughts / Notes" intro="只发布经过重新整理和确认可以公开的内容。" />
-    <div class="note-list">{notes.map((note) => <a class="note-row" href={`/notes/${note.id}/`}><span class="note-date">{formatDate(note.data.date)}</span><span class="note-row-main"><strong>{note.data.title}</strong><small>{note.data.description}</small></span><span class="note-category">{note.data.category}</span><ArrowUpRight size={20} stroke-width={1.5} /></a>)}</div>
-    {notes.length === 0 && <p class="empty-state"><NotebookPen size={21} /> 文章还在整理中。</p>}
+    <SectionHeading index="03" title="最近的文字" label="THOUGHTS / NOTES" intro="原始记录经过整理，成为可以分享的一页。" />
+    <div class="note-list">{notes.map((note) => <a class="note-row" href={`/notes/${note.id}/`}><span class="note-date">{formatDate(note.data.date)} · {note.data.category}</span><span class="note-row-main"><strong>{note.data.title}</strong><small>{note.data.description}</small></span><ArrowUpRight size={19} /></a>)}</div>
+    {notes.length === 0 && <p class="empty-state">新的文字还在整理中。</p>}
+  </section>
+
+  <section class="section-space section-rule container" id="experiences">
+    <SectionHeading index="04" title="在尝试中，慢慢认识自己" label="EXPERIENCES" />
+    <div class="life-experience"><blockquote>把有趣的想法，<br />做成能用的东西。</blockquote><div><p>从项目路演、竞赛展示，到为自己的日常写小工具，我逐渐发现表达与创造可以互相推动。</p><p>也在练习更好地记录：把学习和生活中的片段，整理成以后仍愿意回看的文字。</p></div></div>
   </section>
 
   <section class="section-space section-rule container" id="timeline">
-    <SectionHeading index="05" title="Timeline" intro="一个持续更新中的小小时间轴。" />
+    <SectionHeading index="05" title="一路走来" label="A LITTLE TIMELINE" />
     <div class="timeline">{timeline.filter((item) => item.published).map((item) => <div class="timeline-item"><span class="timeline-year">{item.year}</span><span class="timeline-marker"></span><div><h3>{item.title}</h3><p>{item.description}</p></div></div>)}</div>
   </section>
 </BaseLayout>

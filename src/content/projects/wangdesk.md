@@ -3,8 +3,18 @@ title: WangDesk
 description: 一个把桌面宠物、番茄钟与设备状态放在一起的 Windows 小工具。
 date: 2026-05-01
 role: 开源项目开发
+category: 日常工具
+outcome: 开源 Windows 桌面工具
+order: 6
+highlights:
+  - title: 桌面常驻
+    description: 系统托盘与桌面宠物结合
+  - title: 日常功能
+    description: 番茄钟、设备状态与快捷入口
 technologies: [C#, Windows, 桌面应用]
 cover: /images/project-wangdesk.svg
+coverAlt: 桌面宠物与番茄钟功能的插画示意
+coverCaption: 功能插画示意，非实际软件截图。
 github: https://github.com/MaHao777/wangdesk-desktop-pet
 featured: false
 status: ongoing
