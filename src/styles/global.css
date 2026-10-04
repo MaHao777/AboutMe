@@ -56,14 +56,14 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
 .masthead-caption { color: var(--muted); font-size: 12px; letter-spacing: .16em; padding-bottom: 7px; margin: 0; text-align: right; }
 .masthead-caption span { display: block; margin-top: 10px; font-size: 10px; letter-spacing: .05em; }
 .entry-gallery { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; }
-.gallery-entry { position: relative; min-width: 0; height: 360px; overflow: hidden; isolation: isolate; transition: background-color .5s; }
-.gallery-work { background: #e2edf8; color: #244b7e; }
-.gallery-life { background: #f1dba7; color: #694b2e; }
-.gallery-work:hover { background: #d8e7f6; }
-.gallery-life:hover { background: #edd29b; }
+.gallery-entry { position: relative; min-width: 0; height: 360px; overflow: visible; isolation: isolate; }
+.gallery-entry::before { content: ''; position: absolute; inset: 0; z-index: 0; background: var(--entry-bg); transition: background-color .5s; }
+.gallery-entry:hover::before { background: var(--entry-hover-bg); }
+.gallery-work { --entry-bg: #e2edf8; --entry-hover-bg: #d8e7f6; color: #244b7e; }
+.gallery-life { --entry-bg: #f1dba7; --entry-hover-bg: #edd29b; color: #694b2e; }
 .entry-index { position: absolute; top: 26px; left: 30px; font-size: 10px; letter-spacing: .15em; z-index: 2; }
-.gallery-entry .art-study { position: absolute; width: 475px; max-width: 100%; right: -10px; top: -51px; transition: transform .8s cubic-bezier(.2,.65,.25,1); }
-.gallery-life .art-study { width: 430px; top: -55px; right: -50px; }
+.gallery-entry .art-study { position: absolute; z-index: 1; pointer-events: none; width: 475px; max-width: 100%; right: -10px; top: -72px; transition: transform .8s cubic-bezier(.2,.65,.25,1); }
+.gallery-life .art-study { width: 430px; top: -76px; right: -50px; }
 .gallery-entry:hover .art-study { transform: translate(-6px, -8px) scale(1.025); }
 .entry-title { position: absolute; inset: auto 29px 27px; display: flex; align-items: end; justify-content: space-between; gap: 12px; z-index: 2; }
 .entry-title > div > span { font-size: 11px; letter-spacing: .12em; }
@@ -250,10 +250,8 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
 .footer-links a { display: inline-flex; align-items: center; gap: 4px; }
 .footer-links a:hover { color: var(--accent); }
 .footer-signature { font: italic 13px var(--serif); }
-:root[data-theme="dark"] .gallery-work { background: #314865; color: #e0ebf9; }
-:root[data-theme="dark"] .gallery-life { background: #66502d; color: #f7e5c0; }
-:root[data-theme="dark"] .gallery-work:hover { background: #3b5575; }
-:root[data-theme="dark"] .gallery-life:hover { background: #715a35; }
+:root[data-theme="dark"] .gallery-work { --entry-bg: #314865; --entry-hover-bg: #3b5575; color: #e0ebf9; }
+:root[data-theme="dark"] .gallery-life { --entry-bg: #66502d; --entry-hover-bg: #715a35; color: #f7e5c0; }
 
 /* Lightweight motion; content remains present without JavaScript. */
 .hero-arrive { animation: arrive 1s cubic-bezier(.2,.7,.2,1) both; }
@@ -286,8 +284,8 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
   .gallery-entry { height: 330px; }
   .entry-title h2 { font-size: 38px; }
   .entry-title { inset-inline: 22px; }
-  .gallery-entry .art-study { width: 420px; right: -30px; top: -20px; }
-  .gallery-life .art-study { right: -65px; }
+  .gallery-entry .art-study { width: 420px; right: -30px; top: -60px; }
+  .gallery-life .art-study { top: -62px; right: -65px; }
   .collection-hero { min-height: 500px; }
   .collection-copy h1 { font-size: 63px; }
   .life-hero .collection-copy h1 { font-size: 59px; }
@@ -308,11 +306,11 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
   .name-display { font-size: 79px; }
   .masthead-caption { font-size: 9px; letter-spacing: .03em; padding-top: 8px; }
   .masthead-caption span { font-size: 9px; margin-top: 6px; }
-  .entry-gallery { grid-template-columns: 1fr; gap: 14px; }
+  .entry-gallery { grid-template-columns: 1fr; gap: 34px; }
   .gallery-entry { height: 270px; }
   .entry-index { top: 21px; left: 22px; font-size: 9px; }
-  .gallery-entry .art-study { width: 315px; max-width: 90%; top: -40px; right: -12px; }
-  .gallery-life .art-study { width: 295px; top: -43px; right: -5px; }
+  .gallery-entry .art-study { width: 315px; max-width: 90%; top: -55px; right: -12px; }
+  .gallery-life .art-study { width: 295px; top: -54px; right: -5px; }
   .entry-title { inset: auto 22px 21px; }
   .entry-title h2 { font-size: 39px; margin-top: 5px; }
   .entry-title > div > span { font-size: 10px; }
