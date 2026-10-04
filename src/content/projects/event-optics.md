@@ -4,13 +4,15 @@ description: 把大气湍流、哈特曼光斑与事件响应连接成可生成�
 date: 2026-07-01
 role: 训练数据生成软件开发 · 展示与答辩
 category: 光电研究
-outcome: 光电设计竞赛 · 东部区赛一等奖
+outcome: 东部区赛一等奖 · 莙政基金入选
 order: 1
 highlights:
   - title: 全链路数据生成
     description: 湍流波前 → Shack-Hartmann 光斑 → 事件流
   - title: 桌面软件交付
     description: 五视图预览、HDF5 录制、批量参数扫描与回放
+  - title: 莙政基金入选
+    description: 2026 年苏州大学 · 超高速波前感知课题
 technologies: [Python, PySide6, HDF5, 事件相机, 波前重构]
 cover: /images/project-optics.svg
 coverAlt: 从波前到哈特曼光斑再到事件流的三步示意图
@@ -42,6 +44,12 @@ published: true
 作品《极速视界：基于物理驱动神经网络的事件基气动光学表征系统》获得第十四届全国大学生光电设计竞赛东部区赛一等奖。
 
 软件部分形成了独立的桌面应用：支持随机 Zernike 与分层大气湍流波前、光斑及斜率计算、事件响应模拟，以及五视图显示、HDF5 单文件与批量录制、数据回放。我的贡献集中于训练数据生成工具，竞赛奖项属于团队作品。
+
+<h2 id="junzheng-fund">莙政基金科研项目</h2>
+
+相关科研课题《基于神经形态视觉的超高速波前感知技术》入选 **2026 年苏州大学「莙政基金」**。
+
+研究方向：神经形态视觉、超高速波前感知。
 
 ## 工程实现
 

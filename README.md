@@ -106,6 +106,7 @@ published: false
 - `src/data/presentation.ts`：首页及两个入口页的短标题、标签。
 - `src/data/skills.ts`：按场景分组的技术能力。
 - `src/data/achievements.ts`：已确认可公开的成果。
+- 莙政基金记录已核对 2026 年入选名单中马浩的条目，正式课题名为「基于神经形态视觉的超高速波前感知技术」。成果栏、研究经历与波前项目详情同步展示，状态表述为项目入选。
 - `src/data/resume.ts`：展示于 Professional「奖项与成果」的奖学金与四六级成绩。大学奖学金按笔记保留“大一”阶段；两次集萃实习一等奖学金按本人确认合并展示，未补写未经确认的获奖日期。考试成绩与月份以成绩单为准，证明原图不放进 `public/`。
 - `src/data/links.ts`：GitHub 链接。
 

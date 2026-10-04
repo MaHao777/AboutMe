@@ -2,6 +2,15 @@ export const achievements = [
   {
     published: true,
     year: '2026',
+    label: '莙政基金',
+    result: '莙政基金项目入选',
+    title: '2026 年苏州大学「莙政基金」',
+    detail: '项目：基于神经形态视觉的超高速波前感知技术',
+    href: '/projects/event-optics/#junzheng-fund',
+  },
+  {
+    published: true,
+    year: '2026',
     label: '光电设计竞赛',
     result: '东部区赛一等奖',
     title: '第十四届全国大学生光电设计竞赛 · 东部区赛一等奖',

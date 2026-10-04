@@ -22,6 +22,15 @@ export const experiences = [
   {
     published: true,
     period: '2026',
+    title: '莙政基金科研项目',
+    place: '苏州大学 · 光电科学与工程学院',
+    description: '基于神经形态视觉的超高速波前感知技术。',
+    outcomes: ['入选 2026 年苏州大学「莙政基金」', '研究方向：事件视觉与超高速波前感知'],
+    href: '/projects/event-optics/#junzheng-fund',
+  },
+  {
+    published: true,
+    period: '2026',
     title: '科研助理与光电项目实践',
     place: '苏州大学',
     description: '围绕高速感知、精密控制与智能探测，开发波前数据平台、条纹锁定程序和事件小目标检测模型。',

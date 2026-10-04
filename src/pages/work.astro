@@ -37,7 +37,7 @@ const projects = await getPublicProjects();
     </HoverDisclosure>
     <HoverDisclosure id="achievements" number="02" title="奖项与成果" hint="RECOGNITION">
       <div class="index-body">
-        <div class="award-list">{achievements.filter((item) => item.published).map((item) => <article class="award-row"><span>{item.year}</span><div><h3>{item.result}</h3><p>{item.title}</p><p>{item.detail}</p></div>{item.href && <a class="circle-link" href={item.href} aria-label={`查看${item.label}获奖作品`}><ArrowUpRight size={22} stroke-width={1.3} /></a>}</article>)}</div>
+      <div class="award-list">{achievements.filter((item) => item.published).map((item) => <article class="award-row"><span>{item.year}</span><div><h3>{item.result}</h3><p>{item.title}</p><p>{item.detail}</p></div>{item.href && <a class="circle-link" href={item.href} aria-label={`查看${item.label}相关项目`}><ArrowUpRight size={22} stroke-width={1.3} /></a>}</article>)}</div>
         <div class="academic-overview">
           <section class="academic-qualification" aria-labelledby="scholarship-heading"><h3 id="scholarship-heading">奖学金</h3><ul class="scholarship-list">{scholarships.filter((item) => item.published).map((item) => <li><span>{item.period}</span><strong>{item.title}</strong></li>)}</ul></section>
           <section class="academic-qualification" aria-labelledby="language-heading"><h3 id="language-heading">英语成绩</h3><dl class="language-scores">{languageScores.filter((item) => item.published).map((item) => <div><dt><span>{item.code}</span>{item.title}</dt><dd><strong>{item.score}</strong><span>分</span></dd><time datetime={item.date}>{item.dateLabel}</time></div>)}</dl></section>

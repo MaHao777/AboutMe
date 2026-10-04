@@ -192,6 +192,7 @@ a.resource-card:hover { border-color: var(--accent); }
 
 /* Long-form pages retain their full content, with a comfortable reading width. */
 .detail-page { padding-block: 45px 85px; }
+#junzheng-fund { scroll-margin-top: 100px; }
 .back-link, .end-link { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
 .back-link:hover, .end-link:hover { color: var(--accent); }
 .detail-head { display: flex; gap: 30px; align-items: end; justify-content: space-between; margin: 55px 0 35px; }
