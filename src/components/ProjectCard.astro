@@ -8,7 +8,7 @@ const { title, description, category, outcome, highlights, cover, coverAlt, role
 const href = `/projects/${project.id}/`;
 ---
 
-<article class="project-card">
+<article class="project-card" data-reveal>
   <a class="project-art" href={href} aria-label={`查看${title}项目详情`}>
     {cover && <img src={cover} alt={coverAlt} loading="lazy" width="1000" height="620" />}
     <span class="project-category">{category}</span>
@@ -16,12 +16,11 @@ const href = `/projects/${project.id}/`;
   <div class="project-info">
     <p class="project-outcome">{outcome}</p>
     <h3><a href={href}>{title}</a></h3>
-    <p class="project-description">{description}</p>
     <details class="project-disclosure">
-      <summary>我做了什么<span aria-hidden="true">＋</span></summary>
-      <div><p class="project-role">{role}</p>
+      <summary>项目概览<span aria-hidden="true">＋</span></summary>
+      <div><p class="project-description">{description}</p><p class="project-role">{role}</p>
       <ul>{highlights.slice(0, 2).map((item) => <li><strong>{item.title}</strong> · {item.description}</li>)}</ul></div>
     </details>
-    <a class="text-link project-detail-link" href={href}>查看完整项目 <ArrowUpRight size={16} stroke-width={1.5} /></a>
+    <a class="text-link project-detail-link" href={href} aria-label={`阅读${title}完整项目`}>阅读全文 <ArrowUpRight size={16} stroke-width={1.5} /></a>
   </div>
 </article>

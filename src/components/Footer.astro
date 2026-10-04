@@ -4,20 +4,7 @@ import { profile } from '../data/profile';
 import { links } from '../data/links';
 ---
 
-<footer class="site-footer">
-  <div class="container footer-top">
-    <div>
-      <p class="eyebrow">UNTIL THE NEXT PAGE</p>
-      <p class="footer-statement">谢谢你，读到这里。<br /><span>也许我们会有共同的话题。</span></p>
-    </div>
-    <div class="footer-links">
-      <a href="/work">Professional <ArrowUpRight size={16} /></a>
-      <a href="/life">Personal <ArrowUpRight size={16} /></a>
-      {links.published && <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight size={16} /></a>}
-    </div>
-  </div>
-  <div class="container footer-bottom">
-    <span>© {new Date().getFullYear()} {profile.englishName}</span>
-    <span>Made with Astro · Thoughtfully, over time.</span>
-  </div>
+<footer class="site-footer container">
+  <div class="footer-contact" data-reveal><p>Let’s talk<span>.</span></p>{profile.email && <a class="email-link" href={`mailto:${profile.email}`}>{profile.email}<ArrowUpRight size={23} stroke-width={1.3} /></a>}</div>
+  <div class="footer-bottom"><span>© {new Date().getFullYear()} {profile.englishName}</span><div class="footer-links"><a href="/work">Professional</a><a href="/life">Personal</a>{links.published && <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight size={13} /></a>}</div><span class="footer-signature">Made with care.</span></div>
 </footer>

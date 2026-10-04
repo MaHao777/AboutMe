@@ -10,7 +10,7 @@ export const profile = {
     '苏州大学本科在读，关注光电与软件的交叉。做过波前数据生成、干涉条纹闭环锁定、事件流微弱目标检测，也在企业实习中开发过车辆通信与测试工具。',
   personalIntroduction:
     '喜欢弹琴、打篮球、拍照，也喜欢把日常里冒出的想法做成真正能用的小工具。',
-  email: null as string | null,
+  email: '2030985559@qq.com' as string | null,
   resumeUrl: null as string | null,
 } as const;
 

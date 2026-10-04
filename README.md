@@ -75,9 +75,9 @@ published: false
 
 ## 信息层次与视觉
 
-Professional 使用蓝白的编辑式排版，Personal 使用暖黄纸页。两者共用导航、字体、组件与深浅主题，但通过 `BaseLayout` 的 `section` 设置不同颜色。
+首页使用双入口画廊构图，Professional 使用蓝白的雕塑与作品选集，Personal 使用暖黄艺术构图。两者共用导航、字体、组件与深浅主题，通过 `BaseLayout` 的 `section` 设置不同颜色。入口页短文案集中在 `src/data/presentation.ts`。
 
-内容按三层呈现：第一层是成果与交付；第二层在项目卡片内展开个人工作；第三层跳转详情，解释问题、方法、限制和图片。展开使用 HTML `details`，不需要客户端脚本。代表成果摘要在 `src/data/profile.ts` 的 `featuredResults` 中管理。
+内容按三层呈现：第一层只显示标题与成果；第二层在项目卡片内展开摘要、个人工作，背景、奖项和技能也默认折叠；第三层跳转详情，解释问题、方法、限制和图片。展开使用 HTML `details`，不需要客户端脚本。代表成果摘要在 `src/data/profile.ts` 的 `featuredResults` 中管理。
 
 TraceFormer 的 `0.954117` 是冻结完整系统在 24 序列验证集上的独立复评结果，不能改写成官方测试成绩。其实际图保存在 `public/images/traceformer-*.png`。其余项目封面是流程或功能示意，并非软件截图或实测数据。原始证书未复制进发布目录。
 
@@ -96,11 +96,14 @@ published: false
 ---
 ```
 
-`readingMinutes` 可省略。请先从原始记录整理成独立文章，删去不适合公开的人名、位置、联系方式等信息，再显式改为 `published: true`。`example-unpublished.md` 是发布开关示例，构建中不会出现。
+`readingMinutes` 可省略。请先从原始记录整理成独立文章，删去不适合公开的人名、位置、联系方式等信息，再显式改为 `published: true`。`example-unpublished.md` 和 `why-i-keep-notes.mdx` 是未发布示例，构建中不会出现。
+
+公众号等外部文章仍放在 `src/content/notes/`，另填写 `source: 微信公众号` 和 `externalUrl: https://...`。Personal 只展示标题与日期并直接打开原文，不生成空的本站详情页，也不复制公众号全文。当前三篇公众号文章已经按页面元数据核对标题和发表日期。
 
 ## 修改个人资料
 
-- `src/data/profile.ts`：姓名、简介、经历、兴趣与时间轴。正式邮箱和 PDF 简历地址通过 `email`、`resumeUrl` 设置；当前为空，因此不会显示虚构联系方式或下载按钮。
+- `src/data/profile.ts`：姓名、简介、经历、兴趣与时间轴。邮箱通过 `email` 设置，当前公开邮箱为 `2030985559@qq.com`。PDF 简历地址通过 `resumeUrl` 设置，未填写时不显示下载按钮。
+- `src/data/presentation.ts`：首页及两个入口页的短标题、标签。
 - `src/data/skills.ts`：按场景分组的技术能力。
 - `src/data/achievements.ts`：已确认可公开的成果。
 - `src/data/links.ts`：GitHub 链接。
@@ -117,4 +120,4 @@ published: false
 
 ## 设计与实现
 
-使用 Astro 静态输出、TypeScript、Tailwind CSS 4、MDX 与 Lucide 图标。页面和内容默认不发送客户端 JavaScript；主题切换使用一段很小的脚本并记住选择。深浅主题与移动端布局均由同一套样式支持。
+使用 Astro 静态输出、TypeScript、Tailwind CSS 4、MDX 与 Lucide 图标。主题切换记住选择，`Motion.astro` 使用原生 IntersectionObserver 实现一次性滚动入场；悬停、雕塑浮动和植物轻摆由 CSS 实现，不使用动画库。`prefers-reduced-motion` 会关闭动态效果，JavaScript 未启用时内容仍可阅读。`ArtStudy.astro` 是可编辑的原生 SVG 装饰，不是项目实测图。深浅主题与移动端布局均由同一套样式支持。

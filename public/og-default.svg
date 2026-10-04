@@ -1,10 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#fbfaf7"/>
-  <rect x="770" y="100" width="290" height="360" fill="#e8f1fa" transform="rotate(-4 915 280)"/>
-  <rect x="850" y="225" width="240" height="310" fill="#f4e8ba" transform="rotate(5 970 380)"/>
-  <text x="92" y="145" fill="#56768f" font-family="Arial,sans-serif" font-size="18" letter-spacing="4">A PERSONAL COLLECTION</text>
-  <text x="90" y="285" fill="#243a4b" font-family="Georgia,serif" font-size="88">Ma Hao</text>
-  <text x="94" y="370" fill="#51616b" font-family="Georgia,serif" font-size="33">Research, work &amp; everyday stories.</text>
-  <path d="M94 430h520" stroke="#d6d8d5"/>
-  <text x="94" y="480" fill="#56768f" font-family="Arial,sans-serif" font-size="21">PROFESSIONAL  /  PERSONAL</text>
+  <rect width="1200" height="630" fill="#fafaf7"/>
+  <text x="66" y="170" fill="#253a50" font-family="Georgia,serif" font-size="126" letter-spacing="-7">Ma Hao<tspan fill="#315dab">.</tspan></text>
+  <rect x="66" y="233" width="588" height="329" fill="#e2edf8"/>
+  <rect x="672" y="233" width="462" height="329" fill="#f1dba7"/>
+  <g fill="none" transform="rotate(-30 450 363)">
+    <ellipse cx="450" cy="389" rx="119" ry="82" stroke="#315e98" stroke-width="18"/>
+    <ellipse cx="450" cy="377" rx="119" ry="82" stroke="#5885bc" stroke-width="18"/>
+    <ellipse cx="450" cy="365" rx="119" ry="82" stroke="#8aadd4" stroke-width="18"/>
+    <ellipse cx="450" cy="353" rx="119" ry="82" stroke="#7099c9" stroke-width="18"/>
+  </g>
+  <circle cx="974" cy="354" r="100" fill="#d9a343"/>
+  <path d="M969 449c-17-49-8-70 18-110s31-62 8-104M986 339c-45-7-65-29-69-61M984 381c48-16 68-42 72-75" stroke="#694b2e" stroke-width="2" fill="none"/>
+  <text x="94" y="517" fill="#244b7e" font-family="Georgia,serif" font-size="46">Professional</text>
+  <text x="703" y="517" fill="#694b2e" font-family="Georgia,serif" font-size="46">Personal</text>
 </svg>

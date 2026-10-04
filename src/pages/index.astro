@@ -1,54 +1,30 @@
 ---
 import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeading from '../components/SectionHeading.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import { profile, featuredResults } from '../data/profile';
-import { getPublicProjects, getPublicNotes, formatDate } from '../lib/content';
-
-const projects = (await getPublicProjects()).filter((project) => project.data.featured).slice(0, 3);
-const notes = (await getPublicNotes()).slice(0, 2);
+import ArtStudy from '../components/ArtStudy.astro';
+import ResultStrip from '../components/ResultStrip.astro';
+import { profile } from '../data/profile';
+import { presentation } from '../data/presentation';
 ---
 
-<BaseLayout title="首页" description="马浩的研究、工程作品与生活笔记。波前数据平台、条纹锁定、事件目标检测与个人工具。">
-  <section class="home-intro container">
-    <div class="home-copy">
-      <p class="eyebrow">MA HAO · A PERSONAL COLLECTION</p>
-      <h1>认真做事，<br />也认真<span class="serif-italic">生活。</span></h1>
-      <p class="home-description">我是{profile.name}。{profile.introduction}</p>
-      <p class="home-signature">研究、作品，与一些日常拾页。<span>Ma Hao</span></p>
+<BaseLayout title="首页" description="马浩的研究、工程作品与生活笔记。波前数据平台、条纹锁定、微弱目标检测与个人工具。">
+  <section class="home-gallery container" aria-label="认识马浩">
+    <div class="home-masthead">
+      <h1 class="name-display hero-arrive">{profile.englishName}<span class="name-period">.</span></h1>
+      <p class="masthead-caption hero-arrive">{presentation.home.caption}<span>苏州大学</span></p>
     </div>
-    <div class="entry-spread">
-      <a href="/work" class="entry-paper entry-work">
-        <span class="paper-edition">01 / 研究与作品</span>
-        <span class="paper-title">Professional</span>
-        <span class="paper-subtitle">光电研究 · 模型开发 · 工程交付</span>
-        <span class="paper-preview">波前数据平台<br />干涉条纹锁定<br />微弱目标检测<br />智慧车辆通信</span>
-        <span class="paper-link">从成果开始了解 <ArrowUpRight size={19} /></span>
+    <div class="entry-gallery">
+      <a class="gallery-entry gallery-work hero-arrive" href="/work">
+        <span class="entry-index">01 / WORK</span>
+        <ArtStudy kind="work" id="home-work" />
+        <div class="entry-title"><div><span>{presentation.home.work}</span><h2>Professional</h2></div><span class="round-arrow"><ArrowUpRight size={27} stroke-width={1.2} /></span></div>
       </a>
-      <a href="/life" class="entry-paper entry-life">
-        <span class="paper-edition">02 / 兴趣与文字</span>
-        <span class="paper-title">Personal</span>
-        <span class="paper-subtitle">琴键、球场，和想留下的瞬间</span>
-        <img src="/images/journal-leaf.svg" alt="" class="paper-leaf" />
-        <span class="paper-link">翻开生活这一页 <ArrowUpRight size={19} /></span>
+      <a class="gallery-entry gallery-life hero-arrive" href="/life">
+        <span class="entry-index">02 / LIFE</span>
+        <ArtStudy kind="life" id="home-life" />
+        <div class="entry-title"><div><span>{presentation.home.life}</span><h2>Personal</h2></div><span class="round-arrow"><ArrowUpRight size={27} stroke-width={1.2} /></span></div>
       </a>
     </div>
   </section>
-
-  <section class="home-results container" aria-label="代表成果">
-    {featuredResults.filter((item) => item.published).map((item) => <a href={item.href}><strong>{item.value}</strong><span>{item.label}</span><ArrowUpRight size={16} /></a>)}
-  </section>
-
-  <section class="section-space container">
-    <SectionHeading index="01" title="做过的事，留下的作品" label="SELECTED WORK" intro="先看结果；感兴趣的话，再展开我的工作与项目细节。" href="/work#projects" linkLabel="全部研究与项目" />
-    <div class="project-grid home-project-grid">{projects.map((project) => <ProjectCard project={project} />)}</div>
-  </section>
-
-  <section class="home-journal section-space">
-    <div class="container journal-preview-grid">
-      <div><p class="eyebrow">A FEW PAGES FROM LIFE</p><h2>留一点位置，<br />给日常。</h2><p>音乐、运动、影像，还有整理后愿意分享的文字。</p><a class="text-link" href="/life">走进 Personal <ArrowUpRight size={16} /></a></div>
-      <div class="note-list">{notes.map((note) => <a class="note-row" href={`/notes/${note.id}/`}><span class="note-date">{formatDate(note.data.date)} · {note.data.category}</span><span class="note-row-main"><strong>{note.data.title}</strong><small>{note.data.description}</small></span><ArrowUpRight size={18} /></a>)}</div>
-    </div>
-  </section>
+  <ResultStrip />
 </BaseLayout>

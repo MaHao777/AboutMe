@@ -1,0 +1,41 @@
+---
+interface Props { kind: 'work' | 'life'; id: string }
+const { kind, id } = Astro.props;
+const gradient = `art-blue-${id}`;
+---
+
+<div class:list={['art-study', `art-${kind}`]} aria-hidden="true">
+  {kind === 'work' ? <svg viewBox="0 0 700 600" fill="none" class="sculpture-art">
+    <defs><linearGradient id={gradient} x1="120" y1="150" x2="520" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#98b8dc" /><stop offset="1" stop-color="#2453a1" /></linearGradient></defs>
+    <ellipse cx="350" cy="500" rx="158" ry="12" fill="#234875" opacity=".07" class="art-shadow" />
+    <g class="sculpture-body" transform="rotate(-30 350 300)">
+      <ellipse cx="350" cy="348" rx="201" ry="142" stroke="#214b83" stroke-width="22" />
+      <ellipse cx="350" cy="332" rx="201" ry="142" stroke="#315e98" stroke-width="22" />
+      <ellipse cx="350" cy="316" rx="201" ry="142" stroke="#426fa9" stroke-width="22" />
+      <ellipse cx="350" cy="300" rx="201" ry="142" stroke="#5885bc" stroke-width="22" />
+      <ellipse cx="350" cy="284" rx="201" ry="142" stroke="#7099c9" stroke-width="22" />
+      <ellipse cx="350" cy="268" rx="201" ry="142" stroke="#8aadd4" stroke-width="22" />
+      <ellipse cx="350" cy="252" rx="201" ry="142" stroke={`url(#${gradient})`} stroke-width="24" />
+      <ellipse cx="350" cy="252" rx="183" ry="124" stroke="#d9e5f1" stroke-opacity=".65" stroke-width="2" />
+      <path d="M183 185C218 142 281 111 350 110" stroke="#edf4fa" stroke-opacity=".8" stroke-width="3" stroke-linecap="round" />
+    </g>
+    <circle cx="543" cy="171" r="22" fill="#e7ddc6" class="art-pebble" />
+  </svg> : <svg viewBox="0 0 700 600" fill="none" class="sun-art">
+    <g class="sun-body">
+      <circle cx="370" cy="270" r="184" fill="#e3af46" />
+      <path d="M186 270a184 184 0 0 0 368 0" fill="#c7862f" />
+      <path d="M245 135c35-34 78-50 125-50" stroke="#f4d88b" stroke-width="3" stroke-linecap="round" />
+    </g>
+    <path d="M135 475h430" stroke="#ab824c" stroke-opacity=".28" />
+    <path d="M181 475V253c0-61 46-110 107-110" stroke="#6e5540" stroke-width="2" />
+    <g class="botanical-body" stroke="#574c37" stroke-width="2.4" stroke-linecap="round">
+      <path d="M357 490c-10-66 4-104 36-151s37-89 18-149M389 346c-41-6-76-21-93-57M409 280c39-17 63-43 71-81M366 422c44-17 79-44 99-81" />
+      <path d="M410 190c-32-28-33-57-11-83 26 28 27 56 11 83Z" fill="#f9efd4" />
+      <path d="M296 289c-42 0-69-17-74-49 39-4 66 14 74 49Z" fill="#f9efd4" />
+      <path d="M480 199c7-44 29-66 63-65-4 38-25 60-63 65Z" fill="#f9efd4" />
+      <path d="M465 341c13-36 37-52 70-44-10 34-33 49-70 44Z" fill="#f9efd4" />
+      <path d="M374 393c-33-11-52-31-48-61 33 8 51 29 48 61Z" fill="#f9efd4" />
+    </g>
+    <circle cx="165" cy="387" r="28" fill="#f4d88b" class="art-pebble" />
+  </svg>}
+</div>
