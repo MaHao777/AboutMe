@@ -1,26 +1,29 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { ArrowUpRight } from '@lucide/astro';
+import { getLocale, localePath, translator, contentSlug } from '../lib/i18n';
 
 interface Props { project: CollectionEntry<'projects'>; index?: number }
 const { project } = Astro.props;
 const { title, description, category, outcome, highlights, cover, coverAlt, role } = project.data;
-const href = `/projects/${project.id}/`;
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const href = localePath(`/projects/${contentSlug(project.id)}/`, locale);
 ---
 
 <article class="project-card" data-reveal>
-  <a class="project-art" href={href} aria-label={`查看${title}项目详情`}>
+  <a class="project-art" href={href} aria-label={t(`查看${title}项目详情`, `View ${title}`)}>
     {cover && <img src={cover} alt={coverAlt} loading="lazy" width="1000" height="620" />}
     <span class="project-category">{category}</span>
   </a>
   <div class="project-info">
-    <p class="project-outcome">{outcome}</p>
+    <p class="project-outcome"><strong>{outcome}</strong></p>
     <h3><a href={href}>{title}</a></h3>
     <details class="project-disclosure">
-      <summary>项目概览<span aria-hidden="true">＋</span></summary>
+      <summary>{t('项目概览', 'Project overview')}<span aria-hidden="true">＋</span></summary>
       <div><p class="project-description">{description}</p><p class="project-role">{role}</p>
       <ul>{highlights.slice(0, 2).map((item) => <li><strong>{item.title}</strong> · {item.description}</li>)}</ul></div>
     </details>
-    <a class="text-link project-detail-link" href={href} aria-label={`阅读${title}完整项目`}>阅读全文 <ArrowUpRight size={16} stroke-width={1.5} /></a>
+    <a class="text-link project-detail-link" href={href} aria-label={t(`阅读${title}完整项目`, `Read about ${title}`)}>{t('项目详情', 'Read project')} <ArrowUpRight size={16} stroke-width={1.5} /></a>
   </div>
 </article>

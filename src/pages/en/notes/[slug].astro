@@ -1,0 +1,11 @@
+---
+import Page from '../../notes/[slug].astro';
+import { getPublicNotes } from '../../../lib/content';
+import { contentSlug } from '../../../lib/i18n';
+export async function getStaticPaths() {
+  const entries = await getPublicNotes('en');
+  return entries.filter((note) => !note.data.externalUrl).map((note) => ({ params: { slug: contentSlug(note.id) }, props: { note } }));
+}
+const { note } = Astro.props;
+---
+<Page note={note} />

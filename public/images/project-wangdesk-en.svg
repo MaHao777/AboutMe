@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="#edf2f5"/>
+  <path d="M150 431h700" stroke="#c5d5e2" stroke-width="2"/>
+  <rect x="184" y="154" width="422" height="277" rx="8" fill="#fff" stroke="#91abc2" stroke-width="2"/>
+  <path d="M185 194h420" stroke="#c5d5e2" stroke-width="2"/>
+  <circle cx="212" cy="175" r="4" fill="#b5c6d5"/><circle cx="229" cy="175" r="4" fill="#b5c6d5"/>
+  <circle cx="395" cy="312" r="72" fill="none" stroke="#bdd0df" stroke-width="4"/><path d="M395 240a72 72 0 0 1 61 110" fill="none" stroke="#4b7297" stroke-width="5"/>
+  <text x="395" y="325" font-family="Georgia,serif" font-size="37" fill="#527697" text-anchor="middle">25:00</text>
+  <path d="M667 314v-76l50 30q28-13 53 0l51-29v75q22 37 0 72-32 35-76 35t-73-35q-22-30-5-72z" fill="#e1ebf3" stroke="#799ab6" stroke-width="3"/>
+  <circle cx="715" cy="332" r="7" fill="#4d7394"/><circle cx="775" cy="332" r="7" fill="#4d7394"/><path d="M733 358q12 9 24 0" fill="none" stroke="#4d7394" stroke-width="3"/>
+  <text x="500" y="522" text-anchor="middle" font-family="Georgia,serif" font-size="22" fill="#6d8aa3" font-style="italic">A little company for an ordinary workday.</text>
+</svg>

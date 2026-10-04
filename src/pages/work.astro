@@ -5,51 +5,52 @@ import ArtStudy from '../components/ArtStudy.astro';
 import ResultStrip from '../components/ResultStrip.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import HoverDisclosure from '../components/HoverDisclosure.astro';
-import { profile, experiences } from '../data/profile';
-import { presentation } from '../data/presentation';
-import { skillGroups } from '../data/skills';
-import { achievements } from '../data/achievements';
-import { scholarships, languageScores } from '../data/resume';
+
 import { links } from '../data/links';
 import { getPublicProjects } from '../lib/content';
-const projects = await getPublicProjects();
+import { getSiteData } from '../data/localized';
+import { getLocale, localePath, translator } from '../lib/i18n';
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const projects = await getPublicProjects(locale);
+const { profile, experiences, presentation, skillGroups, achievements, scholarships, languageScores } = getSiteData(locale);
 ---
 
-<BaseLayout title="Professional" description="马浩的研究与工程成果：波前数据平台、条纹闭环锁定、TraceFormer 微弱目标检测与车辆通信软件。" section="work">
+<BaseLayout title={t('研究与作品', 'Research & Projects')} description={t('马浩的研究与工程成果：波前数据平台、条纹闭环锁定、TraceFormer 微弱目标检测与车辆通信软件。', 'Research and engineering: wavefront data, fringe control, event-based detection, and vehicle communication.')} section="work">
   <section class="collection-hero work-hero container">
     <div class="collection-copy hero-arrive">
-      <p class="eyebrow">01 / PROFESSIONAL</p>
+      <p class="eyebrow">{t('01 / 研究与作品', '01 / WORK')}</p>
       <h1>{presentation.work.heading[0]}<br /><span>{presentation.work.heading[1]}</span></h1>
-      <div class="hero-bottom"><p>{presentation.work.caption}</p><a class="circle-link" href="#projects" aria-label="浏览研究与项目"><ArrowUpRight size={24} stroke-width={1.3} /></a></div>
+      <div class="hero-bottom"><p>{presentation.work.caption}</p><a class="circle-link" href="#projects" aria-label={t('浏览研究与项目', 'Browse research and projects')}><ArrowUpRight size={24} stroke-width={1.3} /></a></div>
     </div>
-    <div class="hero-artwork hero-arrive"><ArtStudy kind="work" id="work-hero" /><span class="art-caption">FORM / LIGHT / POSSIBILITY</span></div>
+    <div class="hero-artwork hero-arrive"><ArtStudy kind="work" id="work-hero" /><span class="art-caption">{t('形态 / 光 / 可能', 'FORM / LIGHT / POSSIBILITY')}</span></div>
   </section>
   <ResultStrip />
 
   <section class="section-space container" id="projects">
-    <div class="collection-heading" data-reveal><p class="eyebrow">SELECTED WORK / {String(projects.length).padStart(2, '0')}</p><h2>{presentation.work.projects}</h2><span>研究 · 工程 · 工具</span></div>
+    <div class="collection-heading" data-reveal><p class="eyebrow">{t('作品选集', 'SELECTED WORK')} / {String(projects.length).padStart(2, '0')}</p><h2>{presentation.work.projects}</h2><span>{t('研究 · 工程 · 工具', 'Research · Engineering · Tools')}</span></div>
     <div class="project-grid">{projects.map((project) => <ProjectCard project={project} />)}</div>
   </section>
 
-  <section class="profile-index container" aria-label="更多职业背景" data-reveal>
-    <HoverDisclosure id="experience" number="01" title="关于与经历" hint="BACKGROUND">
-      <div class="index-body"><p class="profile-introduction">{profile.introduction}</p><div class="experience-list">{experiences.filter((item) => item.published).map((item) => <article class="experience-row"><span class="experience-period">{item.period}</span><div><p class="eyebrow">{item.place}</p><h3>{item.title}</h3><p>{item.description}</p><ul>{item.outcomes.map((outcome) => <li>{outcome}</li>)}</ul><a class="text-link" href={item.href}>项目详情 <ArrowUpRight size={15} /></a></div></article>)}</div></div>
+  <section class="profile-index container" aria-label={t('更多职业背景', 'More professional background')} data-reveal>
+    <HoverDisclosure id="experience" number="01" title={t('关于与经历', 'About & Experience')} hint={t('经历', 'Background')}>
+      <div class="index-body"><p class="profile-introduction">{profile.introduction}</p><div class="experience-list">{experiences.filter((item) => item.published).map((item) => <article class="experience-row"><span class="experience-period">{item.period}</span><div><p class="eyebrow">{item.place}</p><h3>{item.title}</h3><p>{item.description}</p><ul>{item.outcomes.map((outcome) => <li><strong>{outcome}</strong></li>)}</ul><a class="text-link" href={localePath(item.href, locale)}>{t('项目详情', 'Project details')} <ArrowUpRight size={15} /></a></div></article>)}</div></div>
     </HoverDisclosure>
-    <HoverDisclosure id="achievements" number="02" title="奖项与成果" hint="RECOGNITION">
+    <HoverDisclosure id="achievements" number="02" title={t('奖项与成果', 'Awards & Results')} hint={t('成果', 'Recognition')}>
       <div class="index-body">
-      <div class="award-list">{achievements.filter((item) => item.published).map((item) => <article class="award-row"><span>{item.year}</span><div><h3>{item.result}</h3><p>{item.title}</p><p>{item.detail}</p></div>{item.href && <a class="circle-link" href={item.href} aria-label={`查看${item.label}相关项目`}><ArrowUpRight size={22} stroke-width={1.3} /></a>}</article>)}</div>
+      <div class="award-list">{achievements.filter((item) => item.published).map((item) => <article class="award-row"><span>{item.year}</span><div><h3><strong>{item.result}</strong></h3><p>{item.title}</p><p>{item.detail}</p></div>{item.href && <a class="circle-link" href={localePath(item.href, locale)} aria-label={t(`查看${item.label}相关项目`, `View project for ${item.label}`)}><ArrowUpRight size={22} stroke-width={1.3} /></a>}</article>)}</div>
         <div class="academic-overview">
-          <section class="academic-qualification" aria-labelledby="scholarship-heading"><h3 id="scholarship-heading">奖学金</h3><ul class="scholarship-list">{scholarships.filter((item) => item.published).map((item) => <li><span>{item.period}</span><strong>{item.title}</strong></li>)}</ul></section>
-          <section class="academic-qualification" aria-labelledby="language-heading"><h3 id="language-heading">英语成绩</h3><dl class="language-scores">{languageScores.filter((item) => item.published).map((item) => <div><dt><span>{item.code}</span>{item.title}</dt><dd><strong>{item.score}</strong><span>分</span></dd><time datetime={item.date}>{item.dateLabel}</time></div>)}</dl></section>
+          <section class="academic-qualification" aria-labelledby="scholarship-heading"><h3 id="scholarship-heading">{t('奖学金', 'Scholarships')}</h3><ul class="scholarship-list">{scholarships.filter((item) => item.published).map((item) => <li><span>{item.period}</span><strong>{item.title}</strong></li>)}</ul></section>
+          <section class="academic-qualification" aria-labelledby="language-heading"><h3 id="language-heading">{t('英语成绩', 'English Test Scores')}</h3><dl class="language-scores">{languageScores.filter((item) => item.published).map((item) => <div><dt><span>{t(item.title.endsWith('四级') ? '四级' : '六级', item.code)}</span>{item.title}</dt><dd><strong>{item.score}</strong><span>{t('分', 'points')}</span></dd><time datetime={item.date}>{item.dateLabel}</time></div>)}</dl></section>
         </div>
       </div>
     </HoverDisclosure>
-    <HoverDisclosure id="skills" number="03" title="能力与工具" hint="TOOLKIT">
+    <HoverDisclosure id="skills" number="03" title={t('能力与工具', 'Skills & Tools')} hint={t('工具', 'Toolkit')}>
       <div class="index-body skill-grid">{skillGroups.filter((group) => group.published).map((group) => <div class="skill-card"><h3>{group.title}</h3><div class="tags">{group.items.map((item) => <span>{item}</span>)}</div></div>)}</div>
     </HoverDisclosure>
-    <HoverDisclosure id="resume" number="04" title="简历与代码" hint="MORE">
+    <HoverDisclosure id="resume" number="04" title={t('简历与代码', 'Résumé & Code')} hint={t('更多', 'More')}>
       <div class="index-body">
-        <div class="resource-grid"><div class="resource-card"><Download size={22} stroke-width={1.5} /><h3>简历</h3>{profile.resumeUrl ? <a class="text-link" href={profile.resumeUrl} download>下载 PDF <ArrowUpRight size={16} /></a> : <p>PDF 版正在整理。</p>}</div><a class="resource-card" href={links.github} target="_blank" rel="noopener noreferrer"><GitBranch size={22} stroke-width={1.5} /><h3>GitHub</h3><span class="text-link">{links.githubLabel} <ArrowUpRight size={16} /></span></a></div>
+        <div class="resource-grid"><div class="resource-card"><Download size={22} stroke-width={1.5} /><h3>{t('简历', 'Résumé')}</h3>{profile.resumeUrl ? <a class="text-link" href={profile.resumeUrl} download>{t('下载简历', 'Download résumé')} <ArrowUpRight size={16} /></a> : <p>{t('简历正在整理。', 'Résumé coming soon.')}</p>}</div><a class="resource-card" href={links.github} target="_blank" rel="noopener noreferrer"><GitBranch size={22} stroke-width={1.5} /><h3>GitHub</h3><span class="text-link">{links.githubLabel} <ArrowUpRight size={16} /></span></a></div>
       </div>
     </HoverDisclosure>
   </section>

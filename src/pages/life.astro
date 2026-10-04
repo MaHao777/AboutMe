@@ -3,26 +3,30 @@ import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArtStudy from '../components/ArtStudy.astro';
 import HoverDisclosure from '../components/HoverDisclosure.astro';
-import { profile, interests, timeline } from '../data/profile';
-import { presentation } from '../data/presentation';
+
 import { getPublicNotes, formatDate } from '../lib/content';
-const notes = await getPublicNotes();
+import { getSiteData } from '../data/localized';
+import { getLocale, localePath, translator, contentSlug } from '../lib/i18n';
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const notes = await getPublicNotes(locale);
+const { profile, interests, timeline, presentation } = getSiteData(locale);
 ---
 
-<BaseLayout title="Personal" description="马浩的生活拾页：音乐、运动、影像与经过整理的公开笔记。" section="life">
+<BaseLayout title={t('生活与文字', 'Life & Writing')} description={t('马浩的生活拾页：音乐、运动、影像与经过整理的公开笔记。', 'Pages from everyday life: music, sport, photography, and public writing.')} section="life">
   <section class="collection-hero life-hero container">
-    <div class="collection-copy hero-arrive"><p class="eyebrow">02 / PERSONAL</p><h1>{presentation.life.heading}</h1><div class="hero-bottom"><p>{presentation.life.caption}</p><a class="circle-link" href="#notes" aria-label="阅读个人文章"><ArrowUpRight size={24} stroke-width={1.3} /></a></div></div>
-    <div class="hero-artwork hero-arrive"><ArtStudy kind="life" id="life-hero" /><span class="art-caption">A LITTLE ROOM FOR LIFE</span></div>
+    <div class="collection-copy hero-arrive"><p class="eyebrow">{t('02 / 生活与文字', '02 / LIFE')}</p><h1>{presentation.life.heading}</h1><div class="hero-bottom"><p>{presentation.life.caption}</p><a class="circle-link" href="#notes" aria-label={t('阅读个人文章', 'Read personal writing')}><ArrowUpRight size={24} stroke-width={1.3} /></a></div></div>
+    <div class="hero-artwork hero-arrive"><ArtStudy kind="life" id="life-hero" /><span class="art-caption">{t('给生活留一点空间', 'A LITTLE ROOM FOR LIFE')}</span></div>
   </section>
 
   <section class="section-space container notes-section" id="notes">
-    <div class="collection-heading" data-reveal><p class="eyebrow">JOURNAL / OPEN PAGES</p><h2>{presentation.life.notes}</h2><span>慢慢写，慢慢读。</span></div>
-    <div class="note-list">{notes.map((note, index) => <a class="note-row" data-reveal href={note.data.externalUrl ?? `/notes/${note.id}/`} target={note.data.externalUrl ? '_blank' : undefined} rel={note.data.externalUrl ? 'noopener noreferrer' : undefined} aria-label={note.data.externalUrl ? `${note.data.title}，在新窗口阅读微信原文` : undefined}><span class="note-index">{String(index + 1).padStart(2, '0')}</span><span class="note-row-main"><small>{note.data.source} / {formatDate(note.data.date)}</small><strong>{note.data.title}</strong></span><span class="round-arrow"><ArrowUpRight size={25} stroke-width={1.3} /></span></a>)}</div>
-    {notes.length === 0 && <p class="empty-state">新的文字还在整理中。</p>}
+    <div class="collection-heading" data-reveal><p class="eyebrow">{t('笔记 / 公开文章', 'JOURNAL / OPEN PAGES')}</p><h2>{presentation.life.notes}</h2><span>{t('慢慢写，慢慢读。', 'Write slowly. Read slowly.')}</span></div>
+    <div class="note-list">{notes.map((note, index) => <a class="note-row" data-reveal href={note.data.externalUrl ?? localePath(`/notes/${contentSlug(note.id)}/`, locale)} target={note.data.externalUrl ? '_blank' : undefined} rel={note.data.externalUrl ? 'noopener noreferrer' : undefined} aria-label={note.data.externalUrl ? t(`${note.data.title}，在新窗口阅读微信原文`, `${note.data.title}, read the Chinese original on WeChat in a new window`) : undefined}><span class="note-index">{String(index + 1).padStart(2, '0')}</span><span class="note-row-main"><small>{note.data.source}{note.data.externalUrl && locale === 'en' && ' · Chinese original'} / {formatDate(note.data.date, locale)}</small><strong>{note.data.title}</strong></span><span class="round-arrow"><ArrowUpRight size={25} stroke-width={1.3} /></span></a>)}</div>
+    {notes.length === 0 && <p class="empty-state">{t('新的文字还在整理中。', 'New writing is on its way.')}</p>}
   </section>
 
-  <section class="profile-index container life-index" aria-label="更多个人背景" data-reveal>
-    <HoverDisclosure id="about" number="01" title="工作之外" hint="ABOUT ME"><div class="index-body"><p class="profile-introduction">{profile.personalIntroduction}</p><div class="interest-grid">{interests.filter((item) => item.published).map((item) => <article class="interest-card"><span>{item.number}</span><h3>{item.title}</h3><p>{item.description}</p></article>)}</div></div></HoverDisclosure>
-    <HoverDisclosure id="timeline" number="02" title="一路走来" hint="LITTLE MOMENTS"><div class="index-body"><p class="profile-introduction">从项目路演、竞赛展示，到为日常写小工具，在尝试中慢慢认识自己。</p><div class="timeline">{timeline.filter((item) => item.published).map((item) => <div class="timeline-item"><span class="timeline-year">{item.year}</span><span class="timeline-marker"></span><div><h3>{item.title}</h3><p>{item.description}</p></div></div>)}</div></div></HoverDisclosure>
+  <section class="profile-index container life-index" aria-label={t('更多个人背景', 'More personal background')} data-reveal>
+    <HoverDisclosure id="about" number="01" title={t('工作之外', 'Outside Work')} hint={t('关于我', 'About Me')}><div class="index-body"><p class="profile-introduction">{profile.personalIntroduction}</p><div class="interest-grid">{interests.filter((item) => item.published).map((item) => <article class="interest-card"><span>{item.number}</span><h3>{item.title}</h3><p>{item.description}</p></article>)}</div></div></HoverDisclosure>
+    <HoverDisclosure id="timeline" number="02" title={t('一路走来', 'Along the Way')} hint={t('成长片段', 'Little Moments')}><div class="index-body"><p class="profile-introduction">{t('在研究、竞赛与日常创造中，慢慢认识自己。', 'Getting to know myself through research, competitions, and everyday projects.')}</p><div class="timeline">{timeline.filter((item) => item.published).map((item) => <div class="timeline-item"><span class="timeline-year">{item.year}</span><span class="timeline-marker"></span><div><h3>{item.title}</h3><p>{item.description}</p></div></div>)}</div></div></HoverDisclosure>
   </section>
 </BaseLayout>

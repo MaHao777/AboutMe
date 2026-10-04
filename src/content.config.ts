@@ -7,6 +7,7 @@ const shared = {
   description: z.string().min(1),
   date: z.coerce.date(),
   published: z.boolean().default(false),
+  locale: z.enum(['zh', 'en']).default('zh'),
 };
 
 const projects = defineCollection({
@@ -35,8 +36,8 @@ const notes = defineCollection({
   loader: glob({ base: './src/content/notes', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
     ...shared,
-    category: z.enum(['思考', '生活', '技术', '随笔']),
-    source: z.enum(['本站', '微信公众号']).default('本站'),
+    category: z.enum(['思考', '生活', '技术', '随笔', 'Thoughts', 'Life', 'Technology', 'Essays']),
+    source: z.enum(['本站', '微信公众号', 'This site', 'WeChat']).default('本站'),
     externalUrl: z.url().optional(),
     readingMinutes: z.number().int().positive().optional(),
   }),

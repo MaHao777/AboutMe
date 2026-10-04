@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <rect width="1200" height="630" fill="#fafaf7"/>
-  <text x="66" y="170" fill="#253a50" font-family="Georgia,serif" font-size="126" letter-spacing="-7">马浩<tspan fill="#315dab">.</tspan></text>
+  <text x="66" y="170" fill="#253a50" font-family="Georgia,serif" font-size="126" letter-spacing="-7">Ma Hao<tspan fill="#315dab">.</tspan></text>
   <rect x="66" y="233" width="588" height="329" fill="#e2edf8"/>
   <rect x="672" y="233" width="462" height="329" fill="#f1dba7"/>
   <g fill="none" transform="rotate(-30 450 363)">
@@ -11,6 +11,6 @@
   </g>
   <circle cx="974" cy="354" r="100" fill="#d9a343"/>
   <path d="M969 449c-17-49-8-70 18-110s31-62 8-104M986 339c-45-7-65-29-69-61M984 381c48-16 68-42 72-75" stroke="#694b2e" stroke-width="2" fill="none"/>
-  <text x="94" y="517" fill="#244b7e" font-family="Georgia,serif" font-size="46">研究与作品</text>
-  <text x="703" y="517" fill="#694b2e" font-family="Georgia,serif" font-size="46">生活与文字</text>
+  <text x="94" y="517" fill="#244b7e" font-family="Georgia,serif" font-size="46">Professional</text>
+  <text x="703" y="517" fill="#694b2e" font-family="Georgia,serif" font-size="46">Personal</text>
 </svg>

@@ -1,0 +1,11 @@
+---
+import Page from '../../projects/[slug].astro';
+import { getPublicProjects } from '../../../lib/content';
+import { contentSlug } from '../../../lib/i18n';
+export async function getStaticPaths() {
+  const entries = await getPublicProjects('en');
+  return entries.map((project) => ({ params: { slug: contentSlug(project.id) }, props: { project } }));
+}
+const { project } = Astro.props;
+---
+<Page project={project} />

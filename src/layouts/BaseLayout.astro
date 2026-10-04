@@ -3,6 +3,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Motion from '../components/Motion.astro';
 import '../styles/global.css';
+import { getLocale, localePath, translator } from '../lib/i18n';
 
 interface Props {
   title: string;
@@ -13,13 +14,16 @@ interface Props {
 }
 
 const { title, description, image = '/og-default.svg', type = 'website', section = 'home' } = Astro.props;
-const pageTitle = title === '首页' ? '马浩 — Research, Code & Life' : `${title} | 马浩`;
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const pageTitle = `${title} | ${t('马浩', 'Ma Hao')}`;
+const defaultImage = t('/og-default.svg', '/og-default-en.svg');
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
-const ogImage = new URL(image, Astro.site ?? Astro.url);
+const ogImage = new URL(image === '/og-default.svg' ? defaultImage : image, Astro.site ?? Astro.url);
 ---
 
 <!doctype html>
-<html lang="zh-CN" data-section={section}>
+<html lang={t('zh-CN', 'en')} data-section={section}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,11 +31,13 @@ const ogImage = new URL(image, Astro.site ?? Astro.url);
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="zh-CN" href={new URL(localePath(Astro.url.pathname, 'zh'), canonical)} />
+    <link rel="alternate" hreflang="en" href={new URL(localePath(Astro.url.pathname, 'en'), canonical)} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content={section === 'life' ? '#f5edd8' : '#f5f8fc'} />
     <meta property="og:type" content={type} />
-    <meta property="og:site_name" content="Ma Hao" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content={t('马浩', 'Ma Hao')} />
+    <meta property="og:locale" content={t('zh_CN', 'en_US')} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -49,7 +55,7 @@ const ogImage = new URL(image, Astro.site ?? Astro.url);
     </script>
   </head>
   <body>
-    <a class="skip-link" href="#main">跳转到正文</a>
+    <a class="skip-link" href="#main">{t('跳转到正文', 'Skip to content')}</a>
     <Header />
     <main id="main"><slot /></main>
     <Footer />

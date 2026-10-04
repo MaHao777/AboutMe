@@ -47,6 +47,10 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
 .moon-icon, :root[data-theme="dark"] .sun-icon { display: none; }
 :root[data-theme="dark"] .moon-icon { display: block; }
 .header-github { display: inline-flex; gap: 7px; align-items: center; font-size: 11px; color: var(--muted); }
+.language-toggle { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 3px 12px; border: 1px solid var(--line); border-radius: 18px; font-size: 12px; white-space: nowrap; }
+.language-toggle:hover { background: var(--tint); border-color: var(--accent); }
+.project-outcome strong, .detail-outcome strong, .award-row h3 strong, .detail-highlights h2 strong { font-weight: 700; }
+.experience-row li strong { font-weight: 600; color: var(--text); }
 
 /* Home: a name and two rooms. */
 .home-gallery { padding-bottom: 45px; }
@@ -95,6 +99,7 @@ a:hover > .round-arrow svg, .gallery-entry:hover .round-arrow svg, .circle-link:
 .art-caption { display: block; color: var(--muted); font-size: 9px; letter-spacing: .2em; text-align: center; margin-top: -13px; }
 .life-hero { min-height: 600px; }
 .life-hero .collection-copy h1 { white-space: nowrap; font-size: clamp(54px, 6.3vw, 91px); margin-block: 40px; }
+html[lang="en"] .life-hero .collection-copy h1 { white-space: normal; }
 .section-space { padding-block: 85px; }
 .collection-heading { display: grid; grid-template-columns: 1fr auto; align-items: end; margin-bottom: 42px; gap: 16px; }
 .collection-heading > .eyebrow { grid-column: 1 / -1; }
@@ -285,7 +290,7 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
   .entry-title h2 { font-size: 38px; }
   .entry-title { inset-inline: 22px; }
   .gallery-entry .art-study { width: 420px; right: -30px; top: -60px; }
-  .gallery-life .art-study { top: -62px; right: -65px; }
+  .gallery-life .art-study { top: -62px; right: -25px; }
   .collection-hero { min-height: 500px; }
   .collection-copy h1 { font-size: 63px; }
   .life-hero .collection-copy h1 { font-size: 59px; }
@@ -296,11 +301,12 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
   .container { width: calc(100% - 40px); }
   .site-header { height: 70px; }
   .header-inner { gap: 17px; }
+  .header-actions { gap: 6px; margin-left: 0; }
+  .language-toggle { padding-inline: 9px; font-size: 11px; }
+  .primary-nav { gap: 16px; }
+  .nav-link { font-size: 11px; white-space: nowrap; }
   .brand-mark { font-size: 21px; white-space: nowrap; }
   .brand-name, .header-github { display: none; }
-  .primary-nav { gap: 19px; }
-  .nav-link { font-size: 10px; }
-  .header-actions { margin-left: 0; }
   .icon-button { width: 25px; height: 30px; }
   .home-masthead { padding: 40px 0 30px; align-items: start; }
   .name-display { font-size: 79px; }
@@ -379,6 +385,14 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
   .footer-bottom { flex-wrap: wrap; gap: 17px; font-size: 9px; }
   .footer-links { gap: 16px; }
   .footer-signature { display: none; }
+}
+@media (max-width: 420px) {
+  .site-header { height: 96px; }
+  .header-inner { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; row-gap: 2px; padding-block: 8px; }
+  .brand { grid-column: 1; grid-row: 1; }
+  .header-actions { grid-column: 2; grid-row: 1; }
+  .primary-nav { grid-column: 1 / -1; grid-row: 2; justify-self: center; margin-left: 0; gap: 26px; }
+  .nav-link { padding-block: 3px; }
 }
 @media (max-width: 370px) {
   .container { width: calc(100% - 32px); }

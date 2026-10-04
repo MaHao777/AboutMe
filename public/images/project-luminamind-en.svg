@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="#edf2f6"/>
+  <rect x="178" y="127" width="289" height="359" rx="3" fill="#dde7f0" transform="rotate(-8 322 307)"/>
+  <rect x="188" y="127" width="289" height="359" rx="3" fill="#fff" stroke="#c9d7e4" stroke-width="2"/>
+  <g stroke="#8ca7be" stroke-width="3"><path d="M229 193h151M229 229h205M229 261h185M229 293h194M229 378h105"/></g>
+  <text x="226" y="445" fill="#4b6d8f" font-family="Georgia,serif" font-style="italic" font-size="25">My memories.md</text>
+  <g fill="#fff" stroke="#cbd9e6" stroke-width="2"><rect x="607" y="172" width="204" height="105" rx="4"/><rect x="607" y="331" width="204" height="105" rx="4"/></g>
+  <path d="M496 305h61V224h29m-12-9 12 9-12 9M557 305v80h29m-12-9 12 9-12 9" fill="none" stroke="#86a0b8" stroke-width="2"/>
+  <g font-family="Microsoft YaHei,sans-serif" fill="#567897" font-size="23" text-anchor="middle"><text x="709" y="237">Retrieval & dialogue</text><text x="709" y="395">User review</text></g>
+  <text x="500" y="542" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="#869bad" font-style="italic">A memory you can read, edit, and take with you.</text>
+</svg>

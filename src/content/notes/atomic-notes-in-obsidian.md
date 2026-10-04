@@ -1,5 +1,5 @@
 ---
-title: 如何在Obsidian中实践原子笔记
+title: 如何在 Obsidian 中实践原子笔记
 description: 在 Obsidian 中组织与连接原子笔记的个人实践。
 date: 2026-05-19
 category: 技术

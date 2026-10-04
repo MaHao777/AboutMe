@@ -2,32 +2,36 @@
 import { ArrowUpRight, Moon, Sun } from '@lucide/astro';
 import { profile } from '../data/profile';
 import { links as socialLinks } from '../data/links';
+import { getLocale, localePath, translator } from '../lib/i18n';
 
-const path = Astro.url.pathname;
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const path = localePath(Astro.url.pathname, 'zh').replace(/\/$/, '') || '/';
 const links = [
-  { href: '/', label: '首页', active: path === '/' },
-  { href: '/work', label: 'Professional', active: path === '/work' || path.startsWith('/projects/') },
-  { href: '/life', label: 'Personal', active: path === '/life' || path.startsWith('/notes/') },
+  { href: '/', label: t('首页', 'Home'), active: path === '/' },
+  { href: '/work', label: t('研究与作品', 'Work'), active: path === '/work' || path.startsWith('/projects/') },
+  { href: '/life', label: t('生活与文字', 'Life'), active: path === '/life' || path.startsWith('/notes/') },
 ];
 ---
 
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="返回首页">
-      <span class="brand-mark">{profile.name}</span>
-      <span class="brand-name">MA HAO</span>
+    <a class="brand" href={localePath('/', locale)} aria-label={t('返回首页', 'Back to home')}>
+      <span class="brand-mark">{t(profile.name, profile.englishName)}</span>
+      <span class="brand-name">{t('光电与软件', 'OPTICS & SOFTWARE')}</span>
     </a>
-    <nav class="primary-nav" aria-label="主导航">
-      {links.map((link) => <a href={link.href} class:list={['nav-link', { active: link.active }]} aria-current={link.active ? 'page' : undefined}>{link.label}</a>)}
+    <nav class="primary-nav" aria-label={t('主导航', 'Main navigation')}>
+      {links.map((link) => <a href={localePath(link.href, locale)} class:list={['nav-link', { active: link.active }]} aria-current={link.active ? 'page' : undefined}>{link.label}</a>)}
     </nav>
     <div class="header-actions">
-      <button id="theme-toggle" class="icon-button theme-toggle" type="button" aria-label="切换深色模式" title="切换主题">
+      <button id="theme-toggle" class="icon-button theme-toggle" type="button" aria-label={t('切换深色模式', 'Switch to dark mode')} title={t('切换主题', 'Switch theme')} data-light-label={t('切换浅色模式', 'Switch to light mode')} data-dark-label={t('切换深色模式', 'Switch to dark mode')}>
         <Sun size={17} stroke-width={1.8} class="sun-icon" />
         <Moon size={17} stroke-width={1.8} class="moon-icon" />
       </button>
-      <a class="header-github" href={socialLinks.github} target="_blank" rel="noopener noreferrer" aria-label="在新窗口打开 GitHub">
+      <a class="header-github" href={socialLinks.github} target="_blank" rel="noopener noreferrer" aria-label={t('在新窗口打开 GitHub', 'Open GitHub in a new window')}>
         GitHub <ArrowUpRight size={15} stroke-width={1.8} />
       </a>
+      <a class="language-toggle" href={localePath(Astro.url.pathname, locale === 'zh' ? 'en' : 'zh')} hreflang={locale === 'zh' ? 'en' : 'zh-CN'} aria-label={t('切换到英文', 'Switch to Chinese')} title={t('切换到英文', 'Switch to Chinese')} data-language-switch>{t('英文', 'Chinese')}</a>
     </div>
   </div>
 </header>
@@ -35,13 +39,15 @@ const links = [
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
   const updateLabel = () => {
-    if (toggle) toggle.setAttribute('aria-label', document.documentElement.dataset.theme === 'dark' ? '切换浅色模式' : '切换深色模式');
+    if (toggle) toggle.setAttribute('aria-label', (document.documentElement.dataset.theme === 'dark' ? toggle.dataset.lightLabel : toggle.dataset.darkLabel) ?? '');
   };
   updateLabel();
   toggle?.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
-    localStorage.setItem('theme', next);
+    try { localStorage.setItem('theme', next); } catch { /* Theme still works without storage. */ }
     updateLabel();
   });
+  const languageSwitch = document.querySelector<HTMLAnchorElement>('[data-language-switch]');
+  if (languageSwitch) languageSwitch.href += location.search + location.hash;
 </script>

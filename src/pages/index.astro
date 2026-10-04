@@ -3,26 +3,30 @@ import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArtStudy from '../components/ArtStudy.astro';
 import ResultStrip from '../components/ResultStrip.astro';
-import { profile } from '../data/profile';
-import { presentation } from '../data/presentation';
+
+import { getSiteData } from '../data/localized';
+import { getLocale, localePath, translator } from '../lib/i18n';
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const { profile, presentation } = getSiteData(locale);
 ---
 
-<BaseLayout title="首页" description="马浩的研究、工程作品与生活笔记。波前数据平台、条纹锁定、微弱目标检测与个人工具。">
-  <section class="home-gallery container" aria-label="认识马浩">
+<BaseLayout title={t('首页', 'Home')} description={t('马浩的研究、工程作品与生活笔记。波前数据平台、条纹锁定、微弱目标检测与个人工具。', 'Ma Hao’s research, engineering projects, and writing on everyday life.')}>
+  <section class="home-gallery container" aria-label={t('认识马浩', 'Meet Ma Hao')}>
     <div class="home-masthead">
-      <h1 class="name-display hero-arrive">{profile.englishName}<span class="name-period">.</span></h1>
-      <p class="masthead-caption hero-arrive">{presentation.home.caption}<span>苏州大学</span></p>
+      <h1 class="name-display hero-arrive">{profile.name}<span class="name-period">.</span></h1>
+      <p class="masthead-caption hero-arrive">{presentation.home.caption}<span>{t('苏州大学', 'Soochow University')}</span></p>
     </div>
     <div class="entry-gallery">
-      <a class="gallery-entry gallery-work hero-arrive" href="/work">
-        <span class="entry-index">01 / WORK</span>
+      <a class="gallery-entry gallery-work hero-arrive" href={localePath('/work', locale)}>
+        <span class="entry-index">{t('01 / 研究', '01 / WORK')}</span>
         <ArtStudy kind="work" id="home-work" />
-        <div class="entry-title"><div><span>{presentation.home.work}</span><h2>Professional</h2></div><span class="round-arrow"><ArrowUpRight size={27} stroke-width={1.2} /></span></div>
+        <div class="entry-title"><div><span>{t('光电研究与软件实践', 'Research & Projects')}</span><h2>{t('研究与作品', 'Professional')}</h2></div><span class="round-arrow"><ArrowUpRight size={27} stroke-width={1.2} /></span></div>
       </a>
-      <a class="gallery-entry gallery-life hero-arrive" href="/life">
-        <span class="entry-index">02 / LIFE</span>
+      <a class="gallery-entry gallery-life hero-arrive" href={localePath('/life', locale)}>
+        <span class="entry-index">{t('02 / 生活', '02 / LIFE')}</span>
         <ArtStudy kind="life" id="home-life" />
-        <div class="entry-title"><div><span>{presentation.home.life}</span><h2>Personal</h2></div><span class="round-arrow"><ArrowUpRight size={27} stroke-width={1.2} /></span></div>
+        <div class="entry-title"><div><span>{t('日常观察与个人笔记', 'Life & Writing')}</span><h2>{t('生活与文字', 'Personal')}</h2></div><span class="round-arrow"><ArrowUpRight size={27} stroke-width={1.2} /></span></div>
       </a>
     </div>
   </section>

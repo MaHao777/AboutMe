@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="#eaf1f7"/>
+  <g fill="#fff" stroke="#cddbe7" stroke-width="2"><rect x="120" y="140" width="315" height="290" rx="5"/><rect x="565" y="140" width="315" height="290" rx="5"/></g>
+  <g fill="#cbd7e0"><circle cx="166" cy="194" r="4"/><circle cx="199" cy="281" r="5"/><circle cx="235" cy="180" r="4"/><circle cx="274" cy="392" r="5"/><circle cx="341" cy="335" r="4"/><circle cx="376" cy="222" r="4"/><circle cx="386" cy="365" r="5"/><circle cx="148" cy="347" r="4"/><circle cx="212" cy="367" r="4"/><circle cx="312" cy="217" r="4"/><circle cx="348" cy="181" r="4"/><circle cx="390" cy="303" r="4"/><circle cx="172" cy="392" r="4"/><circle cx="213" cy="225" r="4"/><circle cx="309" cy="359" r="4"/></g>
+  <g fill="#7190ad"><circle cx="230" cy="327" r="6"/><circle cx="244" cy="315" r="5"/><circle cx="249" cy="318" r="7"/><circle cx="262" cy="301" r="6"/><circle cx="275" cy="291" r="7"/><circle cx="280" cy="282" r="5"/><circle cx="292" cy="268" r="7"/><circle cx="304" cy="261" r="6"/><circle cx="313" cy="255" r="5"/><circle cx="322" cy="244" r="6"/></g>
+  <g fill="#426e98"><circle cx="675" cy="327" r="6"/><circle cx="689" cy="315" r="5"/><circle cx="694" cy="318" r="7"/><circle cx="707" cy="301" r="6"/><circle cx="720" cy="291" r="7"/><circle cx="725" cy="282" r="5"/><circle cx="737" cy="268" r="7"/><circle cx="749" cy="261" r="6"/><circle cx="758" cy="255" r="5"/><circle cx="767" cy="244" r="6"/></g>
+  <path d="M466 283h69m-12-10 12 10-12 10" fill="none" stroke="#86a0b8" stroke-width="2"/>
+  <g font-family="Microsoft YaHei,sans-serif" font-size="23" fill="#4c6c8a" text-anchor="middle"><text x="277" y="483">Input events</text><text x="722" y="483">Moving targets</text></g>
+  <text x="500" y="537" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="18" fill="#879bad">Finding a small trace in a noisy world.</text>
+</svg>
