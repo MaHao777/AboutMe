@@ -1,0 +1,55 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+}
+
+const { title, description, image = '/og-default.svg', type = 'website' } = Astro.props;
+const pageTitle = title === '首页' ? '马浩 — Research, Code & Life' : `${title} | 马浩`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const ogImage = new URL(image, Astro.site ?? Astro.url);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0a1828" />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Ma Hao" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('theme');
+        document.documentElement.dataset.theme = saved === 'dark' || saved === 'light'
+          ? saved
+          : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳转到正文</a>
+    <Header />
+    <main id="main"><slot /></main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="#0d2639"/><g stroke="#24435b" stroke-width="1"><path d="M0 310h1000M500 0v620M0 100h1000M0 520h1000M100 0v620M900 0v620"/></g>
+  <g fill="none" stroke="#51a6fa" stroke-width="2"><path d="M60 306c110-200 180 204 290 0s180 204 290 0 180 204 300 0"/><path d="M60 272c110-200 180 204 290 0s180 204 290 0 180 204 300 0" opacity=".5"/><path d="M60 342c110-200 180 204 290 0s180 204 290 0 180 204 300 0" opacity=".5"/></g><circle cx="500" cy="310" r="148" fill="none" stroke="#7abdfb" stroke-opacity=".6" stroke-width="2"/><circle cx="500" cy="310" r="81" fill="none" stroke="#7abdfb" stroke-opacity=".4"/>
+  <text x="52" y="80" fill="#9ab9d0" font-family="Arial,sans-serif" font-size="17" letter-spacing="5">EVENTS / OPTICS / WAVEFRONT</text><text x="52" y="552" fill="#fff" font-family="Arial,sans-serif" font-size="42" font-weight="700">极速视界</text>
+</svg>

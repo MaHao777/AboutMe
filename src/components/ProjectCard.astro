@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { ArrowUpRight } from '@lucide/astro';
+
+interface Props { project: CollectionEntry<'projects'>; index?: number }
+const { project, index } = Astro.props;
+const { title, description, technologies, cover, date } = project.data;
+---
+
+<a class="project-card" href={`/projects/${project.id}/`}>
+  <div class="project-art">
+    {cover ? <img src={cover} alt="" loading="lazy" /> : <div class="project-art-fallback"></div>}
+    <span class="project-number">{String((index ?? 0) + 1).padStart(2, '0')}</span>
+    <span class="project-open" aria-hidden="true"><ArrowUpRight size={21} stroke-width={1.6} /></span>
+  </div>
+  <div class="project-info">
+    <div class="project-title-line"><h3>{title}</h3><span>{date.getFullYear()}</span></div>
+    <p>{description}</p>
+    <div class="tags">{technologies.slice(0, 4).map((tech) => <span>{tech}</span>)}</div>
+  </div>
+</a>

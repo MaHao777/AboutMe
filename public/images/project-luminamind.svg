@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="#0b1d31"/>
+  <g stroke="#1e3953" stroke-width="1"><path d="M0 100h1000M0 200h1000M0 300h1000M0 400h1000M0 500h1000M100 0v620M200 0v620M300 0v620M400 0v620M500 0v620M600 0v620M700 0v620M800 0v620M900 0v620"/></g>
+  <g fill="none" stroke="#3a8fea" stroke-width="2"><path d="M305 300 430 203 573 280 722 202M305 300 436 413 573 280 709 409M430 203 436 413M573 280 722 202 709 409"/></g>
+  <g fill="#0b1d31" stroke="#66afff" stroke-width="3"><circle cx="305" cy="300" r="25"/><circle cx="430" cy="203" r="22"/><circle cx="436" cy="413" r="24"/><circle cx="573" cy="280" r="37"/><circle cx="722" cy="202" r="23"/><circle cx="709" cy="409" r="25"/></g>
+  <circle cx="573" cy="280" r="12" fill="#6bb5ff"/><text x="52" y="80" fill="#9ab9d0" font-family="Arial,sans-serif" font-size="17" letter-spacing="5">MEMORY / IN YOUR HANDS</text><text x="52" y="552" fill="#fff" font-family="Arial,sans-serif" font-size="42" font-weight="700">LuminaMind</text>
+</svg>

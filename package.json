@@ -1,0 +1,29 @@
+{
+  "name": "mahao-personal-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^8.0.2",
+    "@lucide/astro": "^1.51.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.5",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@eslint/js": "^9.38.0",
+    "eslint": "^9.38.0",
+    "eslint-plugin-astro": "^1.4.0",
+    "globals": "^16.4.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0"
+  }
+}

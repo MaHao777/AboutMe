@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+materials/diaries/
+materials/projects/*
+!materials/projects/.gitkeep
+materials/achievements/*
+!materials/achievements/.gitkeep
+drafts/*
+!drafts/README.md
+个人介绍背景资料.md

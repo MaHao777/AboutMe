@@ -1,0 +1,23 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import { profile } from '../data/profile';
+import { links } from '../data/links';
+---
+
+<footer class="site-footer">
+  <div class="container footer-top">
+    <div>
+      <p class="eyebrow">STAY CURIOUS</p>
+      <p class="footer-statement">保持好奇，<br />继续做点有意思的事<span class="accent">.</span></p>
+    </div>
+    <div class="footer-links">
+      <a href="/work">Professional <ArrowUpRight size={16} /></a>
+      <a href="/life">Personal <ArrowUpRight size={16} /></a>
+      {links.published && <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight size={16} /></a>}
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© {new Date().getFullYear()} {profile.englishName}</span>
+    <span>Made with Astro · Thoughtfully, over time.</span>
+  </div>
+</footer>

@@ -1,0 +1,67 @@
+---
+import { ArrowRight, ArrowUpRight, Compass, FlaskConical, MoveDownRight } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { profile } from '../data/profile';
+import { getPublicProjects, getPublicNotes, formatDate } from '../lib/content';
+
+const projects = (await getPublicProjects()).filter((project) => project.data.featured).slice(0, 2);
+const notes = (await getPublicNotes()).slice(0, 2);
+---
+
+<BaseLayout title="首页" description="马浩的个人网站：光电、事件视觉、软件开发，以及生活与思考。">
+  <section class="home-hero container">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow hero-kicker"><span class="live-dot"></span> HELLO, I'M MA HAO <span class="kicker-line"></span> SUZHOU, CN</p>
+        <h1>在研究与代码之间，<br /><span>保持好奇<span class="accent">.</span></span></h1>
+        <p class="hero-description">{profile.introduction}</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="/work">探索我的工作 <ArrowUpRight size={18} stroke-width={1.8} /></a>
+          <a class="button button-plain" href="/life">看看生活一面 <ArrowRight size={17} stroke-width={1.8} /></a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="visual-corner visual-corner-top">FIG. 01 / SIGNAL & STORY</div>
+        <div class="orbit orbit-outer"></div><div class="orbit orbit-mid"></div><div class="orbit orbit-inner"></div>
+        <div class="orbit-axis orbit-axis-x"></div><div class="orbit-axis orbit-axis-y"></div>
+        <div class="orbit-dot orbit-dot-one"></div><div class="orbit-dot orbit-dot-two"></div>
+        <div class="orbit-core"><span>MH</span><small>RESEARCH<br />× CODE</small></div>
+        <span class="orbit-coordinate coord-a">31°18′ N</span><span class="orbit-coordinate coord-b">120°37′ E</span>
+        <div class="visual-corner visual-corner-bottom">ALWAYS IN PROGRESS <span>↗</span></div>
+      </div>
+    </div>
+    <div class="hero-bottom"><span>SCROLL TO EXPLORE</span><MoveDownRight size={17} stroke-width={1.5} /><span>01 / 03</span></div>
+  </section>
+
+  <section class="paths-section section-space">
+    <div class="container">
+      <SectionHeading index="01" title="两个方向，同一个我" intro="你可以从项目和研究认识我，也可以从兴趣与文字开始。" />
+      <div class="path-grid">
+        <a class="path-card path-work" href="/work">
+          <span class="path-top"><span class="path-icon"><FlaskConical size={22} stroke-width={1.5} /></span><span>01 / EXPLORE</span></span>
+          <span class="path-body"><span class="path-overline">FOR RECRUITERS & COLLABORATORS</span><strong>Professional<span class="accent">.</span></strong><span class="path-description">项目、研究、工程实践与技能。看看我如何把想法做成可运行的东西。</span></span>
+          <span class="path-bottom">进入专业页面 <ArrowUpRight size={19} stroke-width={1.7} /></span>
+        </a>
+        <a class="path-card path-life" href="/life">
+          <span class="path-top"><span class="path-icon"><Compass size={22} stroke-width={1.5} /></span><span>02 / WANDER</span></span>
+          <span class="path-body"><span class="path-overline">FOR THE CURIOUS & KINDRED</span><strong>Personal<span class="accent">.</span></strong><span class="path-description">音乐、运动、影像和记录。在工作之外，也有值得认真生活的部分。</span></span>
+          <span class="path-bottom">进入生活页面 <ArrowUpRight size={19} stroke-width={1.7} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space container home-projects">
+    <SectionHeading index="02" title="正在做的事" intro="一些让我投入时间、也让我不断学习的项目。" href="/work#projects" linkLabel="更多项目" />
+    <div class="project-grid">{projects.map((project, index) => <ProjectCard project={project} index={index} />)}</div>
+  </section>
+
+  <section class="section-space notes-preview">
+    <div class="container">
+      <SectionHeading index="03" title="随手记，也认真想" intro="从生活和实践中挑出值得分享的片段。" href="/life#notes" linkLabel="阅读文章" />
+      <div class="note-list">{notes.map((note) => <a class="note-row" href={`/notes/${note.id}/`}><span class="note-date">{formatDate(note.data.date)}</span><span class="note-row-main"><strong>{note.data.title}</strong><small>{note.data.description}</small></span><span class="note-category">{note.data.category}</span><ArrowUpRight size={20} stroke-width={1.5} /></a>)}</div>
+    </div>
+  </section>
+</BaseLayout>

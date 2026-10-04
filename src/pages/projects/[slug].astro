@@ -1,0 +1,26 @@
+---
+import { render } from 'astro:content';
+import { ArrowLeft, ArrowUpRight, GitBranch } from '@lucide/astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublicProjects, formatDate } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getPublicProjects();
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, description, date, role, technologies, cover, github, paper, demo, status } = project.data;
+const statusLabel = { ongoing: '进行中', completed: '已完成', archived: '已归档' }[status as 'ongoing' | 'completed' | 'archived'];
+---
+
+<BaseLayout title={title} description={description} image={cover} type="article">
+  <article class="detail-page container">
+    <a href="/work#projects" class="back-link"><ArrowLeft size={17} /> 返回项目列表</a>
+    <div class="detail-head"><div><p class="eyebrow">PROJECT / {statusLabel}</p><h1>{title}<span class="accent">.</span></h1><p class="detail-description">{description}</p></div><span class="detail-date">{formatDate(date)}</span></div>
+    {cover && <div class="detail-cover"><img src={cover} alt="" /></div>}
+    <div class="detail-grid"><aside class="detail-sidebar"><div><span>MY ROLE</span><p>{role}</p></div><div><span>TECHNOLOGIES</span><div class="tags">{technologies.map((tech: string) => <span>{tech}</span>)}</div></div><div class="detail-links">{github && <a href={github} target="_blank" rel="noopener noreferrer"><GitBranch size={17} /> GitHub <ArrowUpRight size={16} /></a>}{paper && <a href={paper} target="_blank" rel="noopener noreferrer">Paper <ArrowUpRight size={16} /></a>}{demo && <a href={demo} target="_blank" rel="noopener noreferrer">Demo <ArrowUpRight size={16} /></a>}</div></aside><div class="prose"><Content /></div></div>
+    <a href="/work#projects" class="end-link"><ArrowLeft size={17} /> 查看更多项目</a>
+  </article>
+</BaseLayout>

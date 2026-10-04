@@ -1,0 +1,47 @@
+---
+import { ArrowUpRight, Moon, Sun } from '@lucide/astro';
+import { profile } from '../data/profile';
+import { links as socialLinks } from '../data/links';
+
+const path = Astro.url.pathname;
+const links = [
+  { href: '/', label: '首页', active: path === '/' },
+  { href: '/work', label: 'Professional', active: path === '/work' || path.startsWith('/projects/') },
+  { href: '/life', label: 'Personal', active: path === '/life' || path.startsWith('/notes/') },
+];
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="返回首页">
+      <span class="brand-mark">{profile.monogram}</span>
+      <span class="brand-name">MA HAO<span class="brand-dot">.</span></span>
+    </a>
+    <nav class="primary-nav" aria-label="主导航">
+      {links.map((link) => <a href={link.href} class:list={['nav-link', { active: link.active }]} aria-current={link.active ? 'page' : undefined}>{link.label}</a>)}
+    </nav>
+    <div class="header-actions">
+      <button id="theme-toggle" class="icon-button theme-toggle" type="button" aria-label="切换深色模式" title="切换主题">
+        <Sun size={17} stroke-width={1.8} class="sun-icon" />
+        <Moon size={17} stroke-width={1.8} class="moon-icon" />
+      </button>
+      <a class="header-github" href={socialLinks.github} target="_blank" rel="noopener noreferrer" aria-label="在新窗口打开 GitHub">
+        GitHub <ArrowUpRight size={15} stroke-width={1.8} />
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
+  const updateLabel = () => {
+    if (toggle) toggle.setAttribute('aria-label', document.documentElement.dataset.theme === 'dark' ? '切换浅色模式' : '切换深色模式');
+  };
+  updateLabel();
+  toggle?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem('theme', next);
+    updateLabel();
+  });
+</script>
