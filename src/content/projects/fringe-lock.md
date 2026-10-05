@@ -13,9 +13,11 @@ technologies:
 - Sapera SDK
 - PZT
 - 闭环控制
-cover: /images/project-fringe.svg
-coverAlt: 参考与漂移条纹通过相位解调和反馈补偿趋于对齐的概念示意
-coverCaption: 闭环工作原理示意，不表示实测响应曲线或锁定精度。
+cover: /images/fringe-lock-experiment.jpg
+coverWidth: 1706
+coverHeight: 1280
+coverAlt: 条纹锁定实验界面照片，显示参考与当前条纹、相位误差、压电位置及控制指令曲线
+coverCaption: 2026 年 7 月 21 日实验界面照片：记录条纹对照、相位误差、PZT 位置与控制指令。单次运行记录不作为锁定精度或长期稳定性的完整评估。点击可查看原图。
 featured: true
 status: ongoing
 published: true

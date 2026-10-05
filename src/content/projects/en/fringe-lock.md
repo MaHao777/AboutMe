@@ -13,9 +13,11 @@ technologies:
 - Sapera SDK
 - PZT
 - Closed-loop control
-cover: /images/project-fringe-en.svg
-coverAlt: Reference and shifted fringes aligned through phase demodulation and compensation
-coverCaption: Feedback-loop illustration; not a measured response curve or locking-accuracy result.
+cover: /images/fringe-lock-experiment.jpg
+coverWidth: 1706
+coverHeight: 1280
+coverAlt: A photograph of the fringe-locking experiment showing reference and current fringes, phase error, piezo position, and control commands
+coverCaption: 'Experimental interface photographed on July 21, 2026: fringe comparison, phase error, PZT position, and control commands. This single run is not a complete assessment of locking accuracy or long-term stability. Click to view the original.'
 featured: true
 status: ongoing
 published: true

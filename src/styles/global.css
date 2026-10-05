@@ -107,7 +107,7 @@ html[lang="en"] .life-hero .collection-copy h1 { white-space: normal; }
 .collection-heading > span { font-size: 11px; color: var(--muted); }
 .project-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 55px 35px; }
 .project-card { min-width: 0; }
-.project-art { display: block; position: relative; aspect-ratio: 1.8; background: #e8f0f8; overflow: hidden; }
+.project-art { display: block; position: relative; aspect-ratio: 1.8; background: #fff; overflow: hidden; }
 .project-art img { width: 100%; height: 100%; object-fit: contain; transition: transform .8s cubic-bezier(.2,.65,.25,1); }
 .project-art:hover img { transform: scale(1.055); }
 .project-category { position: absolute; top: 16px; left: 18px; background: #ffffffcc; color: #526c88; padding: 3px 9px; font-size: 9px; letter-spacing: .06em; }
@@ -209,7 +209,8 @@ a.resource-card:hover { border-color: var(--accent); }
 .detail-highlights h2 { font-size: 23px; margin-bottom: 8px; }
 .detail-highlights p { font-size: 13px; color: var(--muted); margin: 0; }
 .detail-cover { margin: 0 auto; max-width: 850px; }
-.detail-cover img { width: 100%; }
+.detail-cover a { display: block; background: #fff; border: 1px solid var(--line); cursor: zoom-in; }
+.detail-cover img { width: 100%; height: auto; }
 figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top: 14px; }
 .detail-grid { display: grid; grid-template-columns: 220px minmax(0,1fr); gap: 85px; padding-top: 60px; }
 .detail-sidebar { display: flex; flex-direction: column; gap: 30px; }
@@ -232,6 +233,7 @@ figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; padding-top
 .project-gallery { padding-top: 65px; max-width: 940px; margin-inline: auto; }
 .project-gallery h2 { font-size: 38px; margin-bottom: 35px; }
 .project-gallery figure { margin: 0 0 45px; }
+.project-gallery a { display: block; cursor: zoom-in; }
 .project-gallery img { background: #fff; width: 100%; border: 1px solid var(--line); }
 .end-link { width: 100%; border-top: 1px solid var(--line); padding-top: 25px; margin-top: 65px; }
 .note-detail { max-width: 880px; }

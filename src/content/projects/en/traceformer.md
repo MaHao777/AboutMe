@@ -12,9 +12,11 @@ technologies:
 - Transformer
 - LightGBM
 - Event cameras
-cover: /images/project-traceformer-en.svg
-coverAlt: Selecting moving-target events from a noisy event stream
-coverCaption: Detection concept illustration; actual validation visualizations appear below.
+cover: /images/traceformer-architecture.png
+coverWidth: 4836
+coverHeight: 1752
+coverAlt: TraceFormer architecture with spatiotemporal blocks, attention pooling, a cone Transformer encoder, and event decoding
+coverCaption: 'Model architecture: spatiotemporal blocks and attention pooling feed a cone Transformer encoder, followed by event-probability decoding. This diagram shows the neural network; the complete system also includes postprocessing. Click to view the original.'
 github: https://github.com/MaHao777/TraceFormer
 featured: true
 status: ongoing
@@ -33,6 +35,9 @@ gallery:
   alt: Scores for public PACT weights, the TraceFormer detector, and the complete system across 24 sequences
   caption: Same 24-sequence validation set. Training and development budgets differ; this is not a matched-training comparison
     or an official test ranking.
+- src: /images/traceformer-competition.png
+  alt: A cropped competition score list highlighting an August 31, 2026 submission with a score of 0.9338
+  caption: 'Historical competition screenshot: the highlighted submission dated August 31, 2026 shows a score of 0.9338. Only part of the list is visible, so no final rank is inferred. This record is presented separately from the local validation results reported here.'
 locale: en
 ---
 

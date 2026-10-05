@@ -14,7 +14,7 @@ const locale = getLocale(Astro.url.pathname);
 const t = translator(locale);
 const { project } = Astro.props;
 const { Content } = await render(project);
-const { title, description, date, role, technologies, cover, coverAlt, coverCaption, gallery, outcome, highlights, github, paper, demo, status } = project.data;
+const { title, description, date, role, technologies, cover, coverAlt, coverWidth, coverHeight, coverCaption, gallery, outcome, highlights, github, paper, demo, status } = project.data;
 const statusLabel = { ongoing: t('进行中', 'In progress'), completed: t('已完成', 'Completed'), archived: t('已归档', 'Archived') }[status as 'ongoing' | 'completed' | 'archived'];
 ---
 
@@ -23,9 +23,9 @@ const statusLabel = { ongoing: t('进行中', 'In progress'), completed: t('已�
     <a href={localePath('/work#projects', locale)} class="back-link"><ArrowLeft size={17} />{t(' 返回项目列表', ' Back to projects')}</a>
     <div class="detail-head"><div><p class="eyebrow">{t('项目', 'PROJECT')} / {statusLabel}</p><h1>{title}</h1><p class="detail-outcome"><strong>{outcome}</strong></p><p class="detail-description">{description}</p></div><span class="detail-date">{formatDate(date, locale)}</span></div>
     <div class="detail-highlights">{highlights.map((item: { title: string; description: string }) => <div><h2><strong>{item.title}</strong></h2><p>{item.description}</p></div>)}</div>
-    {cover && <figure class="detail-cover"><img src={cover} alt={coverAlt} /><figcaption>{coverCaption}</figcaption></figure>}
+    {cover && <figure class="detail-cover"><a href={cover} target="_blank" rel="noopener noreferrer" aria-label={t('在新窗口查看完整图片', 'Open full image in a new window')}><img src={cover} alt={coverAlt} width={coverWidth} height={coverHeight} /></a><figcaption>{coverCaption}</figcaption></figure>}
     <div class="detail-grid"><aside class="detail-sidebar"><div><span>{t('我的贡献', 'MY ROLE')}</span><p>{role}</p></div><div><span>{t('技术与工具', 'TECHNOLOGIES')}</span><div class="tags">{technologies.map((tech: string) => <span>{tech}</span>)}</div></div><div class="detail-links">{github && <a href={github} target="_blank" rel="noopener noreferrer"><GitBranch size={17} /> GitHub <ArrowUpRight size={16} /></a>}{paper && <a href={paper} target="_blank" rel="noopener noreferrer">{t('论文 ', 'Paper ')}<ArrowUpRight size={16} /></a>}{demo && <a href={demo} target="_blank" rel="noopener noreferrer">{t('演示 ', 'Demo ')}<ArrowUpRight size={16} /></a>}</div></aside><div class="prose"><Content /></div></div>
-    {gallery.length > 0 && <section class="project-gallery" aria-label={t('项目结果图片', 'Project result images')}><h2>{t('结果展示', 'Results')}</h2>{gallery.map((item: { src: string; alt: string; caption: string }) => <figure><a href={item.src} target="_blank" rel="noopener noreferrer" aria-label={t('在新窗口查看完整图片', 'Open full image in a new window')}><img src={item.src} alt={item.alt} loading="lazy" /></a><figcaption>{item.caption}</figcaption></figure>)}</section>}
+    {gallery.length > 0 && <section class="project-gallery" aria-label={t('项目图片', 'Project images')}><h2>{t('项目图集', 'Project gallery')}</h2>{gallery.map((item: { src: string; alt: string; caption: string }) => <figure><a href={item.src} target="_blank" rel="noopener noreferrer" aria-label={t('在新窗口查看完整图片', 'Open full image in a new window')}><img src={item.src} alt={item.alt} loading="lazy" /></a><figcaption>{item.caption}</figcaption></figure>)}</section>}
     <a href={localePath('/work#projects', locale)} class="end-link"><ArrowLeft size={17} />{t(' 查看更多项目', ' More projects')}</a>
   </article>
 </BaseLayout>

@@ -19,9 +19,11 @@ technologies:
 - HDF5
 - Event cameras
 - Wavefront reconstruction
-cover: /images/project-optics-en.svg
-coverAlt: 'Three stages: wavefronts, Shack–Hartmann spots, and events'
-coverCaption: Physics pipeline illustration of the generation, preview, and recording workflow.
+cover: /images/event-optics-interface.png
+coverWidth: 2879
+coverHeight: 1654
+coverAlt: The data-generation interface displaying the wavefront ground truth, Shack–Hartmann spots, and event spots
+coverCaption: 'Software screenshot: the data-generation page displays the wavefront ground truth, Shack–Hartmann spots, and event spots. Reconstruction is disabled in this capture, leaving the two lower views empty. Click to view the original.'
 featured: true
 status: completed
 published: true

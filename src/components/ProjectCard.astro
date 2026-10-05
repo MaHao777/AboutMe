@@ -5,7 +5,7 @@ import { getLocale, localePath, translator, contentSlug } from '../lib/i18n';
 
 interface Props { project: CollectionEntry<'projects'>; index?: number }
 const { project } = Astro.props;
-const { title, description, category, outcome, highlights, cover, coverAlt, role } = project.data;
+const { title, description, category, outcome, highlights, cover, coverAlt, coverWidth, coverHeight, role } = project.data;
 const locale = getLocale(Astro.url.pathname);
 const t = translator(locale);
 const href = localePath(`/projects/${contentSlug(project.id)}/`, locale);
@@ -13,7 +13,7 @@ const href = localePath(`/projects/${contentSlug(project.id)}/`, locale);
 
 <article class="project-card" data-reveal>
   <a class="project-art" href={href} aria-label={t(`查看${title}项目详情`, `View ${title}`)}>
-    {cover && <img src={cover} alt={coverAlt} loading="lazy" width="1000" height="620" />}
+    {cover && <img src={cover} alt={coverAlt} loading="lazy" width={coverWidth ?? 1000} height={coverHeight ?? 620} />}
     <span class="project-category">{category}</span>
   </a>
   <div class="project-info">

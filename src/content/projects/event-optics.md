@@ -19,9 +19,11 @@ technologies:
 - HDF5
 - 事件相机
 - 波前重构
-cover: /images/project-optics.svg
-coverAlt: 从波前到哈特曼光斑再到事件流的三步示意图
-coverCaption: 物理数据链路示意；对应软件中的生成、预览与录制流程。
+cover: /images/event-optics-interface.png
+coverWidth: 2879
+coverHeight: 1654
+coverAlt: 波前数据平台的数据生成界面，同时展示波前真值、哈特曼光斑与事件光斑
+coverCaption: 软件运行截图：数据生成页展示波前真值、哈特曼光斑与事件光斑；此时未启用重构，下方两个视图为空。点击可查看原图。
 featured: true
 status: completed
 published: true

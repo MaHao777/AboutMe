@@ -12,9 +12,11 @@ technologies:
 - Transformer
 - LightGBM
 - 事件相机
-cover: /images/project-traceformer.svg
-coverAlt: 从噪声事件中筛选运动目标事件的示意图
-coverCaption: 检测任务概念示意；下方展示实际验证集可视化与比较结果。
+cover: /images/traceformer-architecture.png
+coverWidth: 4836
+coverHeight: 1752
+coverAlt: TraceFormer 模型结构图，展示时空分块、注意力池化、锥形 Transformer 编码器与事件解码
+coverCaption: 模型结构图：从时空分块与注意力池化，经锥形 Transformer 编码器，解码为事件概率。图中展示神经网络部分，完整系统另含后处理。点击可查看原图。
 github: https://github.com/MaHao777/TraceFormer
 featured: true
 status: ongoing
@@ -31,6 +33,9 @@ gallery:
 - src: /images/traceformer-validation.png
   alt: PACT 公开权重、TraceFormer 神经网络与完整系统在 24 个验证序列上的得分
   caption: 同一 24 序列验证集的逐序列比较；训练与开发预算未匹配，不代表同训练协议比较或官方排名。
+- src: /images/traceformer-competition.png
+  alt: 比赛成绩列表局部截图，红框标出 2026 年 8 月 31 日提交记录及 0.9338 得分
+  caption: 历史比赛成绩截图：红框标出 2026 年 8 月 31 日的提交记录，显示得分 0.9338。截图仅保留列表局部，不据此认定最终名次；该记录与本站报告的本地验证结果分开呈现。
 ---
 
 ## 成果

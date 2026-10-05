@@ -21,6 +21,8 @@ const projects = defineCollection({
     highlights: z.array(z.object({ title: z.string(), description: z.string() })).default([]),
     technologies: z.array(z.string()),
     cover: z.string().optional(),
+    coverWidth: z.number().int().positive().optional(),
+    coverHeight: z.number().int().positive().optional(),
     coverAlt: z.string().default('项目流程示意'),
     coverCaption: z.string().optional(),
     gallery: z.array(z.object({ src: z.string(), alt: z.string(), caption: z.string() })).default([]),
