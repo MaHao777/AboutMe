@@ -75,9 +75,9 @@ published: false
 
 ## 信息层次与视觉
 
-首页使用双入口画廊构图，Professional 使用蓝白的雕塑与作品选集，Personal 使用暖黄艺术构图。两者共用导航、字体、组件与深浅主题，通过 `BaseLayout` 的 `section` 设置不同颜色。入口页短文案集中在 `src/data/presentation.ts`。
+首页使用双入口画廊构图，Professional 用带细密星环和云带的冰蓝行星，Personal 用带地形、陨石坑和极冠的暖色岩质行星。两颗球体的直径和画布尺寸一致，卫星沿固定轨道绕行。两者共用导航、字体、组件与深浅主题，通过 `BaseLayout` 的 `section` 设置不同颜色。入口页短文案集中在 `src/data/presentation.ts`。
 
-内容按三层呈现：第一层只显示标题与成果；第二层在项目卡片内展开摘要、个人工作，背景、奖项和技能也默认折叠；第三层跳转详情，解释问题、方法、限制和图片。展开使用 HTML `details`，不需要客户端脚本。代表成果摘要在 `src/data/profile.ts` 的 `featuredResults` 中管理。
+首页用居中的欢迎标题、双入口画廊和基本信息栏；Professional 页继续展示代表成果。内容按三层呈现：第一层显示入口标题与成果；第二层在项目卡片内展开摘要、个人工作，背景、奖项和技能也默认折叠；第三层跳转详情，解释问题、方法、限制和图片。展开使用 HTML `details`，不需要客户端脚本。Professional 页的代表成果摘要在 `src/data/profile.ts` 的 `featuredResults` 中管理。
 
 TraceFormer 的 `0.954117` 是冻结完整系统在 24 序列验证集上的独立复评结果，不能改写成官方测试成绩。其实际图保存在 `public/images/traceformer-*.png`。
 
@@ -134,6 +134,6 @@ published: false
 
 ## 设计与实现
 
-使用 Astro 静态输出、TypeScript、Tailwind CSS 4、MDX 与 Lucide 图标。主题切换记住选择，`Motion.astro` 使用原生 IntersectionObserver 实现一次性滚动入场；悬停、雕塑浮动和植物轻摆由 CSS 实现，不使用动画库。`prefers-reduced-motion` 会关闭动态效果，JavaScript 未启用时内容仍可阅读。`ArtStudy.astro` 是可编辑的原生 SVG 装饰，不是项目实测图。深浅主题与移动端布局均由同一套样式支持。
+使用 Astro 静态输出、TypeScript、Tailwind CSS 4、MDX 与 Lucide 图标。主题切换记住选择，`Motion.astro` 使用原生 IntersectionObserver 实现一次性滚动入场。`ArtStudy.astro` 在 JavaScript 未启用或 WebGL 不可用时显示静态 SVG 备用图；支持 WebGL 时，`planetScene.ts` 用 Three.js 绘制有纹理和光照的球体、固定轨道与绕行卫星。三维首帧完成后淡入画布，备用图不参与淡入；包含行星的页面在跨页导航时跳过截图叠加过渡，避免旧图闪现和重影。场景离开视口或页面隐藏时暂停，`prefers-reduced-motion` 下保持静止。两种图形均是装饰，不是项目实测图。深浅主题与移动端布局均由同一套样式支持。
 
 `HoverDisclosure.astro` 统一管理两个入口页下方的补充栏目：桌面鼠标移入展开、离开收回，使用原生 Web Animations API 平滑改变高度，并配合内容淡入、淡出与加号旋转。快速移入移出会从当前高度继续动画。触屏通过点击切换，键盘聚焦可展开并保持内部链接可用；系统开启减少动态效果时直接切换。未启用 JavaScript 时仍可使用原生 `details` 点击展开。

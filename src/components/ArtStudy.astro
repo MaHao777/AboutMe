@@ -1,41 +1,75 @@
 ---
 interface Props { kind: 'work' | 'life'; id: string }
 const { kind, id } = Astro.props;
-const gradient = `art-blue-${id}`;
+const gradientId = `planet-fallback-${id}`;
+const frontId = `orbit-front-${id}`;
+const globeId = `globe-${id}`;
+const palette = kind === 'work'
+  ? { light: '#bbdfe6', dark: '#285487', orbit: '#749ec8', moon: '#f4e5c4' }
+  : { light: '#f5d691', dark: '#a96932', orbit: '#b58b51', moon: '#fff0c8' };
 ---
 
-<div class:list={['art-study', `art-${kind}`]} aria-hidden="true">
-  {kind === 'work' ? <svg viewBox="0 0 700 600" fill="none" class="sculpture-art">
-    <defs><linearGradient id={gradient} x1="120" y1="150" x2="520" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#98b8dc" /><stop offset="1" stop-color="#2453a1" /></linearGradient></defs>
-    <ellipse cx="350" cy="500" rx="158" ry="12" fill="#234875" opacity=".07" class="art-shadow" />
-    <g class="sculpture-body" transform="rotate(-30 350 300)">
-      <ellipse cx="350" cy="348" rx="201" ry="142" stroke="#214b83" stroke-width="22" />
-      <ellipse cx="350" cy="332" rx="201" ry="142" stroke="#315e98" stroke-width="22" />
-      <ellipse cx="350" cy="316" rx="201" ry="142" stroke="#426fa9" stroke-width="22" />
-      <ellipse cx="350" cy="300" rx="201" ry="142" stroke="#5885bc" stroke-width="22" />
-      <ellipse cx="350" cy="284" rx="201" ry="142" stroke="#7099c9" stroke-width="22" />
-      <ellipse cx="350" cy="268" rx="201" ry="142" stroke="#8aadd4" stroke-width="22" />
-      <ellipse cx="350" cy="252" rx="201" ry="142" stroke={`url(#${gradient})`} stroke-width="24" />
-      <ellipse cx="350" cy="252" rx="183" ry="124" stroke="#d9e5f1" stroke-opacity=".65" stroke-width="2" />
-      <path d="M183 185C218 142 281 111 350 110" stroke="#edf4fa" stroke-opacity=".8" stroke-width="3" stroke-linecap="round" />
+<div class:list={['art-study', `art-${kind}`]} data-planet-scene data-kind={kind} aria-hidden="true">
+  <svg class="planet-fallback" viewBox="0 0 700 600" fill="none">
+    <defs>
+      <radialGradient id={gradientId} cx="32%" cy="26%" r="76%">
+        <stop stop-color={palette.light} />
+        <stop offset="1" stop-color={palette.dark} />
+      </radialGradient>
+      <clipPath id={frontId}><rect x="0" y="285" width="700" height="315" /></clipPath>
+      <clipPath id={globeId}><circle cx="350" cy="285" r="151" /></clipPath>
+    </defs>
+    <ellipse cx="350" cy="285" rx="238" ry="106" transform="rotate(-18 350 285)" stroke={palette.orbit} stroke-opacity=".65" stroke-width="2" />
+    {kind === 'work' && <ellipse cx="350" cy="285" rx="210" ry="62" transform="rotate(-18 350 285)" stroke="#c3d6de" stroke-opacity=".75" stroke-width="22" />}
+    <circle cx="350" cy="285" r="151" fill={`url(#${gradientId})`} />
+    <g clip-path={`url(#${globeId})`}>
+      {kind === 'work' ? (
+        <g stroke="#d4edf0" stroke-opacity=".22" stroke-width="7" transform="rotate(-10 350 285)">
+          <path d="M190 218 Q350 245 510 218 M190 250 Q350 282 510 250 M190 295 Q350 319 510 295 M190 338 Q350 358 510 338" />
+        </g>
+      ) : (
+        <g>
+          <path d="M240 146 Q290 174 331 153 Q385 188 450 165 L455 134 L230 129Z" fill="#efe5cd" fill-opacity=".8" />
+          <path d="M202 271 Q260 228 307 281 T407 277 L435 327 Q369 298 321 339 T226 343Z" fill="#925f41" fill-opacity=".25" />
+          <g stroke="#f0d2a3" stroke-opacity=".25" fill="#7e4d34" fill-opacity=".12" stroke-width="3">
+            <circle cx="306" cy="252" r="19" /><circle cx="402" cy="315" r="28" /><circle cx="295" cy="363" r="11" />
+          </g>
+        </g>
+      )}
     </g>
-    <circle cx="543" cy="171" r="22" fill="#e7ddc6" class="art-pebble" />
-  </svg> : <svg viewBox="0 0 700 600" fill="none" class="sun-art">
-    <g class="sun-body">
-      <circle cx="370" cy="270" r="184" fill="#e3af46" />
-      <path d="M186 270a184 184 0 0 0 368 0" fill="#c7862f" />
-      <path d="M245 135c35-34 78-50 125-50" stroke="#f4d88b" stroke-width="3" stroke-linecap="round" />
+    <g clip-path={`url(#${frontId})`}>
+      {kind === 'work' && <g transform="rotate(-18 350 285)" stroke="#c3d6de">
+        <ellipse cx="350" cy="285" rx="210" ry="62" stroke-opacity=".75" stroke-width="22" />
+        <ellipse cx="350" cy="285" rx="217" ry="64" stroke-opacity=".5" stroke-width="2" />
+        <ellipse cx="350" cy="285" rx="201" ry="59" stroke-opacity=".5" stroke-width="2" />
+      </g>}
+      <ellipse cx="350" cy="285" rx="238" ry="106" transform="rotate(-18 350 285)" stroke={palette.orbit} stroke-opacity=".85" stroke-width="2" />
     </g>
-    <path d="M135 475h430" stroke="#ab824c" stroke-opacity=".28" />
-    <path d="M181 475V253c0-61 46-110 107-110" stroke="#6e5540" stroke-width="2" />
-    <g class="botanical-body" stroke="#574c37" stroke-width="2.4" stroke-linecap="round">
-      <path d="M357 490c-10-66 4-104 36-151s37-89 18-149M389 346c-41-6-76-21-93-57M409 280c39-17 63-43 71-81M366 422c44-17 79-44 99-81" />
-      <path d="M410 190c-32-28-33-57-11-83 26 28 27 56 11 83Z" fill="#f9efd4" />
-      <path d="M296 289c-42 0-69-17-74-49 39-4 66 14 74 49Z" fill="#f9efd4" />
-      <path d="M480 199c7-44 29-66 63-65-4 38-25 60-63 65Z" fill="#f9efd4" />
-      <path d="M465 341c13-36 37-52 70-44-10 34-33 49-70 44Z" fill="#f9efd4" />
-      <path d="M374 393c-33-11-52-31-48-61 33 8 51 29 48 61Z" fill="#f9efd4" />
-    </g>
-    <circle cx="165" cy="387" r="28" fill="#f4d88b" class="art-pebble" />
-  </svg>}
+    <circle cx="568" cy="210" r="21" fill={palette.moon} />
+  </svg>
 </div>
+
+<script>
+  import { mountPlanetScene } from '../lib/planetScene';
+
+  type PlanetManager = { mount: () => void; dispose: () => void };
+  const globalWindow = window as Window & { __cosmosPlanetManager?: PlanetManager };
+
+  if (!globalWindow.__cosmosPlanetManager) {
+    const scenes = new Map<HTMLElement, () => void>();
+    const mount = () => {
+      document.querySelectorAll<HTMLElement>('[data-planet-scene]').forEach((host) => {
+        if (!scenes.has(host)) scenes.set(host, mountPlanetScene(host, host.dataset.kind === 'life' ? 'life' : 'work'));
+      });
+    };
+    const dispose = () => {
+      scenes.forEach((cleanup) => cleanup());
+      scenes.clear();
+    };
+    globalWindow.__cosmosPlanetManager = { mount, dispose };
+    document.addEventListener('astro:page-load', mount);
+    document.addEventListener('astro:before-swap', dispose);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });
+    else mount();
+  }
+</script>

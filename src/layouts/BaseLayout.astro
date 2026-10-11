@@ -44,6 +44,14 @@ const ogImage = new URL(image === '/og-default.svg' ? defaultImage : image, Astr
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <script is:inline>
+      document.documentElement.classList.add('has-planet-client');
+      // Canvas scenes are initialized after navigation snapshots are captured.
+      // Avoid capturing a fallback or blending planets at two page positions.
+      const skipPlanetTransition = (event) => {
+        if (document.querySelector('[data-planet-scene]')) event.viewTransition?.skipTransition();
+      };
+      window.addEventListener('pageswap', skipPlanetTransition);
+      window.addEventListener('pagereveal', skipPlanetTransition);
       try {
         const saved = localStorage.getItem('theme');
         document.documentElement.dataset.theme = saved === 'dark' || saved === 'light'

@@ -2,20 +2,20 @@
 import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArtStudy from '../components/ArtStudy.astro';
-import ResultStrip from '../components/ResultStrip.astro';
+import ProfileStrip from '../components/ProfileStrip.astro';
 
 import { getSiteData } from '../data/localized';
 import { getLocale, localePath, translator } from '../lib/i18n';
 const locale = getLocale(Astro.url.pathname);
 const t = translator(locale);
-const { profile, presentation } = getSiteData(locale);
+const { presentation } = getSiteData(locale);
 ---
 
 <BaseLayout title={t('首页', 'Home')} description={t('马浩的研究、工程作品与生活笔记。波前数据平台、条纹锁定、微弱目标检测与个人工具。', 'Ma Hao’s research, engineering projects, and writing on everyday life.')}>
   <section class="home-gallery container" aria-label={t('认识马浩', 'Meet Ma Hao')}>
     <div class="home-masthead">
-      <h1 class="name-display hero-arrive">{profile.name}<span class="name-period">.</span></h1>
-      <p class="masthead-caption hero-arrive">{presentation.home.caption}<span>{t('苏州大学', 'Soochow University')}</span></p>
+      <h1 class="name-display hero-arrive">Welcome To My COSMOS</h1>
+      <p class="masthead-caption hero-arrive">{presentation.home.caption}</p>
     </div>
     <div class="entry-gallery">
       <a class="gallery-entry gallery-work hero-arrive" href={localePath('/work', locale)}>
@@ -30,5 +30,5 @@ const { profile, presentation } = getSiteData(locale);
       </a>
     </div>
   </section>
-  <ResultStrip />
+  <ProfileStrip />
 </BaseLayout>

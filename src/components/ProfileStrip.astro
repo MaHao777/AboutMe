@@ -1,0 +1,14 @@
+---
+import { getSiteData } from '../data/localized';
+import { getLocale, translator } from '../lib/i18n';
+
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const { profile } = getSiteData(locale);
+---
+
+<section class="profile-strip container" aria-label={t('我的基本信息', 'About me')} data-reveal>
+  <div class="profile-fact"><strong>{profile.name}</strong><span>{profile.school}</span></div>
+  <div class="profile-fact"><strong>{t('光电 × 软件', 'Optics × Software')}</strong><span>{t('研究与开发', 'Research & Development')}</span></div>
+  <div class="profile-fact"><strong>{profile.location}</strong><span>{t('学习、生活与创造', 'Learning, living & creating')}</span></div>
+</section>

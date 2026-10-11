@@ -31,6 +31,7 @@ const links = [
       <a class="header-github" href={socialLinks.github} target="_blank" rel="noopener noreferrer" aria-label={t('在新窗口打开 GitHub', 'Open GitHub in a new window')}>
         GitHub <ArrowUpRight size={15} stroke-width={1.8} />
       </a>
+      {profile.email && <a class="header-contact" href={`mailto:${profile.email}`} aria-label={t(`通过邮件联系：${profile.email}`, `Email me: ${profile.email}`)}><span class="contact-address">{profile.email}</span><span class="contact-label">{t('联系', 'Email')}</span><ArrowUpRight size={15} stroke-width={1.8} /></a>}
       <a class="language-toggle" href={localePath(Astro.url.pathname, locale === 'zh' ? 'en' : 'zh')} hreflang={locale === 'zh' ? 'en' : 'zh-CN'} aria-label={t('切换到英文', 'Switch to Chinese')} title={t('切换到英文', 'Switch to Chinese')} data-language-switch>{t('英文', 'Chinese')}</a>
     </div>
   </div>

@@ -11,7 +11,7 @@ export const profile = {
   personalIntroduction:
     '喜欢钢琴、篮球和摄影，也把日常想法做成实用的小工具。',
   email: '2030985559@qq.com' as string | null,
-  resumeUrl: null as string | null,
+  resumeUrl: '/resume.pdf' as string | null,
 } as const;
 
 if (!profile.published) {
