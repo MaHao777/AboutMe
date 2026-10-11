@@ -17,9 +17,11 @@ technologies:
 - TypeScript
 - Python
 - FastAPI
-cover: /images/project-luminamind-en.svg
-coverAlt: Markdown memory notes connected to retrieval and user review
-coverCaption: Memory workflow illustration showing user access and review.
+cover: /images/project-luminamind.jpg
+coverWidth: 1761
+coverHeight: 1279
+coverAlt: Certificate recognizing LuminaMind with an Outstanding Project Award in the AISpeech OPC Innovation Competition
+coverCaption: LuminaMind received an Outstanding Project Award in the AISpeech OPC Innovation Competition.
 github: https://github.com/MaHao777/LuminaMind
 featured: true
 status: ongoing

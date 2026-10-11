@@ -13,9 +13,11 @@ technologies:
 - MQTT
 - CAN
 - Linux
-cover: /images/project-vehicle.svg
-coverAlt: 网页端经 ROS 2 中转节点与 CAN 端通信，以及 MQTT 测试工具双向收发的流程示意
-coverCaption: 根据实习工作绘制的通信流程示意。
+cover: /images/project-vehicle.png
+coverWidth: 1602
+coverHeight: 833
+coverAlt: 实习期间绘制的 MQTT 通讯与 ROS 2 机器人操作系统业务架构图
+coverCaption: 实习期间的 MQTT 通讯与 ROS 2 业务架构图。
 featured: true
 status: completed
 published: true

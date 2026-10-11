@@ -13,9 +13,11 @@ technologies:
 - MQTT
 - CAN
 - Linux
-cover: /images/project-vehicle-en.svg
-coverAlt: Web-to-CAN communication through a ROS 2 relay, with bidirectional MQTT testing
-coverCaption: Communication workflow illustration based on internship work.
+cover: /images/project-vehicle.png
+coverWidth: 1602
+coverHeight: 833
+coverAlt: Internship architecture diagram for MQTT communication and ROS 2 robot operating system workflows
+coverCaption: MQTT communication and ROS 2 workflow diagram from the internship.
 featured: true
 status: completed
 published: true
