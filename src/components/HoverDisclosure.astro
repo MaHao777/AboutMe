@@ -1,15 +1,13 @@
 ---
 interface Props {
   id: string;
-  number: string;
   title: string;
-  hint: string;
 }
-const { id, number, title, hint } = Astro.props;
+const { id, title } = Astro.props;
 ---
 
 <details class="index-disclosure" id={id} data-hover-disclosure>
-  <summary><span class="index-number">{number}</span><span>{title}</span><span class="index-hint">{hint}</span><span class="disclosure-plus" aria-hidden="true">＋</span></summary>
+  <summary><span class="index-title">{title}</span><span class="disclosure-plus" aria-hidden="true">＋</span></summary>
   <div data-disclosure-content><slot /></div>
 </details>
 

@@ -77,7 +77,7 @@ published: false
 
 网站使用 COSMOS「个人宇宙」视觉：午夜蓝星空、冰蓝研究轨道、香槟金生活轨道，以及暖白纸面浅色主题。首次访问默认深色，之后记住手动选择。首页以分层的欢迎标题、COSMOS 字标和双行星入口构成；细星轨、静态星图与柔和光晕由 CSS 和 `CosmicBackdrop.astro` 绘制，不依赖外部图片、字体或额外动画循环。Professional 用带细密星环和云带的冰蓝行星，Personal 用带地形、陨石坑和极冠的暖色岩质行星。两颗球体的直径和画布尺寸一致，卫星沿固定轨道绕行。两者共用导航、字体、组件与深浅主题，通过 `BaseLayout` 的 `section` 设置不同颜色。入口页短文案集中在 `src/data/presentation.ts`；首页的主题引导文案在 `src/pages/index.astro`。
 
-首页用居中的欢迎标题、双入口画廊和基本信息栏；Professional 页继续展示代表成果。内容按三层呈现：第一层显示入口标题与成果；第二层在项目卡片内展开摘要、个人工作，背景、奖项和技能也默认折叠；第三层跳转详情，解释问题、方法、限制和图片。展开使用 HTML `details`，不需要客户端脚本。Professional 页的代表成果摘要在 `src/data/profile.ts` 的 `featuredResults` 中管理。
+首页用居中的欢迎标题、一行主题、双入口画廊和基本信息栏；入口卡片只保留栏目名与箭头。页面省去轨道标签、装饰性标语、重复副标题和页脚口号，栏目展开项只显示标题与加号。Professional 页继续展示代表成果。内容按三层呈现：第一层显示入口标题与成果；第二层在项目卡片内展开摘要、个人工作，背景、奖项和技能也默认折叠；第三层跳转详情，解释问题、方法、限制和图片。展开使用 HTML `details`，不需要客户端脚本。Professional 页的代表成果摘要在 `src/data/profile.ts` 的 `featuredResults` 中管理。
 
 TraceFormer 的 `0.954117` 是冻结完整系统在 24 序列验证集上的独立复评结果，不能改写成官方测试成绩。其实际图保存在 `public/images/traceformer-*.png`。
 

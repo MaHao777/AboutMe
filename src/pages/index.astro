@@ -1,5 +1,5 @@
 ---
-import { ArrowDown, ArrowUpRight } from '@lucide/astro';
+import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArtStudy from '../components/ArtStudy.astro';
 import ProfileStrip from '../components/ProfileStrip.astro';
@@ -14,25 +14,19 @@ const { presentation } = getSiteData(locale);
 <BaseLayout title={t('首页', 'Home')} description={t('马浩的研究、工程作品与生活笔记。波前数据平台、条纹锁定、微弱目标检测与个人工具。', 'Ma Hao’s research, engineering projects, and writing on everyday life.')}>
   <section class="home-gallery container" aria-label={t('认识马浩', 'Meet Ma Hao')}>
     <div class="home-masthead">
-      <p class="masthead-eyebrow hero-arrive"><span></span>{t('马浩的个人宇宙', 'THE PERSONAL UNIVERSE OF MA HAO')}</p>
       <h1 class="name-display hero-arrive"><span class="welcome-line">Welcome to my</span><span class="cosmos-word">COSMOS<span class="cosmos-spark" aria-hidden="true">✦</span></span></h1>
-      <p class="masthead-caption hero-arrive">{t('在光与代码之间探索，也为日常留一片星空。', 'Exploring light and code. Making room for everyday wonder.')}</p>
-      <div class="cosmos-coordinate hero-arrive"><span>{presentation.home.caption}</span><span class="coordinate-line"></span><span>{t('两个轨道，同一个我。', 'TWO ORBITS. ONE UNIVERSE.')}</span></div>
+      <p class="masthead-caption hero-arrive">{presentation.home.caption}</p>
     </div>
-    <div class="gallery-guide"><span>{t('选择一条轨道，开始探索', 'CHOOSE AN ORBIT TO EXPLORE')}</span><ArrowDown size={14} stroke-width={1.3} /></div>
     <div class="entry-gallery">
       <a class="gallery-entry gallery-work hero-arrive" href={localePath('/work', locale)}>
-        <span class="entry-index"><span class="orbit-dot"></span>ORBIT 01<span class="entry-type">{t('向外探索', 'THE OUTER WORLD')}</span></span>
         <ArtStudy kind="work" id="home-work" />
-        <div class="entry-title"><div><span>RESEARCH & CREATION</span><h2>{presentation.home.work}</h2><p>{t('让好奇心成为可运行的作品。', 'Turning curiosity into things that work.')}</p></div><span class="round-arrow"><ArrowUpRight size={25} stroke-width={1.3} /></span></div>
+        <div class="entry-title"><h2>{presentation.home.work}</h2><span class="round-arrow"><ArrowUpRight size={25} stroke-width={1.3} /></span></div>
       </a>
       <a class="gallery-entry gallery-life hero-arrive" href={localePath('/life', locale)}>
-        <span class="entry-index"><span class="orbit-dot"></span>ORBIT 02<span class="entry-type">{t('向内漫游', 'THE INNER WORLD')}</span></span>
         <ArtStudy kind="life" id="home-life" />
-        <div class="entry-title"><div><span>LIFE & REFLECTIONS</span><h2>{presentation.home.life}</h2><p>{t('收集日常里微小而明亮的瞬间。', 'Collecting the small, bright moments of life.')}</p></div><span class="round-arrow"><ArrowUpRight size={25} stroke-width={1.3} /></span></div>
+        <div class="entry-title"><h2>{presentation.home.life}</h2><span class="round-arrow"><ArrowUpRight size={25} stroke-width={1.3} /></span></div>
       </a>
     </div>
   </section>
   <ProfileStrip />
-  <div class="home-closing container"><span class="closing-star" aria-hidden="true">✦</span><p>{t('保持好奇，继续环游。', 'Stay curious. Keep orbiting.')}</p><span class="closing-line"></span><span>ENDLESS CURIOSITY</span></div>
 </BaseLayout>
