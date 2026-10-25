@@ -75,7 +75,7 @@ published: false
 
 ## 信息层次与视觉
 
-首页使用双入口画廊构图，Professional 用带细密星环和云带的冰蓝行星，Personal 用带地形、陨石坑和极冠的暖色岩质行星。两颗球体的直径和画布尺寸一致，卫星沿固定轨道绕行。两者共用导航、字体、组件与深浅主题，通过 `BaseLayout` 的 `section` 设置不同颜色。入口页短文案集中在 `src/data/presentation.ts`。
+网站使用 COSMOS「个人宇宙」视觉：午夜蓝星空、冰蓝研究轨道、香槟金生活轨道，以及暖白纸面浅色主题。首次访问默认深色，之后记住手动选择。首页以分层的欢迎标题、COSMOS 字标和双行星入口构成；细星轨、静态星图与柔和光晕由 CSS 和 `CosmicBackdrop.astro` 绘制，不依赖外部图片、字体或额外动画循环。Professional 用带细密星环和云带的冰蓝行星，Personal 用带地形、陨石坑和极冠的暖色岩质行星。两颗球体的直径和画布尺寸一致，卫星沿固定轨道绕行。两者共用导航、字体、组件与深浅主题，通过 `BaseLayout` 的 `section` 设置不同颜色。入口页短文案集中在 `src/data/presentation.ts`；首页的主题引导文案在 `src/pages/index.astro`。
 
 首页用居中的欢迎标题、双入口画廊和基本信息栏；Professional 页继续展示代表成果。内容按三层呈现：第一层显示入口标题与成果；第二层在项目卡片内展开摘要、个人工作，背景、奖项和技能也默认折叠；第三层跳转详情，解释问题、方法、限制和图片。展开使用 HTML `details`，不需要客户端脚本。Professional 页的代表成果摘要在 `src/data/profile.ts` 的 `featuredResults` 中管理。
 
@@ -135,5 +135,7 @@ published: false
 ## 设计与实现
 
 使用 Astro 静态输出、TypeScript、Tailwind CSS 4、MDX 与 Lucide 图标。主题切换记住选择，`Motion.astro` 使用原生 IntersectionObserver 实现一次性滚动入场。`ArtStudy.astro` 在 JavaScript 未启用或 WebGL 不可用时显示静态 SVG 备用图；支持 WebGL 时，`planetScene.ts` 用 Three.js 绘制有纹理和光照的球体、固定轨道与绕行卫星。三维首帧完成后淡入画布，备用图不参与淡入；包含行星的页面在跨页导航时跳过截图叠加过渡，避免旧图闪现和重影。场景离开视口或页面隐藏时暂停，`prefers-reduced-motion` 下保持静止。两种图形均是装饰，不是项目实测图。深浅主题与移动端布局均由同一套样式支持。
+
+站内导航使用 Astro `ClientRouter`，保留行星画布与旋转进度。每种行星最多缓存一个场景，离开入口页后暂停，返回时按新布局调整尺寸并继续绘制。纹理预先保存于 `public/textures/` 的无损 WebP 中，像素与原先的程序生成结果一致，切页时不再执行地形、陨石坑与云带的逐像素计算。主题、语言切换、滚动入场和栏目展开在每次客户端导航后重新绑定；关闭 JavaScript 时仍使用普通链接和 SVG 备用图。
 
 `HoverDisclosure.astro` 统一管理两个入口页下方的补充栏目：桌面鼠标移入展开、离开收回，使用原生 Web Animations API 平滑改变高度，并配合内容淡入、淡出与加号旋转。快速移入移出会从当前高度继续动画。触屏通过点击切换，键盘聚焦可展开并保持内部链接可用；系统开启减少动态效果时直接切换。未启用 JavaScript 时仍可使用原生 `details` 点击展开。

@@ -8,5 +8,6 @@ const t = translator(locale);
 ---
 
 <footer class="site-footer container">
-  <div class="footer-bottom"><span>© {new Date().getFullYear()} {t(profile.name, profile.englishName)}</span><div class="footer-links"><a href={localePath('/work', locale)}>{t('研究与作品', 'Work')}</a><a href={localePath('/life', locale)}>{t('生活与文字', 'Life')}</a>{links.published && <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight size={13} /></a>}</div><span class="footer-signature">{t('用心记录与创造。', 'Made with care.')}</span></div>
+  <div class="footer-orbit"><span>MA HAO / COSMOS</span><span>{t('探索 · 创造 · 记录', 'EXPLORE · CREATE · REFLECT')}</span></div>
+  <div class="footer-bottom"><span>© {new Date().getFullYear()} {t(profile.name, profile.englishName)}</span><div class="footer-links"><a href={localePath('/work', locale)}>{t('研究与作品', 'Work')}</a><a href={localePath('/life', locale)}>{t('生活与文字', 'Life')}</a>{links.published && <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight size={13} /></a>}{profile.email && <a href={`mailto:${profile.email}`}>{t('联系', 'Email')} <ArrowUpRight size={13} /></a>}</div><span class="footer-signature">{t('用心记录与创造。', 'Made with care.')}</span></div>
 </footer>

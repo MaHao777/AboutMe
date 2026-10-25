@@ -16,8 +16,12 @@ const { id, number, title, hint } = Astro.props;
 <script>
   const hover = matchMedia('(hover: hover) and (pointer: fine)');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const bound = new WeakSet<HTMLDetailsElement>();
+  let cleanup: (() => void)[] = [];
 
-  document.querySelectorAll<HTMLDetailsElement>('[data-hover-disclosure]').forEach((details) => {
+  const initializeDisclosures = () => document.querySelectorAll<HTMLDetailsElement>('[data-hover-disclosure]').forEach((details) => {
+    if (bound.has(details)) return;
+    bound.add(details);
     const summary = details.querySelector('summary')!;
     const content = details.querySelector<HTMLElement>('[data-disclosure-content]')!;
     let animation: Animation | undefined;
@@ -93,6 +97,17 @@ const { id, number, title, hint } = Astro.props;
       keyboardFocus = false;
       if (!hovered) setExpanded(false);
     });
-    reducedMotion.addEventListener('change', () => { animation?.finish(); });
+    const finishAnimation = () => { animation?.finish(); };
+    reducedMotion.addEventListener('change', finishAnimation);
+    cleanup.push(() => {
+      animation?.cancel();
+      reducedMotion.removeEventListener('change', finishAnimation);
+    });
+  });
+  initializeDisclosures();
+  document.addEventListener('astro:page-load', initializeDisclosures);
+  document.addEventListener('astro:before-swap', () => {
+    cleanup.forEach((dispose) => dispose());
+    cleanup = [];
   });
 </script>

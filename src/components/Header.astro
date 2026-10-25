@@ -17,8 +17,9 @@ const links = [
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href={localePath('/', locale)} aria-label={t('返回首页', 'Back to home')}>
+      <svg class="brand-orbit" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="8" stroke="currentColor" /><ellipse cx="20" cy="20" rx="18" ry="7" transform="rotate(-35 20 20)" stroke="currentColor" /><circle cx="33" cy="10" r="2.5" fill="currentColor" /></svg>
       <span class="brand-mark">{t(profile.name, profile.englishName)}</span>
-      <span class="brand-name">{t('光电与软件', 'OPTICS & SOFTWARE')}</span>
+      <span class="brand-name">MY COSMOS</span>
     </a>
     <nav class="primary-nav" aria-label={t('主导航', 'Main navigation')}>
       {links.map((link) => <a href={localePath(link.href, locale)} class:list={['nav-link', { active: link.active }]} aria-current={link.active ? 'page' : undefined}>{link.label}</a>)}
@@ -32,23 +33,38 @@ const links = [
         GitHub <ArrowUpRight size={15} stroke-width={1.8} />
       </a>
       {profile.email && <a class="header-contact" href={`mailto:${profile.email}`} aria-label={t(`通过邮件联系：${profile.email}`, `Email me: ${profile.email}`)}><span class="contact-address">{profile.email}</span><span class="contact-label">{t('联系', 'Email')}</span><ArrowUpRight size={15} stroke-width={1.8} /></a>}
-      <a class="language-toggle" href={localePath(Astro.url.pathname, locale === 'zh' ? 'en' : 'zh')} hreflang={locale === 'zh' ? 'en' : 'zh-CN'} aria-label={t('切换到英文', 'Switch to Chinese')} title={t('切换到英文', 'Switch to Chinese')} data-language-switch>{t('英文', 'Chinese')}</a>
+      <a class="language-toggle" href={localePath(Astro.url.pathname, locale === 'zh' ? 'en' : 'zh')} hreflang={locale === 'zh' ? 'en' : 'zh-CN'} aria-label={t('切换到英文', 'Switch to Chinese')} title={t('切换到英文', 'Switch to Chinese')} data-language-switch>{t('EN', '中文')}</a>
     </div>
   </div>
 </header>
 
 <script>
-  const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
-  const updateLabel = () => {
-    if (toggle) toggle.setAttribute('aria-label', (document.documentElement.dataset.theme === 'dark' ? toggle.dataset.lightLabel : toggle.dataset.darkLabel) ?? '');
-  };
-  updateLabel();
-  toggle?.addEventListener('click', () => {
-    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem('theme', next); } catch { /* Theme still works without storage. */ }
+  const bound = new WeakSet<Element>();
+  const initializeHeader = () => {
+    const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
+    const updateLabel = () => {
+      if (toggle) toggle.setAttribute('aria-label', (document.documentElement.dataset.theme === 'dark' ? toggle.dataset.lightLabel : toggle.dataset.darkLabel) ?? '');
+    };
     updateLabel();
-  });
-  const languageSwitch = document.querySelector<HTMLAnchorElement>('[data-language-switch]');
-  if (languageSwitch) languageSwitch.href += location.search + location.hash;
+    if (toggle && !bound.has(toggle)) {
+      bound.add(toggle);
+      toggle.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next === 'dark' ? '#0c111b' : '#f7f5ef');
+        try { localStorage.setItem('theme', next); } catch { /* Theme still works without storage. */ }
+        updateLabel();
+      });
+    }
+    const languageSwitch = document.querySelector<HTMLAnchorElement>('[data-language-switch]');
+    if (languageSwitch && !bound.has(languageSwitch)) {
+      bound.add(languageSwitch);
+      const path = languageSwitch.pathname;
+      const updateDestination = () => { languageSwitch.href = path + location.search + location.hash; };
+      updateDestination();
+      languageSwitch.addEventListener('click', updateDestination);
+    }
+  };
+  initializeHeader();
+  document.addEventListener('astro:page-load', initializeHeader);
 </script>

@@ -9,7 +9,7 @@ const palette = kind === 'work'
   : { light: '#f5d691', dark: '#a96932', orbit: '#b58b51', moon: '#fff0c8' };
 ---
 
-<div class:list={['art-study', `art-${kind}`]} data-planet-scene data-kind={kind} aria-hidden="true">
+<div class:list={['art-study', `art-${kind}`]} data-planet-scene data-kind={kind} transition:persist={`planet-${kind}`} aria-hidden="true">
   <svg class="planet-fallback" viewBox="0 0 700 600" fill="none">
     <defs>
       <radialGradient id={gradientId} cx="32%" cy="26%" r="76%">
@@ -50,25 +50,50 @@ const palette = kind === 'work'
 </div>
 
 <script>
-  import { mountPlanetScene } from '../lib/planetScene';
+  import { mountPlanetScene, type PlanetScene } from '../lib/planetScene';
 
   type PlanetManager = { mount: () => void; dispose: () => void };
   const globalWindow = window as Window & { __cosmosPlanetManager?: PlanetManager };
 
   if (!globalWindow.__cosmosPlanetManager) {
-    const scenes = new Map<HTMLElement, () => void>();
+    // Keep at most one scene per orbit, including when its host leaves the page.
+    // Returning from a detail page restores the canvas, textures, and rotation.
+    const scenes = new Map<string, { host: HTMLElement; scene: Promise<PlanetScene> }>();
     const mount = () => {
       document.querySelectorAll<HTMLElement>('[data-planet-scene]').forEach((host) => {
-        if (!scenes.has(host)) scenes.set(host, mountPlanetScene(host, host.dataset.kind === 'life' ? 'life' : 'work'));
+        const kind = host.dataset.kind === 'life' ? 'life' : 'work';
+        const cached = scenes.get(kind);
+        if (cached) {
+          if (cached.host !== host) host.replaceWith(cached.host);
+          void cached.scene.then((scene) => cached.host.isConnected ? scene.refresh() : scene.pause());
+        } else {
+          const scene = mountPlanetScene(host, kind);
+          scenes.set(kind, { host, scene });
+          void scene.then((controller) => { if (!host.isConnected) controller.pause(); });
+        }
       });
     };
+    const pause = () => scenes.forEach(({ scene }) => { void scene.then((controller) => controller.pause()); });
     const dispose = () => {
-      scenes.forEach((cleanup) => cleanup());
+      scenes.forEach(({ scene }) => { void scene.then((controller) => controller.dispose()); });
       scenes.clear();
     };
     globalWindow.__cosmosPlanetManager = { mount, dispose };
+    document.addEventListener('astro:after-swap', mount);
     document.addEventListener('astro:page-load', mount);
-    document.addEventListener('astro:before-swap', dispose);
+    document.addEventListener('astro:before-swap', pause);
+    window.addEventListener('pagehide', pause);
+    window.addEventListener('pageshow', mount);
+    if (import.meta.hot) import.meta.hot.dispose(() => {
+      dispose();
+      document.removeEventListener('astro:after-swap', mount);
+      document.removeEventListener('astro:page-load', mount);
+      document.removeEventListener('astro:before-swap', pause);
+      document.removeEventListener('DOMContentLoaded', mount);
+      window.removeEventListener('pagehide', pause);
+      window.removeEventListener('pageshow', mount);
+      delete globalWindow.__cosmosPlanetManager;
+    });
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });
     else mount();
   }
