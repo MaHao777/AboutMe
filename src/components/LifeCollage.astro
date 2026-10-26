@@ -1,0 +1,42 @@
+---
+import { ArrowUpRight, Shuffle } from '@lucide/astro';
+import { getPublicNotes } from '../lib/content';
+import { getSiteData } from '../data/localized';
+import { getLocale, localePath, translator, contentSlug } from '../lib/i18n';
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const notes = await getPublicNotes(locale);
+const { interests } = getSiteData(locale);
+const diary = notes.find((note) => contentSlug(note.id) === 'why-i-write-diaries') ?? notes[0];
+const music = interests.find((item) => item.number === '01' && item.published);
+---
+<div class="life-collage" data-reveal>
+  {diary && <a class="life-paper" href={diary.data.externalUrl ?? localePath(`/notes/${contentSlug(diary.id)}/`, locale)} target={diary.data.externalUrl ? '_blank' : undefined} rel={diary.data.externalUrl ? 'noopener noreferrer' : undefined}><span class="paper-pin" aria-hidden="true"></span><span class="paper-date">{diary.data.date.toISOString().slice(0, 10).replaceAll('-', '.')}</span><h3>{t('给日常，\n留一页。', 'A page for\nthe everyday.').split('\n').map((line, i) => <>{i > 0 && <br />}{line}</>)}</h3><p>{diary.data.description}</p><span class="paper-read">{diary.data.title}<ArrowUpRight size={18} /></span><img src="/images/journal-leaf.svg" alt="" width="140" height="140" loading="lazy" /></a>}
+  <div class="life-side">
+    {music && <div class="life-music"><h3>{music.title}</h3><p>{music.description}</p><div class="piano-keys" aria-hidden="true">{Array.from({ length: 11 }, (_, i) => <span class:list={{ 'with-black': ![2, 6, 9].includes(i) }}></span>)}</div></div>}
+    {notes.length > 0 && <div class="life-discovery"><span class="discovery-asterisk" aria-hidden="true">✳</span><div><a data-random-note href={notes[0].data.externalUrl ?? localePath(`/notes/${contentSlug(notes[0].id)}/`, locale)} target="_blank" rel="noopener noreferrer" data-notes={JSON.stringify(notes.map((note) => note.data.externalUrl ?? localePath(`/notes/${contentSlug(note.id)}/`, locale)))}>{t('随机读一篇', 'Read something at random')}<Shuffle size={15} /></a></div></div>}
+  </div>
+</div>
+<script>
+  const bound = new WeakSet<Element>();
+  function initializeDiscovery() {
+    document.querySelectorAll<HTMLAnchorElement>('[data-random-note]').forEach((link) => {
+      if (bound.has(link)) return;
+      bound.add(link);
+      const notes: string[] = JSON.parse(link.dataset.notes ?? '[]');
+      let previous = -1;
+      const choose = () => {
+        if (!notes.length) return;
+        let index = Math.floor(Math.random() * notes.length);
+        if (notes.length > 1 && index === previous) index = (index + 1) % notes.length;
+        previous = index;
+        link.href = notes[index];
+      };
+      choose();
+      link.addEventListener('click', choose);
+      link.addEventListener('auxclick', choose);
+    });
+  }
+  initializeDiscovery();
+  document.addEventListener('astro:page-load', initializeDiscovery);
+</script>

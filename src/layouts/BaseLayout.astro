@@ -5,6 +5,7 @@ import Motion from '../components/Motion.astro';
 import CosmicBackdrop from '../components/CosmicBackdrop.astro';
 import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
+import '../styles/editorial.css';
 import { getLocale, localePath, translator } from '../lib/i18n';
 
 interface Props {
@@ -25,7 +26,7 @@ const ogImage = new URL(image === '/og-default.svg' ? defaultImage : image, Astr
 ---
 
 <!doctype html>
-<html lang={t('zh-CN', 'en')} data-section={section} data-theme="dark">
+<html lang={t('zh-CN', 'en')} data-section={section} data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -36,7 +37,7 @@ const ogImage = new URL(image === '/og-default.svg' ? defaultImage : image, Astr
     <link rel="alternate" hreflang="zh-CN" href={new URL(localePath(Astro.url.pathname, 'zh'), canonical)} />
     <link rel="alternate" hreflang="en" href={new URL(localePath(Astro.url.pathname, 'en'), canonical)} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#0c111b" />
+    <meta name="theme-color" content="#f5f3ee" />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content={t('马浩', 'Ma Hao')} />
     <meta property="og:locale" content={t('zh_CN', 'en_US')} />
@@ -52,12 +53,12 @@ const ogImage = new URL(image === '/og-default.svg' ? defaultImage : image, Astr
         window.__cosmosThemeBound = true;
         try {
           const saved = localStorage.getItem('theme');
-          document.documentElement.dataset.theme = saved === 'light' ? 'light' : 'dark';
+          document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light';
         } catch {
-          document.documentElement.dataset.theme = 'dark';
+          document.documentElement.dataset.theme = 'light';
         }
         const updateThemeColor = () => document.querySelector('meta[name="theme-color"]')?.setAttribute('content',
-          document.documentElement.dataset.theme === 'dark' ? '#0c111b' : '#f7f5ef');
+          document.documentElement.dataset.theme === 'dark' ? '#101c29' : '#f5f3ee');
         // Copy the current choice before swapping HTML, including when storage is unavailable.
         document.addEventListener('astro:before-swap', (event) => {
           event.newDocument.documentElement.dataset.theme = document.documentElement.dataset.theme;

@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { ArrowUpRight } from '@lucide/astro';
 import { getLocale, localePath, translator, contentSlug } from '../lib/i18n';
+import { getProjectStories } from '../data/stories';
 
 interface Props { project: CollectionEntry<'projects'>; index?: number }
 const { project } = Astro.props;
@@ -9,6 +10,7 @@ const { title, description, category, outcome, highlights, cover, coverAlt, cove
 const locale = getLocale(Astro.url.pathname);
 const t = translator(locale);
 const href = localePath(`/projects/${contentSlug(project.id)}/`, locale);
+const story = getProjectStories(locale).find((item) => item.slug === contentSlug(project.id));
 ---
 
 <article class="project-card" data-reveal>
@@ -19,6 +21,7 @@ const href = localePath(`/projects/${contentSlug(project.id)}/`, locale);
   <div class="project-info">
     <p class="project-outcome"><strong>{outcome}</strong></p>
     <h3><a href={href}>{title}</a></h3>
+    <p class="project-teaser">{story?.description ?? description}</p>
     <details class="project-disclosure">
       <summary>{t('项目概览', 'Project overview')}<span aria-hidden="true">＋</span></summary>
       <div><p class="project-description">{description}</p><p class="project-role">{role}</p>

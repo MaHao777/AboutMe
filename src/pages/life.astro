@@ -1,7 +1,7 @@
 ---
 import { ArrowUpRight } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ArtStudy from '../components/ArtStudy.astro';
+import LifeCollage from '../components/LifeCollage.astro';
 import HoverDisclosure from '../components/HoverDisclosure.astro';
 
 import { getPublicNotes, formatDate } from '../lib/content';
@@ -14,10 +14,10 @@ const { profile, interests, timeline, presentation } = getSiteData(locale);
 ---
 
 <BaseLayout title={t('生活与文字', 'Life & Writing')} description={t('马浩的生活拾页：音乐、运动、影像与经过整理的公开笔记。', 'Pages from everyday life: music, sport, photography, and public writing.')} section="life">
-  <section class="collection-hero life-hero container">
+  <section class="editorial-page-hero life-page-hero container">
     <div class="collection-copy hero-arrive"><h1>{presentation.life.heading}</h1><div class="hero-bottom"><p>{presentation.life.caption}</p><a class="circle-link" href="#notes" aria-label={t('阅读个人文章', 'Read personal writing')}><ArrowUpRight size={24} stroke-width={1.3} /></a></div></div>
-    <div class="hero-artwork hero-arrive"><ArtStudy kind="life" id="life-hero" /></div>
   </section>
+  <section class="container life-page-collage" aria-label={t('日常拾页', 'Everyday fragments')}><LifeCollage /></section>
 
   <section class="section-space container notes-section" id="notes">
     <div class="collection-heading" data-reveal><h2>{presentation.life.notes}</h2></div>

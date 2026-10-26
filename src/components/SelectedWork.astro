@@ -1,0 +1,29 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import { getPublicProjects } from '../lib/content';
+import { getProjectStories } from '../data/stories';
+import { getLocale, localePath, translator, contentSlug } from '../lib/i18n';
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const projects = await getPublicProjects(locale);
+const stories = getProjectStories(locale).flatMap((story) => {
+  const project = projects.find((item) => contentSlug(item.id) === story.slug);
+  return project ? [{ ...story, project, href: localePath(`/projects/${story.slug}/`, locale) }] : [];
+});
+---
+<section class="selected-section" id="selected-work" aria-labelledby="selected-heading">
+  <div class="container">
+    <div class="editorial-section-head" data-reveal>
+      <h2 id="selected-heading">{t('作品选集', 'Selected work')}</h2>
+      <a class="editorial-link" href={localePath('/work#projects', locale)}>{t('全部研究与作品', 'All research & projects')} <ArrowUpRight size={18} /></a>
+    </div>
+    <div class="selected-stories">
+      {stories.map((story, index) => <article class:list={['selected-story', `story-${story.slug}`, { 'story-lead': index === 0 }]} data-reveal>
+        <a class="story-image" href={story.href} title={story.caption} aria-label={t(`探索${story.project.data.title}`, `Explore ${story.project.data.title}`)}>
+          <div class="story-image-inner"><img src={story.image} alt={story.project.data.gallery.find((image) => image.src === story.image)?.alt ?? story.project.data.coverAlt} width={story.width} height={story.height} loading="lazy" /></div>
+        </a>
+        <div class="story-copy"><p class="story-project-name">{story.project.data.title}</p><h3><a href={story.href}>{story.question.split('\n').map((line, i) => <>{i > 0 && <br />}{line}</>)}</a></h3><p>{story.description}</p><div class="story-result"><span>{story.result}</span></div><a class="editorial-link" href={story.href}>{t('项目详情', 'Read project')} <ArrowUpRight size={17} /></a></div>
+      </article>)}
+    </div>
+  </div>
+</section>

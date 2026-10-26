@@ -1,0 +1,20 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import { getSiteData } from '../data/localized';
+import { getLocale, localePath, translator } from '../lib/i18n';
+const locale = getLocale(Astro.url.pathname);
+const t = translator(locale);
+const { experiences, timeline } = getSiteData(locale);
+const internship = experiences.find((item) => item.href.includes('vehicle-communication') && item.published);
+const research = experiences.find((item) => item.title === t('科研助理与光电项目实践', 'Research and optical engineering') && item.published);
+const now = timeline.find((item) => item.year === t('现在', 'Now') && item.published);
+const stages = [
+  ...(internship ? [{ period: t('企业实践', 'IN THE FIELD'), title: t('让代码走出屏幕。', 'Taking code into the field.'), description: internship.description, detail: internship.outcomes.join(' · '), href: internship.href, image: '/images/project-vehicle.png', alt: t('车辆通信业务架构', 'Vehicle communication architecture') }] : []),
+  ...(research ? [{ period: '2026', title: t('回到光，继续追问。', 'Back to light, and new questions.'), description: research.description, detail: research.outcomes.join(' · '), href: research.href, image: '/images/event-optics-interface.png', alt: t('波前数据平台实际界面', 'Actual wavefront platform interface') }] : []),
+  ...(now ? [{ period: t('现在', 'Now'), title: t('在研究与创造之间。', 'Between research and making.'), description: now.description, detail: t('用独立复评检验模型，也用个人工具回应日常的小问题。', 'Independently evaluating models, and making personal tools for everyday problems.'), href: '/projects/traceformer/', image: '/images/traceformer-architecture.png', alt: t('TraceFormer 模型结构图', 'TraceFormer model architecture') }] : []),
+];
+---
+<section class="journey-section container" id="about" aria-labelledby="journey-heading">
+  <div class="journey-intro" data-reveal><h2 id="journey-heading">{t('探索轨迹', 'Along the way')}</h2><p>{t('苏州大学本科在读。从企业实践到光电研究，继续把想法做成作品。', 'An undergraduate at Soochow University, building projects through industry practice and optical research.')}</p></div>
+  <div class="journey-path" data-reveal>{stages.map((stage, index) => <details class="journey-stop" open={index === 0}><summary><span class="journey-dot" aria-hidden="true"></span><span><small>{stage.period}</small><strong>{stage.title}</strong></span><span class="journey-plus" aria-hidden="true">+</span></summary><div class="journey-content"><p>{stage.description}</p><p>{stage.detail}</p><a href={localePath(stage.href, locale)}><img src={stage.image} alt={stage.alt} loading="lazy" width="480" height="260" /><span>{t('查看相关作品', 'Explore related work')}<ArrowUpRight size={16} /></span></a></div></details>)}</div>
+</section>

@@ -50,7 +50,7 @@ const links = [
       toggle.addEventListener('click', () => {
         const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
         document.documentElement.dataset.theme = next;
-        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next === 'dark' ? '#0c111b' : '#f7f5ef');
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next === 'dark' ? '#101c29' : '#f5f3ee');
         try { localStorage.setItem('theme', next); } catch { /* Theme still works without storage. */ }
         updateLabel();
       });

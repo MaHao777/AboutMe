@@ -1,7 +1,6 @@
 ---
 import { ArrowUpRight, Download, GitBranch } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ArtStudy from '../components/ArtStudy.astro';
 import ResultStrip from '../components/ResultStrip.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import HoverDisclosure from '../components/HoverDisclosure.astro';
@@ -17,12 +16,11 @@ const { profile, experiences, presentation, skillGroups, achievements, scholarsh
 ---
 
 <BaseLayout title={t('研究与作品', 'Research & Projects')} description={t('马浩的研究与工程成果：波前数据平台、条纹闭环锁定、TraceFormer 微弱目标检测与车辆通信软件。', 'Research and engineering: wavefront data, fringe control, event-based detection, and vehicle communication.')} section="work">
-  <section class="collection-hero work-hero container">
+  <section class="editorial-page-hero container">
     <div class="collection-copy hero-arrive">
-      <h1>{presentation.work.heading[0]}<br /><span>{presentation.work.heading[1]}</span></h1>
+      <h1>{presentation.work.heading[0]}<br /><em>{presentation.work.heading[1]}</em></h1>
       <div class="hero-bottom"><p>{presentation.work.caption}</p><a class="circle-link" href="#projects" aria-label={t('浏览研究与项目', 'Browse research and projects')}><ArrowUpRight size={24} stroke-width={1.3} /></a></div>
     </div>
-    <div class="hero-artwork hero-arrive"><ArtStudy kind="work" id="work-hero" /></div>
   </section>
   <ResultStrip />
 
