@@ -1,7 +1,6 @@
 ---
 import { ArrowUpRight, Download, GitBranch } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ResultStrip from '../components/ResultStrip.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import HoverDisclosure from '../components/HoverDisclosure.astro';
 
@@ -22,7 +21,6 @@ const { profile, experiences, presentation, skillGroups, achievements, scholarsh
       <div class="hero-bottom"><p>{presentation.work.caption}</p><a class="circle-link" href="#projects" aria-label={t('浏览研究与项目', 'Browse research and projects')}><ArrowUpRight size={24} stroke-width={1.3} /></a></div>
     </div>
   </section>
-  <ResultStrip />
 
   <section class="section-space container" id="projects">
     <div class="collection-heading" data-reveal><h2>{presentation.work.projects}</h2></div>

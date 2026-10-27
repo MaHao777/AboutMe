@@ -13,7 +13,7 @@ const points = Array.from({ length: 1080 }, (_, i) => {
 <div class="event-field" data-event-field>
   <div class="field-visual">
     <svg class="field-wave" viewBox="0 0 500 420" fill="none" aria-hidden="true">
-      {points.map(point => <circle cx={point.x} cy={point.y} r="1.5" fill={point.warm ? '#e8a582' : '#9cc5da'} opacity=".7" />)}
+      {points.map(point => <circle cx={point.x} cy={point.y} r="1.5" fill={point.warm ? 'var(--field-warm)' : 'var(--field-cool)'} opacity=".7" />)}
     </svg>
     <canvas tabindex="-1" role="button" aria-label={t('互动光场：移动拨动，点击产生涟漪。键盘方向键移动，空格或回车触发。此为交互示意。', 'Interactive light field: move to bend, click for ripples. Arrow keys move; Space or Enter sends a ripple. An interactive illustration.')} aria-describedby="field-description"></canvas>
   </div>

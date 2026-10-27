@@ -32,6 +32,10 @@ export function createEventField(field: HTMLElement) {
   let disposed = false;
   let previousValid = false;
   let eventView = false;
+  const readPalette = () => document.documentElement.dataset.theme === 'light'
+    ? { warm: '#b36b44', cool: '#38647d', positive: '#b54f2d', negative: '#285f9d', line: '#315c7228', faint: '#315c7210' }
+    : { warm: '#e8a582', cool: '#9cc5da', positive: '#f0a780', negative: '#86c2e7', line: '#a1c7db24', faint: '#a1c7db0b' };
+  let palette = readPalette();
 
   const render = (delta: number) => {
     if (!width || !height) return;
@@ -78,14 +82,14 @@ export function createEventField(field: HTMLElement) {
         context.moveTo(previous.x, previous.y); context.lineTo(current.x, current.y);
       }
     }
-    context.strokeStyle = eventView ? '#a1c7db0b' : '#a1c7db24';
+    context.strokeStyle = eventView ? palette.faint : palette.line;
     context.lineWidth = .6;
     context.stroke();
 
     for (const point of projected) {
       const edge = 1 - Math.hypot(point.point.x, point.point.y) * .33;
       context.globalAlpha = eventView ? (motion.matches && Math.abs(point.z) > .1 ? .8 : .12) : .45 + edge * .45;
-      context.fillStyle = point.z > .09 ? '#e8a582' : '#9cc5da';
+      context.fillStyle = point.z > .09 ? palette.warm : palette.cool;
       const size = eventView ? .8 : 1.1 + (point.z + .25) * .65;
       context.beginPath(); context.arc(point.x, point.y, Math.max(.6, size), 0, Math.PI * 2); context.fill();
       if (!eventView && previousValid && Math.abs(point.velocity) > .8) {
@@ -96,7 +100,7 @@ export function createEventField(field: HTMLElement) {
     for (const signal of signals) {
       signal.age += delta;
       context.globalAlpha = Math.max(0, 1 - signal.age / .8) * (eventView ? .95 : .4);
-      context.fillStyle = signal.positive ? '#f0a780' : '#86c2e7';
+      context.fillStyle = signal.positive ? palette.positive : palette.negative;
       context.fillRect(signal.x, signal.y, signal.size, signal.size);
     }
     context.globalAlpha = 1;
@@ -175,6 +179,8 @@ export function createEventField(field: HTMLElement) {
     else { pause(); pointer.active = false; }
   }, { threshold: .08 });
   const observer = new ResizeObserver(resize);
+  const themeObserver = new MutationObserver(() => { palette = readPalette(); render(0); });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   observer.observe(canvas); viewport.observe(field);
   canvas.tabIndex = 0; controls.hidden = false;
   field.classList.add('field-ready');
@@ -188,7 +194,7 @@ export function createEventField(field: HTMLElement) {
   motion.addEventListener('change', preference);
 
   return () => {
-    disposed = true; pause(); observer.disconnect(); viewport.disconnect();
+    disposed = true; pause(); observer.disconnect(); viewport.disconnect(); themeObserver.disconnect();
     canvas.removeEventListener('pointermove', move); canvas.removeEventListener('pointerdown', press);
     canvas.removeEventListener('pointerleave', leave); canvas.removeEventListener('blur', leave); canvas.removeEventListener('keydown', keydown);
     buttons.forEach(button => button.removeEventListener('click', setView));

@@ -6,17 +6,16 @@ import { getProjectStories } from '../data/stories';
 
 interface Props { project: CollectionEntry<'projects'>; index?: number }
 const { project } = Astro.props;
-const { title, description, category, outcome, highlights, cover, coverAlt, coverWidth, coverHeight, role } = project.data;
+const { title, description, outcome, highlights, cover, coverAlt, coverWidth, coverHeight, role } = project.data;
 const locale = getLocale(Astro.url.pathname);
 const t = translator(locale);
 const href = localePath(`/projects/${contentSlug(project.id)}/`, locale);
 const story = getProjectStories(locale).find((item) => item.slug === contentSlug(project.id));
 ---
 
-<article class="project-card" data-reveal>
+<article class:list={['project-card', { 'project-card-flagship': contentSlug(project.id) === 'event-optics' }]} data-reveal>
   <a class="project-art" href={href} aria-label={t(`查看${title}项目详情`, `View ${title}`)}>
-    {cover && <img src={cover} alt={coverAlt} loading="lazy" width={coverWidth ?? 1000} height={coverHeight ?? 620} />}
-    <span class="project-category">{category}</span>
+    {(story?.cover ?? cover) && <img src={story?.cover ?? cover} alt={story?.coverAlt ?? coverAlt} loading="lazy" width={story ? 1600 : coverWidth ?? 1000} height={story ? 1000 : coverHeight ?? 620} />}
   </a>
   <div class="project-info">
     <p class="project-outcome"><strong>{outcome}</strong></p>

@@ -12,17 +12,14 @@ import { getProjectStories } from '../data/stories';
 import { getLocale, localePath, translator, contentSlug } from '../lib/i18n';
 const locale = getLocale(Astro.url.pathname);
 const t = translator(locale);
-const { profile, achievements, featuredResults } = getSiteData(locale);
+const { profile } = getSiteData(locale);
 const projects = await getPublicProjects(locale);
 const selected = new Set(getProjectStories(locale).map(story => story.slug));
 const moreProjects = projects.filter(project => !selected.has(contentSlug(project.id)));
-const prize = achievements.find(item => item.published && item.href === '/projects/event-optics/');
-const fund = achievements.find(item => item.published && item.href?.includes('junzheng-fund'));
-const deployed = featuredResults.find(item => item.published && item.href.includes('vehicle-communication'));
 ---
 <BaseLayout title={t('首页', 'Home')} description={t('你好，我是马浩。把光学问题，写成可以运行的系统。探索事件视觉、工程作品与代码之外的生活。', 'Hi, I’m Ma Hao. Turning optical questions into working systems. Explore event vision, engineering, and life beyond code.')}>
-  <section class="editorial-hero container" aria-labelledby="intro-heading">
-    <div class="intro-grid">
+  <section class="editorial-hero" aria-labelledby="intro-heading">
+    <div class="intro-grid container">
       <div class="intro-copy hero-arrive">
         <p class="intro-greeting">{t('你好，我是马浩。', 'Hi, I’m Ma Hao.')}</p>
         <h1 id="intro-heading">{t('把光学问题，', 'Optical questions,')}<br />{t('写成', 'working ')}<em>{t('可以运行', 'systems.')}</em>{locale === 'zh' && <><br />的系统<span class="orange-period">。</span></>}</h1>
@@ -31,24 +28,16 @@ const deployed = featuredResults.find(item => item.published && item.href.includ
       </div>
       <div class="intro-art hero-arrive"><EventField /></div>
     </div>
-    <div class="hero-signoff"><span class="cosmos-signature">COSMOS<span aria-hidden="true">✳</span></span><a href="#selected-work" aria-label={t('向下探索代表作品', 'Scroll to selected work')}><ArrowDown size={20} /></a></div>
+    <div class="hero-signoff container"><span class="cosmos-signature">COSMOS<span aria-hidden="true">✳</span></span><a href="#selected-work" aria-label={t('向下探索代表作品', 'Scroll to selected work')}><ArrowDown size={20} /></a></div>
   </section>
   <SelectedWork />
   <section class="more-work container" aria-labelledby="more-work-heading">
     <div class="more-work-heading"><h2 id="more-work-heading">{t('更多作品', 'More work')}</h2></div>
-    <div class="more-work-list">{moreProjects.map(project => <a class="more-work-row" href={localePath(`/projects/${contentSlug(project.id)}/`, locale)} data-reveal>{project.data.cover && <img src={project.data.cover} alt={project.data.coverAlt} width="160" height="100" loading="lazy" />}<div><h3>{project.data.title}</h3><p>{project.data.description}</p></div><ArrowUpRight size={23} stroke-width={1.4} /></a>)}</div>
-  </section>
-  <section class="milestone-section container" aria-labelledby="milestone-heading" data-reveal>
-    <div class="milestone-label"><h2 id="milestone-heading">{t('沿途成果', 'Milestones')}</h2></div>
-    <div class="milestone-grid">
-      {prize && <a href={localePath(prize.href!, locale)}><strong>{t('一等奖', 'First Prize')}</strong><span>{t('光电设计竞赛东部区赛 · 团队作品', 'Optoelectronic Design · Eastern Region · team award')}</span><ArrowUpRight size={18} /></a>}
-      {fund && <a href={localePath(fund.href!, locale)}><strong>{t('莙政基金', 'Junzheng Fund')}</strong><span>{t('2026 年科研项目入选', 'Research project selected · 2026')}</span><ArrowUpRight size={18} /></a>}
-      {deployed && <a href={localePath(deployed.href, locale)}><strong>ROS 2</strong><span>{t('通信中转节点 · 实测上线', 'Communication relay · tested and deployed')}</span><ArrowUpRight size={18} /></a>}
-    </div>
+    <div class="more-work-list">{moreProjects.map(project => <a class="more-work-row" href={localePath(`/projects/${contentSlug(project.id)}/`, locale)} data-reveal><div><h3>{project.data.title}</h3><p>{project.data.description}</p></div><ArrowUpRight size={23} stroke-width={1.4} /></a>)}</div>
   </section>
   <Journey />
   <section class="beyond-section" aria-labelledby="beyond-heading"><div class="container"><div class="editorial-section-head" data-reveal><h2 id="beyond-heading">{t('生活与文字', 'Life & writing')}</h2><a class="editorial-link" href={localePath('/life', locale)}>{t('随便看看', 'Take a look')}<ArrowUpRight size={18} /></a></div><LifeCollage /></div></section>
   <section class="connect-section container" aria-labelledby="connect-heading" data-reveal>
-    <div class="connect-main"><h2 id="connect-heading">{t('很高兴，', 'Glad our paths')}<br />{t('在这里遇见你。', 'crossed here.')}</h2><div class="connect-links"><a href={links.github} target="_blank" rel="noopener noreferrer"><GitBranch size={18} />GitHub<ArrowUpRight size={18} /></a>{profile.email && <a href={`mailto:${profile.email}`}><Mail size={18} />{t('写封邮件', 'Say hello')}<ArrowUpRight size={18} /></a>}</div></div>
+    <div class="connect-main"><h2 id="connect-heading">{t('保持好奇。', 'Stay curious.')}</h2><div class="connect-links"><a href={links.github} target="_blank" rel="noopener noreferrer"><GitBranch size={18} />GitHub<ArrowUpRight size={18} /></a>{profile.email && <a href={`mailto:${profile.email}`}><Mail size={18} />{t('写封邮件', 'Say hello')}<ArrowUpRight size={18} /></a>}</div></div>
   </section>
 </BaseLayout>
