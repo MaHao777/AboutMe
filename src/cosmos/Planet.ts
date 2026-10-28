@@ -1,5 +1,6 @@
 import { Color, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, RingGeometry, SphereGeometry } from 'three';
 import type { PlanetData } from './universeData';
+import { PLANET_HALO_SCALE, PLANET_RING_OUTER_SCALE } from './orbits';
 
 export class Planet {
   readonly group = new Group();
@@ -12,10 +13,10 @@ export class Planet {
     this.mesh = new Mesh(new SphereGeometry(data.radius, 40, 28), new MeshStandardMaterial({ color: this.color, roughness: .85, metalness: .12, flatShading: true, emissive: this.color, emissiveIntensity: .035 }));
     this.group.position.fromArray(data.position);
     this.group.add(this.mesh);
-    this.halo = new Mesh(new SphereGeometry(data.radius * 1.055, 32, 20), new MeshBasicMaterial({ color: this.color, transparent: true, opacity: .055, wireframe: true, depthWrite: false }));
+    this.halo = new Mesh(new SphereGeometry(data.radius * PLANET_HALO_SCALE, 32, 20), new MeshBasicMaterial({ color: this.color, transparent: true, opacity: .055, wireframe: true, depthWrite: false }));
     this.group.add(this.halo);
     if (data.ring) {
-      const ring = new Mesh(new RingGeometry(data.radius * 1.2, data.radius * 1.55, 72), new MeshBasicMaterial({ color: this.color, side: DoubleSide, transparent: true, opacity: .24, depthWrite: false }));
+      const ring = new Mesh(new RingGeometry(data.radius * 1.2, data.radius * PLANET_RING_OUTER_SCALE, 72), new MeshBasicMaterial({ color: this.color, side: DoubleSide, transparent: true, opacity: .24, depthWrite: false }));
       ring.rotation.set(1.1, .18, -.28); this.group.add(ring);
     }
   }

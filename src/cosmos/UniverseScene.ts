@@ -99,7 +99,7 @@ export function mountUniverse(host: HTMLElement) {
   let focusedPosition: Vector3 | null = null;
   let lastLoops = 0;
   let width = 1, height = 1;
-  let frame = 0, lastTime = 0, time = 0, hudTime = 0;
+  let frame = 0, lastTime = 0, time = 0, stateTime = 0;
   let disposed = false;
   let contextLost = false;
   const abort = new AbortController();
@@ -114,16 +114,10 @@ export function mountUniverse(host: HTMLElement) {
   const projected = new Vector3();
   const labelDirection = new Vector3();
   const occluderPosition = new Vector3();
-  const progress = host.querySelector<HTMLElement>('[data-progress-fill]')!;
-  const progressText = host.querySelector<HTMLElement>('[data-progress-text]')!;
-  const speed = host.querySelector<HTMLElement>('[data-flight-speed]')!;
-  const status = host.querySelector<HTMLElement>('[data-flight-status]')!;
   const live = host.querySelector<HTMLElement>('[data-flight-live]')!;
   const veil = host.querySelector<HTMLElement>('[data-transition]')!;
   const transitionText = host.querySelector<HTMLElement>('[data-transition-text]')!;
-  const help = host.querySelector<HTMLElement>('[data-help-panel]')!;
   const panelHost = host.querySelector<HTMLElement>('[data-info-panel]')!;
-  const routeButtons = Array.from(host.querySelectorAll<HTMLButtonElement>('[data-planet-nav]'));
   const panel = new PlanetInfoPanel(panelHost, closePanel, (planet, id) => {
     const target = targets.find((entry) => entry.planet.id === planet.id && entry.entry.id === id);
     if (target) explore(target);
@@ -146,7 +140,6 @@ export function mountUniverse(host: HTMLElement) {
     scene.updateMatrixWorld(true);
     focusedPosition = new Vector3().fromArray(target.planet.position);
     panel.show(target.planet, target.entry, target.satellite);
-    help.hidden = true;
     host.dataset.exploring = 'true';
     live.textContent = `正在探索${target.entry.title}，航行已暂停。`;
   }
@@ -175,7 +168,7 @@ export function mountUniverse(host: HTMLElement) {
   }, { passive: false, signal });
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-      if (selected) closePanel(); else help.hidden = true;
+      if (selected) closePanel();
       return;
     }
     if (event.target instanceof Element && event.target.closest('input, textarea, select, [contenteditable], [data-info-panel]')) return;
@@ -208,15 +201,6 @@ export function mountUniverse(host: HTMLElement) {
     event.preventDefault(); contextLost = true; cancelAnimationFrame(frame); flight.stop();
     error.hidden = false; host.dataset.state = 'unavailable';
   }, { signal });
-  host.querySelector('[data-restart]')!.addEventListener('click', () => { help.hidden = true; flight.restart(); }, { signal });
-  host.querySelector('[data-toggle-help]')!.addEventListener('click', () => {
-    help.hidden = !help.hidden;
-    host.querySelector('[data-toggle-help]')!.setAttribute('aria-expanded', String(!help.hidden));
-  }, { signal });
-  routeButtons.forEach((button) => button.addEventListener('click', () => {
-    const target = targets.find((entry) => !entry.satellite && entry.planet.id === button.dataset.planetNav);
-    if (target) explore(target);
-  }, { signal }));
   document.addEventListener('visibilitychange', () => {
     flight.stop(); lastTime = 0;
     if (document.hidden) cancelAnimationFrame(frame);
@@ -247,7 +231,7 @@ export function mountUniverse(host: HTMLElement) {
       const labelWidth = label.target.satellite ? 140 : 238;
       const coveredByPanel = !!selected && x > width - Math.min(410, width * .42) - labelWidth / 2;
       const labelHeight = label.target.satellite ? 48 : 102;
-      let hidden = !visibleMode || !near || view.z > -2 || projected.z > 1 || x < labelWidth / 2 + 8 || x > width - labelWidth / 2 - 8 || y < 100 + labelHeight || y > height - 145 || coveredByPanel;
+      let hidden = !visibleMode || !near || view.z > -2 || projected.z > 1 || x < -20 || x > width + 20 || y < 85 + labelHeight || y > height - 45 || coveredByPanel;
       if (!hidden && label.target.satellite) {
         labelDirection.copy(world).sub(camera.position).normalize();
         // DOM labels must respect the planet's 3D occlusion, just like its satellites.
@@ -261,37 +245,24 @@ export function mountUniverse(host: HTMLElement) {
       }
       label.element.hidden = hidden;
       if (!hidden) {
-        label.element.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-100%)`;
+        const labelX = Math.max(labelWidth / 2 + 12, Math.min(width - labelWidth / 2 - 12, x));
+        label.element.style.transform = `translate3d(${labelX}px,${y}px,0) translate(-50%,-100%)`;
         label.element.style.opacity = String(Math.min(1, (110 - distance) / 25));
       }
     }
   }
 
-  function updateHud() {
-    const percent = Math.round(flight.flightProgress * 100);
-    progress.style.transform = `scaleX(${flight.flightProgress})`;
-    progressText.textContent = `${String(percent).padStart(2, '0')}%`;
-    speed.textContent = `${Math.abs(flight.velocity).toFixed(1)}`;
-    const stateText = flight.mode === 'exploring' ? '探索中 · 航行暂停' : flight.mode === 'returning' ? '镜头归位中' : flight.mode === 'departing' ? '进入事件视界' : flight.mode === 'arriving' ? '新的航程' : flight.velocity < -.1 ? '反向航行' : flight.velocity > .1 ? '向前航行' : '悬停 · 等待滚轮输入';
-    status.textContent = stateText;
+  function updateFlightState() {
     host.dataset.state = flight.mode;
     host.dataset.progress = flight.flightProgress.toFixed(5);
     host.dataset.velocity = flight.velocity.toFixed(3);
     host.dataset.loops = String(flight.loops);
-    const nearest = universeData.reduce((a, b) => Math.abs(-a.position[2] - flight.distance) < Math.abs(-b.position[2] - flight.distance) ? a : b);
-    routeButtons.forEach((button) => {
-      const data = universeData.find((entry) => entry.id === button.dataset.planetNav)!;
-      button.dataset.passed = String(flight.distance > -data.position[2]);
-      button.setAttribute('aria-current', String(nearest.id === data.id));
-      button.disabled = flight.mode !== 'flight';
-    });
-    host.querySelector<HTMLButtonElement>('[data-restart]')!.disabled = flight.mode !== 'flight';
   }
 
   function render(timestamp: number) {
     if (disposed || contextLost || document.hidden) return;
     const dt = lastTime ? Math.min(.05, (timestamp - lastTime) / 1000) : 1 / 60;
-    lastTime = timestamp; time += dt; hudTime += dt;
+    lastTime = timestamp; time += dt; stateTime += dt;
     flight.update(dt);
     if (flight.loops !== lastLoops) {
       rig.snap(0); ship.update(0, 0, time, motion.matches); lastLoops = flight.loops;
@@ -306,14 +277,14 @@ export function mountUniverse(host: HTMLElement) {
     renderer.render(scene, rig.camera);
     if (pointerInside) setHover(pick());
     updateLabels(rig.camera);
-    if (hudTime > .08) { updateHud(); hudTime = 0; }
+    if (stateTime > .08) { updateFlightState(); stateTime = 0; }
     veil.style.opacity = String(flight.transitionOpacity);
     veil.hidden = flight.transitionOpacity === 0;
     transitionText.textContent = flight.mode === 'departing' ? '穿越事件视界' : '回到起点 · 继续探索';
     frame = requestAnimationFrame(render);
   }
 
-  host.dataset.state = 'flight'; updateHud(); frame = requestAnimationFrame(render);
+  host.dataset.state = 'flight'; updateFlightState(); frame = requestAnimationFrame(render);
   return () => {
     if (disposed) return;
     disposed = true; cancelAnimationFrame(frame); abort.abort(); resizeObserver.disconnect();

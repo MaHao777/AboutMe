@@ -27,12 +27,12 @@ npm run preview -- --host 127.0.0.1 --port 4323
 
 - 滚轮向下前进、向上后退；停止输入后平滑减速。起点限制为 0。
 - 按住 ↓ / Page Down 前进，↑ / Page Up 后退；空格立即停止。这是桌面键盘补充入口。
-- 星球实体或名称标签可点击，悬停时高亮并改变指针。底部航标提供同一内容的键盘入口。
+- 星球实体或名称标签可点击，悬停时高亮并改变指针。可通过 Tab 聚焦当前可见的名称标签，按 Enter 探索。
 - 探索时冻结位置与卫星公转，镜头平滑聚焦；面板可独立滚动，所有场景滚轮输入暂停。
 - 点击卫星实体、可见卫星标签或面板内项目入口查看卫星信息。卫星高亮，镜头保留所属星系的整体构图，避免远侧卫星被主星遮挡时镜头进入主星。可在探索中切换同一星系的卫星。
 - Esc 或面板 ✕ 返回，经过 0.85 秒镜头归位后重新接受航行输入。
 - 到达终点，先淡出，再统一重置航行、速度与摄像机，然后淡入。过渡期间丢弃输入。
-- 「重新出发」使用同一复位流程；「操作说明」可开关，Esc 可关闭。
+- 页面只保留一行操作提示，已移除底部控制台、航标进度、左上介绍和右上坐标文字。
 
 ## 模块
 
@@ -44,6 +44,7 @@ npm run preview -- --host 127.0.0.1 --port 4323
 | `Spaceship.ts` | 基础几何飞船及尾焰反馈 |
 | `Planet.ts` / `Satellite.ts` | 可复用球体、自转 / 公转及高亮 |
 | `PlanetSystem.ts` | 主星、卫星及轨道归属 |
+| `orbits.ts` | 倾斜圆轨道、主星 / 星环包围范围及卫星安全间距；动画与轨道线共用计算 |
 | `PlanetInfoPanel.ts` | DOM 内容、项目入口、关闭及焦点恢复 |
 | `BlackHole.ts` | 黑球与基础环形视觉 |
 | `UniverseScene.ts` | 场景组合、渲染、3D 星点、射线点击、标签、输入及资源生命周期 |
@@ -53,24 +54,26 @@ npm run preview -- --host 127.0.0.1 --port 4323
 
 ## 配置扩展
 
-在 `universeData.ts` 增加 `PlanetData` 即可自动生成星球、标签、卫星、详情和底部航标，不需修改航行逻辑。
+在 `universeData.ts` 增加 `PlanetData` 即可自动生成星球、标签、卫星和详情，不需修改航行逻辑。
 
 位置使用 `[x, y, z]`：航行方向为 `-Z`，左右使用正负 X，依次增大负 Z 深度。卫星局部位置由轨道半径与相位计算，其数据嵌在父星球内部，`id` 应唯一。星球与卫星均应避开中心 `x = ±3.3` 的航道，并留出飞船及环形物的空间。
 
-当前航道长 328，五颗星球分别位于 Z = −40、−94、−148、−202、−256，黑洞在 −350。扩展更远航道时同步调整 `ROUTE_LENGTH`、`BLACK_HOLE_Z`，以及必要的镜头远裁剪和星点覆盖范围。
+当前航道长 328，五颗星球分别位于 Z = −40、−94、−148、−202、−256，高度 Y = 4、−6、10、−9、7，形成左右与上下错位；黑洞在 −350。扩展更远航道时同步调整 `ROUTE_LENGTH`、`BLACK_HOLE_Z`，以及必要的镜头远裁剪和星点覆盖范围。
+
+卫星使用半径恒定、整体倾斜 0.4 弧度的圆轨道。实际轨道半径至少为主星完整视觉外缘（含星环）加卫星半径，再加 0.75 的安全间距。轨道线与卫星位置使用同一函数，避免压扁椭圆造成卫星进入主星的情况。扩大星球或轨道后，应运行全圈几何测试，确认仍避开中央航道。
 
 状态流转：`flight → exploring → returning → flight`；循环为 `flight → departing → arriving → flight`。浏览器滚动位置不参与状态，因此复位不需要修正页面 scrollTop。
 
 ## 验证
 
 ```powershell
-node --test scripts/cosmos-flight.test.mjs
+node --test scripts/cosmos-flight.test.mjs scripts/cosmos-orbits.test.mjs
 npm run check
 npm run build
-npx eslint src/cosmos src/pages/cosmos.astro scripts/cosmos-flight.test.mjs
+npx eslint src/cosmos src/pages/cosmos.astro scripts/cosmos-flight.test.mjs scripts/cosmos-orbits.test.mjs
 ```
 
-测试使用本机 Node 24 直接运行可擦除的 TypeScript，不引入测试框架。六项测试覆盖双向移动与停止、起点边界、滚轮单位、面板锁定、黑洞及手动复位、帧率一致性。
+测试使用本机 Node 24 直接运行可擦除的 TypeScript，不引入测试框架。九项测试覆盖双向移动与停止、起点边界、滚轮单位、面板锁定、复位、帧率一致性，以及十颗卫星整圈公转时的主星 / 星环间距、卫星间距、中央航道避让和过小轨道的自动扩展。
 
 2026-10-28 使用本机 Chromium 实际操作构建预览与开发入口：
 
@@ -85,11 +88,13 @@ npx eslint src/cosmos src/pages/cosmos.astro scripts/cosmos-flight.test.mjs
 | 面板阅读滚动不影响飞船 | 通过，滚动后进度完全一致，面板 scrollTop 改变 |
 | Esc / ✕、镜头归位与位置保留 | 通过 |
 | 黑洞淡出、统一复位、下一次航行 | 通过，归零后等待不重复触发，再次输入可前进 |
-| 操作说明、手动重新出发 | 通过 |
+| 简洁操作提示 | 底部仅一行文字，无控制台或进度导航 |
 | 返回原站再浏览器后退 | 通过，场景重新初始化且滚轮可用 |
 | 无 WebGL 提示 | 通过，模拟 WebGL 2 不可用 |
 
-构建预览的正常交互流程未发现浏览器脚本错误。实际显示检查未见顶栏 / 控制台越界、面板与控制台重叠、页面溢出或滚动串扰。详情面板内容超过高度时按设计内部滚动。截图与运行数据保存在被 Git 忽略的 `output/playwright/cosmos-core-*`。
+初版构建预览的正常交互流程未发现浏览器脚本错误。详情面板内容超过高度时按设计内部滚动。初版截图与运行数据保存在被 Git 忽略的 `output/playwright/cosmos-core-*`；本轮界面精简、行星错位与轨道修复的截图使用 `output/playwright/cosmos-revision-*`，额外检查用户预览窗口的 528×704 尺寸。
+
+本轮再次在构建预览中通过实际航行依次打开五颗行星及全部十颗卫星，验证滚轮正反航行、面板滚动隔离、Esc 返回和黑洞复位，浏览器脚本错误为 0。528×704 下已确认删除的界面元素不再存在、页面无溢出、底部操作提示仅一行（约 20 px 高）。完整状态记录位于 `output/playwright/cosmos-revision-audit.json`。
 
 Astro 类型检查为 0 errors / 0 warnings；构建成功。构建仍提示现有两份 MDX 的指令警告，以及 Three.js 相关脚本块超过 500 kB 的体积警告。这些没有阻止构建，后续可独立优化首包。
 
