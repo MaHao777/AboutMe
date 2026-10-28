@@ -29,12 +29,12 @@ import '../cosmos/cosmos.css';
           <h2 id="planet-panel-title" data-panel-title></h2><p class="panel-description" data-panel-description></p>
           <div class="panel-content" data-panel-content></div>
           <div class="panel-satellites" data-panel-satellites></div>
-          <p class="panel-note">内容为第一阶段简要演示。<br />可点击场景中的卫星，或通过上方入口继续探索。</p>
+          <p class="panel-note">场景上滚轮转动卫星，内容自动切换。<br />在此面板内滚动可阅读当前项目。</p>
         </div>
         <div class="panel-bottom"><span class="status-dot"></span> 飞船已悬停<span>ESC 返回航行</span></div>
       </aside>
 
-      <p class="flight-hint">滚轮前后航行 · 点击星球探索 · Esc 返回</p>
+      <p class="flight-hint" data-flight-hint>滚轮前后航行 · 点击星球探索 · Esc 返回</p>
       <div class="transition-veil" data-transition hidden><span class="transition-orbit" aria-hidden="true"></span><p data-transition-text>穿越事件视界</p></div>
       <section class="scene-error" data-scene-error hidden role="alert"><h1>暂时无法开启宇宙场景</h1><p>此 Demo 需要 WebGL 2。请使用开启硬件加速的桌面浏览器；如果场景中断，请刷新后重试。</p><a href="/cosmos/">重新载入</a><a href="/">返回个人网站 ↗</a></section>
       <span class="sr-only" data-flight-live aria-live="polite"></span>

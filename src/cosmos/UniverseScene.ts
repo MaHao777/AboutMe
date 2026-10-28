@@ -97,6 +97,8 @@ export function mountUniverse(host: HTMLElement) {
   let selected: ExploreTarget | null = null;
   let hovered: ExploreTarget | null = null;
   let focusedPosition: Vector3 | null = null;
+  let exploredSystem: PlanetSystem | null = null;
+  let focusPanelFraction = .3;
   let lastLoops = 0;
   let width = 1, height = 1;
   let frame = 0, lastTime = 0, time = 0, stateTime = 0;
@@ -115,6 +117,8 @@ export function mountUniverse(host: HTMLElement) {
   const labelDirection = new Vector3();
   const occluderPosition = new Vector3();
   const live = host.querySelector<HTMLElement>('[data-flight-live]')!;
+  const flightHint = host.querySelector<HTMLElement>('[data-flight-hint]')!;
+  const navigationHint = flightHint.textContent;
   const veil = host.querySelector<HTMLElement>('[data-transition]')!;
   const transitionText = host.querySelector<HTMLElement>('[data-transition-text]')!;
   const panelHost = host.querySelector<HTMLElement>('[data-info-panel]')!;
@@ -128,27 +132,60 @@ export function mountUniverse(host: HTMLElement) {
     if (hovered !== selected) hovered?.highlight(false);
     hovered = target; hovered?.highlight(true);
     canvas.style.cursor = target ? 'pointer' : 'default';
-    host.querySelector<HTMLElement>('[data-hover-hint]')!.textContent = target ? `${target.entry.title} · 点击探索` : '';
+    host.querySelector<HTMLElement>('[data-hover-hint]')!.textContent = target
+      ? `${target.entry.title} · ${exploredSystem ? target.satellite ? '点击转至右侧' : '滚轮探索卫星' : '点击探索'}` : '';
   }
 
   function explore(target: ExploreTarget) {
     if (flight.mode !== 'flight' && flight.mode !== 'exploring') return;
     if (flight.mode === 'flight' && !flight.explore()) return;
-    selected?.highlight(false); setHover(null); selected = target; selected.highlight(true);
-    // A satellite opens its detail while retaining the whole parent system in view.
-    // Moving close to a far-side satellite would otherwise put the camera in its planet.
-    scene.updateMatrixWorld(true);
+    const system = systems.find((system) => system.data.id === target.planet.id)!;
+    const satelliteIndex = system.data.satellites.findIndex((entry) => entry.id === target.entry.id);
+    if (exploredSystem === system) {
+      if (target.satellite) system.orbit.select(satelliteIndex);
+      return;
+    }
+    exploredSystem?.orbit.exit();
+    exploredSystem = system;
+    system.orbit.enter(target.satellite ? satelliteIndex : undefined);
     focusedPosition = new Vector3().fromArray(target.planet.position);
-    panel.show(target.planet, target.entry, target.satellite);
+    syncOrbitSelection(); updateFocusFraming();
     host.dataset.exploring = 'true';
-    live.textContent = `正在探索${target.entry.title}，航行已暂停。`;
+    flightHint.textContent = system.satellites.length > 1 ? '滚轮转动卫星 · 自动切换内容 · Esc 返回' : '滚轮转动卫星 · Esc 返回';
+  }
+
+  function syncOrbitSelection() {
+    if (!exploredSystem) return;
+    const entry = exploredSystem.data.satellites[exploredSystem.orbit.selectedIndex] ?? exploredSystem.data;
+    const target = targets.find((target) => target.planet.id === exploredSystem!.data.id && target.entry.id === entry.id)!;
+    if (target === selected) return;
+    setHover(null); selected?.highlight(false); selected = target; selected.highlight(true);
+    panel.show(target.planet, target.entry, target.satellite);
+    labels.forEach((label) => {
+      const current = label.target === selected;
+      label.element.dataset.selected = String(current);
+      label.element.setAttribute('aria-pressed', String(current));
+      if (label.target.satellite) label.element.querySelector('.label-index')!.textContent = current ? '● 当前卫星' : '↗ 项目卫星';
+    });
+    live.textContent = `${target.planet.title}，当前项目：${target.entry.title}。`;
+  }
+
+  function updateFocusFraming() {
+    if (exploredSystem) focusPanelFraction = 1 - panelHost.offsetLeft / Math.max(1, width);
   }
 
   function closePanel() {
     if (!selected) return;
+    exploredSystem?.orbit.exit(); exploredSystem = null;
     selected.highlight(false);
     selected = null; focusedPosition = null; panel.hide(); flight.resume();
     host.dataset.exploring = 'false'; setHover(null);
+    flightHint.textContent = navigationHint;
+    labels.forEach((label) => {
+      label.element.dataset.selected = 'false'; label.element.setAttribute('aria-pressed', 'false');
+      if (label.target.satellite) label.element.querySelector('.label-index')!.textContent = '↗ 项目卫星';
+    });
+    delete host.dataset.orbitRotation; delete host.dataset.satellite; delete host.dataset.planet;
     live.textContent = '已退出探索，镜头返回飞船。';
   }
 
@@ -156,22 +193,28 @@ export function mountUniverse(host: HTMLElement) {
     width = host.clientWidth; height = host.clientHeight;
     renderer.setSize(width, height, false);
     rig.camera.aspect = width / Math.max(1, height); rig.camera.updateProjectionMatrix();
+    updateFocusFraming();
   }
   const resizeObserver = new ResizeObserver(resize); resizeObserver.observe(host); resize();
 
   host.addEventListener('wheel', (event) => {
-    // Preserve native scrolling inside the panel, but never feed it into flight.
+    // Scene gestures control either flight or exploration; the panel keeps native reading.
     if (event.target instanceof Element && event.target.closest('[data-info-panel]')) return;
     if (event.ctrlKey) return;
     event.preventDefault();
-    flight.wheel(event.deltaY, event.deltaMode, height);
+    if (exploredSystem) exploredSystem.orbit.wheel(event.deltaY, event.deltaMode, height);
+    else flight.wheel(event.deltaY, event.deltaMode, height);
   }, { passive: false, signal });
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       if (selected) closePanel();
       return;
     }
-    if (event.target instanceof Element && event.target.closest('input, textarea, select, [contenteditable], [data-info-panel]')) return;
+    if (event.target instanceof Element && event.target.closest('input, textarea, select, [contenteditable]')) return;
+    if (exploredSystem && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+      event.preventDefault(); exploredSystem.orbit.step(event.key === 'ArrowRight' ? 1 : -1); return;
+    }
+    if (event.target instanceof Element && event.target.closest('[data-info-panel]')) return;
     if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(event.key)) {
       event.preventDefault(); flight.hold(event.key === 'ArrowDown' || event.key === 'PageDown' ? 1 : -1);
     }
@@ -212,7 +255,9 @@ export function mountUniverse(host: HTMLElement) {
     raycaster.setFromCamera(pointer, rig.camera);
     const hits = raycaster.intersectObjects(targets.map((target) => target.mesh), false);
     const hit = hits.find((entry) => entry.distance < 110);
-    return hit ? targets.find((target) => target.mesh === hit.object) ?? null : null;
+    const target = hit ? targets.find((target) => target.mesh === hit.object) ?? null : null;
+    if (exploredSystem && (!target?.satellite || target.planet.id !== exploredSystem.data.id)) return null;
+    return target;
   }
 
   function updateLabels(camera: PerspectiveCamera) {
@@ -221,8 +266,8 @@ export function mountUniverse(host: HTMLElement) {
       view.copy(world).applyMatrix4(camera.matrixWorldInverse);
       const distance = camera.position.distanceTo(world);
       const exploringThisSystem = selected?.planet.id === label.target.planet.id;
-      const near = label.target.satellite ? distance < 47 : distance < 105;
-      const visibleMode = flight.mode === 'flight' || (flight.mode === 'exploring' && exploringThisSystem);
+      const near = label.target.satellite ? distance < (exploringThisSystem ? 160 : 47) : distance < 105;
+      const visibleMode = flight.mode === 'flight' || (flight.mode === 'exploring' && exploringThisSystem && label.target.satellite && (label.target === selected || label.target === hovered));
       // Label anchors sit above their own sphere, in world space, so perspective is real.
       label.anchor.copy(world); label.anchor.y += label.target.radius + (label.target.satellite ? .6 : 1.5);
       projected.copy(label.anchor).project(camera);
@@ -257,6 +302,11 @@ export function mountUniverse(host: HTMLElement) {
     host.dataset.progress = flight.flightProgress.toFixed(5);
     host.dataset.velocity = flight.velocity.toFixed(3);
     host.dataset.loops = String(flight.loops);
+    if (exploredSystem) {
+      host.dataset.planet = exploredSystem.data.id;
+      host.dataset.satellite = selected?.entry.id ?? '';
+      host.dataset.orbitRotation = exploredSystem.orbit.rotation.toFixed(5);
+    }
   }
 
   function render(timestamp: number) {
@@ -269,10 +319,12 @@ export function mountUniverse(host: HTMLElement) {
       live.textContent = '已穿过黑洞，回到宇宙起点。';
     }
     ship.update(flight.distance, flight.velocity, time, motion.matches);
-    rig.update(dt, flight.distance, flight.velocity, focusedPosition && selected ? { position: focusedPosition, radius: selected.planet.radius } : null);
+    ship.group.visible = !exploredSystem;
+    rig.update(dt, flight.distance, flight.velocity, focusedPosition && exploredSystem ? { position: focusedPosition, radius: exploredSystem.extent, panelFraction: focusPanelFraction } : null);
     key.position.set(-25, 28, -flight.distance + 35); key.target.position.set(0, 0, -flight.distance - 50);
     const animate = !motion.matches && flight.mode !== 'exploring';
     systems.forEach((system) => system.update(dt, animate));
+    syncOrbitSelection();
     if (!motion.matches) blackHole.update(dt);
     renderer.render(scene, rig.camera);
     if (pointerInside) setHover(pick());

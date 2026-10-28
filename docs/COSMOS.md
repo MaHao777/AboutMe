@@ -28,8 +28,10 @@ npm run preview -- --host 127.0.0.1 --port 4323
 - 滚轮向下前进、向上后退；停止输入后平滑减速。起点限制为 0。
 - 按住 ↓ / Page Down 前进，↑ / Page Up 后退；空格立即停止。这是桌面键盘补充入口。
 - 星球实体或名称标签可点击，悬停时高亮并改变指针。可通过 Tab 聚焦当前可见的名称标签，按 Enter 探索。
-- 探索时冻结位置与卫星公转，镜头平滑聚焦；面板可独立滚动，所有场景滚轮输入暂停。
-- 点击卫星实体、可见卫星标签或面板内项目入口查看卫星信息。卫星高亮，镜头保留所属星系的整体构图，避免远侧卫星被主星遮挡时镜头进入主星。可在探索中切换同一星系的卫星。
+- 点击行星后冻结飞船位置，镜头平滑聚焦整个星系，右侧直接展示当前卫星的项目信息。
+- 在场景上滚动滚轮，整组卫星正向 / 反向公转；最接近右侧选择位置的卫星高亮，对应内容同步显示。停止输入后平滑对齐当前卫星，多颗卫星可循环探索。只有一颗卫星时仍可控制其公转，信息保持不变。
+- 点击卫星实体、可见标签或面板里的项目名称，会把相应卫星转到右侧选择位置。← / → 也可切换卫星。所有入口使用同一公转状态，面板依据实际转到的卫星更新。
+- 在右侧面板中滚动只用于阅读，不切换卫星，不移动飞船。内容更新时保留键盘焦点，切换到新项目才回到该项目正文顶部。
 - Esc 或面板 ✕ 返回，经过 0.85 秒镜头归位后重新接受航行输入。
 - 到达终点，先淡出，再统一重置航行、速度与摄像机，然后淡入。过渡期间丢弃输入。
 - 页面只保留一行操作提示，已移除底部控制台、航标进度、左上介绍和右上坐标文字。
@@ -44,6 +46,7 @@ npm run preview -- --host 127.0.0.1 --port 4323
 | `Spaceship.ts` | 基础几何飞船及尾焰反馈 |
 | `Planet.ts` / `Satellite.ts` | 可复用球体、自转 / 公转及高亮 |
 | `PlanetSystem.ts` | 主星、卫星及轨道归属 |
+| `SatelliteOrbitController.ts` | 整组公转角度、滚轮、点击 / 键盘对齐、实际选中卫星与退出清理 |
 | `orbits.ts` | 倾斜圆轨道、主星 / 星环包围范围及卫星安全间距；动画与轨道线共用计算 |
 | `PlanetInfoPanel.ts` | DOM 内容、项目入口、关闭及焦点恢复 |
 | `BlackHole.ts` | 黑球与基础环形视觉 |
@@ -67,13 +70,13 @@ npm run preview -- --host 127.0.0.1 --port 4323
 ## 验证
 
 ```powershell
-node --test scripts/cosmos-flight.test.mjs scripts/cosmos-orbits.test.mjs
+node --test scripts/cosmos-flight.test.mjs scripts/cosmos-orbits.test.mjs scripts/cosmos-orbit-control.test.mjs
 npm run check
 npm run build
-npx eslint src/cosmos src/pages/cosmos.astro scripts/cosmos-flight.test.mjs scripts/cosmos-orbits.test.mjs
+npx eslint src/cosmos src/pages/cosmos.astro scripts/cosmos-flight.test.mjs scripts/cosmos-orbits.test.mjs scripts/cosmos-orbit-control.test.mjs
 ```
 
-测试使用本机 Node 24 直接运行可擦除的 TypeScript，不引入测试框架。九项测试覆盖双向移动与停止、起点边界、滚轮单位、面板锁定、复位、帧率一致性，以及十颗卫星整圈公转时的主星 / 星环间距、卫星间距、中央航道避让和过小轨道的自动扩展。
+测试使用本机 Node 24 直接运行可擦除的 TypeScript，不引入测试框架。14 项测试覆盖航行与复位、全圈几何安全，以及行星探索中的滚轮正反公转、实际选择与显示角度一致、循环切换、点击 / 键盘对齐、输入单位、退出清理、单颗卫星与空列表。
 
 2026-10-28 使用本机 Chromium 实际操作构建预览与开发入口：
 
@@ -96,10 +99,12 @@ npx eslint src/cosmos src/pages/cosmos.astro scripts/cosmos-flight.test.mjs scri
 
 本轮再次在构建预览中通过实际航行依次打开五颗行星及全部十颗卫星，验证滚轮正反航行、面板滚动隔离、Esc 返回和黑洞复位，浏览器脚本错误为 0。528×704 下已确认删除的界面元素不再存在、页面无溢出、底部操作提示仅一行（约 20 px 高）。完整状态记录位于 `output/playwright/cosmos-revision-audit.json`。
 
+卫星滚轮探索版另行验证了两颗 / 三颗卫星的正反切换与循环、信息随实际公转同步、点击 / 左右键对齐、焦点保留、面板阅读隔离、单颗卫星公转、退出保留位置并恢复航行，以及探索之后的黑洞复位。1440×900 和 528×704 均已截图复核；正常流程浏览器脚本错误为 0。记录与截图为 `output/playwright/cosmos-orbit-audit.json` 和 `cosmos-orbit-*.png`。
+
 Astro 类型检查为 0 errors / 0 warnings；构建成功。构建仍提示现有两份 MDX 的指令警告，以及 Three.js 相关脚本块超过 500 kB 的体积警告。这些没有阻止构建，后续可独立优化首包。
 
 ## 本阶段的简化与后续工作
 
-飞船、球体与黑洞均为基础几何体；黑洞是视觉淡出复位，没有物理吸引或引力透镜。卫星采用低速、确定的简易轨道，探索时暂停以方便点击。内容仅使用少量现有公开项目摘要与明确标注的占位说明，没有扩充正式简历。
+飞船、球体与黑洞均为基础几何体；黑洞是视觉淡出复位，没有物理吸引或引力透镜。卫星在航行时低速公转，探索时由滚轮控制；整组共用角度偏移，保持安全距离。探索镜头按星系完整范围和右侧面板宽度构图，飞船在探索画面中隐藏，退出后恢复。内容仅使用少量现有公开项目摘要与明确标注的占位说明，没有扩充正式简历。
 
 下一阶段建议先由本人实测鼠标与触控板手感，再调整航道长度、速度、星球间距和聚焦构图；随后完善真实内容、标签防重叠、移动端手势、低性能设备分级、模型与材质。此 Demo 未承诺完整移动端沉浸体验，未制作音效、自由飞行、碰撞或后端。

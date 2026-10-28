@@ -3,6 +3,7 @@ import type { ContentEntry, PlanetData } from './universeData';
 export class PlanetInfoPanel {
   private previousFocus: HTMLElement | null = null;
   private closeButton: HTMLButtonElement;
+  private planetId = '';
 
   constructor(
     private panel: HTMLElement,
@@ -14,9 +15,12 @@ export class PlanetInfoPanel {
   }
 
   show(planet: PlanetData, entry: ContentEntry, isSatellite: boolean) {
-    if (this.panel.hidden) this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const opening = this.panel.hidden;
+    if (opening) this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     this.panel.style.setProperty('--planet-color', planet.color);
-    this.panel.querySelector('[data-panel-eyebrow]')!.textContent = isSatellite ? `${planet.index} / ${planet.title} · 卫星` : `${planet.index} / ${planet.subtitle}`;
+    const index = planet.satellites.findIndex((satellite) => satellite.id === entry.id);
+    this.panel.querySelector('[data-panel-eyebrow]')!.textContent = isSatellite ? `${planet.title} · ${index + 1} / ${planet.satellites.length}` : `${planet.index} / ${planet.subtitle}`;
+    this.panel.dataset.entry = entry.id;
     this.panel.querySelector('[data-panel-title]')!.textContent = entry.title;
     this.panel.querySelector('[data-panel-description]')!.textContent = entry.description;
     const content = this.panel.querySelector<HTMLElement>('[data-panel-content]')!;
@@ -30,23 +34,27 @@ export class PlanetInfoPanel {
       link.className = 'content-link'; content.append(link);
     }
     const satellites = this.panel.querySelector<HTMLElement>('[data-panel-satellites]')!;
-    satellites.replaceChildren();
-    const heading = document.createElement('h3');
-    heading.textContent = isSatellite ? '继续探索这个星系' : `${planet.satellites.length} 颗项目卫星`;
-    satellites.append(heading);
-    for (const satellite of planet.satellites) {
-      const button = document.createElement('button');
-      button.type = 'button'; button.className = 'satellite-entry';
-      button.textContent = `${satellite.title} ↗`;
-      button.setAttribute('aria-pressed', String(entry.id === satellite.id));
-      button.addEventListener('click', () => this.onSatellite(planet, satellite.id));
-      const description = document.createElement('span'); description.textContent = satellite.description;
-      button.append(description); satellites.append(button);
+    if (this.planetId !== planet.id) {
+      this.planetId = planet.id;
+      satellites.replaceChildren();
+      const heading = document.createElement('h3');
+      heading.textContent = '卫星项目'; satellites.append(heading);
+      for (const satellite of planet.satellites) {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'satellite-entry';
+        button.textContent = satellite.title; button.dataset.satellite = satellite.id;
+        button.setAttribute('aria-label', `转动至${satellite.title}`);
+        button.addEventListener('click', () => this.onSatellite(planet, satellite.id));
+        satellites.append(button);
+      }
     }
+    satellites.querySelectorAll<HTMLButtonElement>('[data-satellite]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(entry.id === button.dataset.satellite));
+    });
     this.panel.hidden = false;
     const scroller = this.panel.querySelector<HTMLElement>('.panel-scroll')!;
     scroller.scrollTop = 0;
-    this.closeButton.focus({ preventScroll: true });
+    if (opening) this.closeButton.focus({ preventScroll: true });
   }
 
   hide() {
