@@ -6,25 +6,30 @@ const tick = (orbit, seconds = 2) => {
   for (let elapsed = 0; elapsed < seconds; elapsed += 1 / 120) orbit.update(1 / 120, false);
 };
 
-test('wheel rotates forward and backward and the selected satellite follows the actual rotation', () => {
+test('content commits only after reaching a foreground anchor, in either direction', () => {
   const orbit = new SatelliteOrbitController([.4, 2.5, 4.6]);
   orbit.enter(0); tick(orbit);
   assert.equal(orbit.selectedIndex, 0);
-  orbit.wheel(100);
-  assert.equal(orbit.selectedIndex, 0, 'panel must not jump ahead of the visible satellite');
-  tick(orbit);
+  orbit.wheel(200); orbit.wheel(100);
+  assert.equal(orbit.selectedIndex, 0, 'being nearer the next satellite must not advance the page');
+  const paused = orbit.rotation;
+  tick(orbit, 5);
+  assert.equal(orbit.rotation, paused);
+  orbit.wheel(50);
   assert.equal(orbit.selectedIndex, 1);
-  assert.ok(Math.abs(orbit.rotation + 2.5) < .001);
-  orbit.wheel(-100); tick(orbit);
+  assert.ok(Math.abs(orbit.rotation - orbit.frontAngle + 2.5) < .001);
+  orbit.wheel(-200); orbit.wheel(-100);
+  assert.equal(orbit.selectedIndex, 1, 'reversing near a boundary must keep the arrived page');
+  orbit.wheel(-50);
   assert.equal(orbit.selectedIndex, 0);
 });
 
 test('the satellite carousel wraps in both directions', () => {
   const orbit = new SatelliteOrbitController([.4, 2.5, 4.6]);
   orbit.enter(2); tick(orbit);
-  orbit.wheel(100); tick(orbit);
+  orbit.wheel(240); orbit.wheel(120); tick(orbit);
   assert.equal(orbit.selectedIndex, 0);
-  orbit.wheel(-100); tick(orbit);
+  orbit.wheel(-240); orbit.wheel(-120); tick(orbit);
   assert.equal(orbit.selectedIndex, 2);
 });
 
@@ -63,4 +68,43 @@ test('single-satellite systems still rotate; empty systems remain valid', () => 
   empty.enter(); empty.wheel(100); empty.step(1); tick(empty);
   assert.equal(empty.selectedIndex, -1);
   assert.equal(empty.rotation, 0);
+});
+
+test('a wheel gesture can pause just before the next page without idle snapping', () => {
+  const orbit = new SatelliteOrbitController([.4, 2.5, 4.6]);
+  orbit.enter(0);
+  orbit.wheel(240); orbit.wheel(100);
+  assert.ok(orbit.contentPosition > .95 && orbit.contentPosition < 1);
+  assert.equal(orbit.selectedIndex, 0);
+  const rotation = orbit.rotation, position = orbit.contentPosition;
+  tick(orbit, 8);
+  assert.equal(orbit.rotation, rotation);
+  assert.equal(orbit.contentPosition, position);
+  assert.equal(orbit.selectedIndex, 0);
+});
+
+test('reverse scrubbing can pause between the first and last page without an early switch', () => {
+  const orbit = new SatelliteOrbitController([.4, 2.5, 4.6]);
+  orbit.enter(0); orbit.wheel(-100);
+  assert.ok(orbit.contentPosition < 0 && orbit.contentPosition > -1);
+  tick(orbit, 3);
+  assert.equal(orbit.selectedIndex, 0);
+});
+
+test('wheel input interrupts click alignment and stops with the new exact position', () => {
+  const orbit = new SatelliteOrbitController([.4, 2.5, 4.6]);
+  orbit.enter(0); orbit.select(1); orbit.update(.05);
+  orbit.wheel(10);
+  const rotation = orbit.rotation;
+  tick(orbit, 3);
+  assert.equal(orbit.rotation, rotation);
+});
+
+test('a changed viewing direction preserves the continuous content position', () => {
+  const orbit = new SatelliteOrbitController([.4, 2.5, 4.6]);
+  orbit.enter(0); orbit.wheel(100);
+  const position = orbit.contentPosition;
+  orbit.setFrontAngle(orbit.frontAngle + .7);
+  assert.ok(Math.abs(orbit.contentPosition - position) < 1e-10);
+  assert.equal(orbit.selectedIndex, 0);
 });

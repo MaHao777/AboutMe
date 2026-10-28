@@ -10,6 +10,13 @@ export class CameraController {
 
   constructor() { this.snap(0); }
 
+  focusViewDirection(radius: number, panelFraction: number) {
+    const tangent = Math.tan(53 * Math.PI / 360);
+    const availableWidth = Math.max(.3, 1 - panelFraction - .08);
+    const distance = Math.max(radius / (tangent * .73), radius / (tangent * this.camera.aspect * availableWidth));
+    return new Vector3(distance * tangent * this.camera.aspect * panelFraction, distance * .14, distance);
+  }
+
   snap(distance: number) {
     this.camera.position.set(0, 6.3, -distance + 17);
     this.look.set(0, .2, -distance - 24);
@@ -19,12 +26,9 @@ export class CameraController {
   update(dt: number, distance: number, velocity: number, focus: CameraFocus | null) {
     if (focus) {
       const scale = Math.max(2.6, focus.radius);
-      const tangent = Math.tan(53 * Math.PI / 360);
-      const availableWidth = Math.max(.3, 1 - focus.panelFraction - .08);
-      const distance = Math.max(scale / (tangent * .73), scale / (tangent * this.camera.aspect * availableWidth));
-      const offset = distance * tangent * this.camera.aspect * focus.panelFraction;
-      this.desiredPosition.copy(focus.position).add(new Vector3(offset, distance * .14, distance));
-      this.desiredLook.copy(focus.position).add(new Vector3(offset, 0, 0));
+      const direction = this.focusViewDirection(scale, focus.panelFraction);
+      this.desiredPosition.copy(focus.position).add(direction);
+      this.desiredLook.copy(focus.position).add(new Vector3(direction.x, 0, 0));
     } else {
       this.desiredPosition.set(0, 6.3 + Math.abs(velocity) * .009, -distance + 17 + Math.abs(velocity) * .018);
       this.desiredLook.set(0, .2, -distance - 24);

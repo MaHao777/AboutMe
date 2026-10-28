@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { planetVisualRadius, satelliteOrbitPosition, satelliteOrbitRadius, SATELLITE_CLEARANCE } from '../src/cosmos/orbits.ts';
+import { orbitFrontAngle, planetVisualRadius, satelliteOrbitPosition, satelliteOrbitRadius, SATELLITE_CLEARANCE } from '../src/cosmos/orbits.ts';
 import { universeData } from '../src/cosmos/universeData.ts';
 
 test('all satellites clear their planet, halo and rings throughout a complete orbit', () => {
@@ -45,4 +45,16 @@ test('orbit orientation can rotate a circle into different three-dimensional pla
   const rotated = satelliteOrbitPosition(5, 0, { tilt: 0, roll: Math.PI / 2 });
   assert.ok(Math.abs(rotated[0]) < 1e-10 && Math.abs(rotated[2]) < 1e-10);
   assert.ok(Math.abs(rotated[1] - 5) < 1e-10);
+});
+
+test('the foreground anchor is the nearest point toward the camera in every configured plane', () => {
+  const view = [.35, .14, 1];
+  const depth = (point) => point.reduce((sum, value, axis) => sum + value * view[axis], 0);
+  for (const planet of universeData) {
+    const front = orbitFrontAngle(planet.orbitOrientation, view);
+    const frontDepth = depth(satelliteOrbitPosition(1, front, planet.orbitOrientation));
+    for (let step = 0; step < 720; step++) {
+      assert.ok(frontDepth >= depth(satelliteOrbitPosition(1, step / 720 * Math.PI * 2, planet.orbitOrientation)) - 1e-10);
+    }
+  }
 });

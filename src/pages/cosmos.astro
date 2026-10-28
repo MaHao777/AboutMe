@@ -26,17 +26,10 @@ import '../cosmos/cosmos.css';
       <aside class="info-panel" data-info-panel role="dialog" aria-modal="false" aria-labelledby="planet-panel-title" hidden>
         <div class="panel-glass" aria-hidden="true"><span class="glass-layer glass-layer-deep"></span><span class="glass-layer glass-layer-soft"></span><span class="glass-layer glass-layer-clear"></span></div>
         <div class="panel-top"><span data-panel-eyebrow></span><button type="button" data-close-panel aria-label="关闭探索面板">✕</button></div>
-        <div class="panel-scroll" tabindex="0" aria-label="星球内容，可滚动阅读">
-          <article class="panel-entry" data-panel-entry>
-            <h2 id="planet-panel-title" data-panel-title></h2><p class="panel-description" data-panel-description></p>
-            <div class="panel-content" data-panel-content></div>
-          </article>
-        </div>
+        <div class="panel-scroll" tabindex="0" aria-label="项目内容，滚轮可同步切换卫星"></div>
         <nav class="panel-satellites" data-panel-satellites aria-label="选择卫星项目"></nav>
-        <div class="panel-bottom"><span>场景滚轮切换 · 面板滚轮阅读</span><span>ESC 返回</span></div>
       </aside>
 
-      <p class="flight-hint" data-flight-hint>滚轮前后航行 · 点击星球探索 · Esc 返回</p>
       <div class="transition-veil" data-transition hidden><span class="transition-orbit" aria-hidden="true"></span><p data-transition-text>穿越事件视界</p></div>
       <section class="scene-error" data-scene-error hidden role="alert"><h1>暂时无法开启宇宙场景</h1><p>此 Demo 需要 WebGL 2。请使用开启硬件加速的桌面浏览器；如果场景中断，请刷新后重试。</p><a href="/cosmos/">重新载入</a><a href="/">返回个人网站 ↗</a></section>
       <span class="sr-only" data-flight-live aria-live="polite"></span>
