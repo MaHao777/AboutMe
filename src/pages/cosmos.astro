@@ -1,0 +1,71 @@
+---
+import { ROUTE_LENGTH, universeData } from '../cosmos/universeData';
+import '../cosmos/cosmos.css';
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="COSMOS 交互原型：驾驶飞船，沿宇宙航道探索马浩的五颗主题星球。" />
+    <meta name="robots" content="noindex" />
+    <title>COSMOS · 宇宙探索 Demo</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="cosmos" data-cosmos data-state="loading" aria-label="COSMOS 宇宙探索">
+      <canvas data-universe-canvas aria-label="第三人称宇宙场景；滚轮航行，点击星球探索。也可用底部航标选择主题。" tabindex="0"></canvas>
+      <div class="scene-labels" data-scene-labels></div>
+
+      <header class="cosmos-header">
+        <a href="/" class="cosmos-brand" aria-label="返回个人网站"><span class="brand-orbit" aria-hidden="true">✳</span> COSMOS<span class="brand-divider"></span><span class="brand-name">马浩的宇宙</span></a>
+        <div class="header-actions"><span class="demo-badge">INTERACTION DEMO · 01</span><a class="back-link" href="/">返回主站 ↗</a></div>
+      </header>
+
+      <div class="scene-intro"><span class="eyebrow">A PERSONAL UNIVERSE</span><h1>每一次靠近，<br />都是新的发现。</h1><p>滚轮航行 · 点击星球探索</p></div>
+      <div class="coordinate" aria-hidden="true"><span>STRAIGHT COURSE</span><span>Z − / DEEP SPACE</span></div>
+      <div class="hover-hint" data-hover-hint aria-hidden="true"></div>
+
+      <aside class="info-panel" data-info-panel role="dialog" aria-modal="false" aria-labelledby="planet-panel-title" hidden>
+        <div class="panel-top"><span data-panel-eyebrow></span><button type="button" data-close-panel aria-label="关闭探索面板">✕</button></div>
+        <div class="panel-scroll" tabindex="0" aria-label="星球内容，可滚动阅读">
+          <h2 id="planet-panel-title" data-panel-title></h2><p class="panel-description" data-panel-description></p>
+          <div class="panel-content" data-panel-content></div>
+          <div class="panel-satellites" data-panel-satellites></div>
+          <p class="panel-note">内容为第一阶段简要演示。<br />可点击场景中的卫星，或通过上方入口继续探索。</p>
+        </div>
+        <div class="panel-bottom"><span class="status-dot"></span> 飞船已悬停<span>ESC 返回航行</span></div>
+      </aside>
+
+      <section class="flight-deck" aria-label="航行控制与进度">
+        <div class="flight-readout"><div><span class="status-dot"></span><span data-flight-status>准备出发</span></div><span class="speed-readout">速度 <b data-flight-speed>0.0</b><small> u/s</small></span><div class="deck-tools"><button type="button" data-restart>重新出发</button><button type="button" data-toggle-help aria-expanded="false" aria-controls="flight-help">操作说明 <span>?</span></button></div></div>
+        <nav class="route-map" aria-label="主题航标，也可通过键盘选择探索">
+          <span class="route-origin">起点</span><div class="route-line"><div data-progress-fill></div></div>
+          {universeData.map((planet) => <button type="button" class="waypoint" data-planet-nav={planet.id} style={`--waypoint-position: ${-planet.position[2] / ROUTE_LENGTH * 100}%; --planet-color: ${planet.color};`} aria-label={`探索${planet.title}`}><span class="waypoint-dot"></span><span class="waypoint-title">{planet.index} <span>{planet.title}</span></span></button>)}
+          <span class="route-end">事件视界 <span>◎</span></span>
+        </nav>
+        <div class="deck-bottom"><span>向下滚动前进 <span class="hint-divider">/</span> 向上滚动后退</span><span class="progress-readout"><span data-progress-text>00%</span> <span>FLIGHT PROGRESS</span></span></div>
+      </section>
+
+      <section class="help-panel" id="flight-help" data-help-panel hidden aria-label="操作说明"><h2>你的航行指南</h2><p>滚轮 / 触控板：前进与后退，停止输入后平滑悬停。</p><p>↑ ↓ / Page Up、Down：按住航行。空格：立即停止。</p><p>点击星球或底部航标：聚焦探索；点击卫星：查看项目。Esc 或 ✕ 返回。</p><p>到达黑洞后自动返回起点。探索期间滚轮只用于面板阅读。</p></section>
+      <div class="transition-veil" data-transition hidden><span class="transition-orbit" aria-hidden="true"></span><p data-transition-text>穿越事件视界</p></div>
+      <section class="scene-error" data-scene-error hidden role="alert"><h1>暂时无法开启宇宙场景</h1><p>此 Demo 需要 WebGL 2。请使用开启硬件加速的桌面浏览器；如果场景中断，请刷新后重试。</p><a href="/cosmos/">重新载入</a><a href="/">返回个人网站 ↗</a></section>
+      <span class="sr-only" data-flight-live aria-live="polite"></span>
+      <noscript><div class="scene-error"><h1>开启 JavaScript 后继续航行</h1><p>宇宙 Demo 需要 JavaScript 与 WebGL。</p><a href="/">返回个人网站 ↗</a></div></noscript>
+    </main>
+    <script>
+      import { mountUniverse } from '../cosmos/UniverseScene';
+      let cleanup: (() => void) | undefined;
+      function initialize() {
+        cleanup?.(); cleanup = undefined;
+        const host = document.querySelector<HTMLElement>('[data-cosmos]');
+        if (host) cleanup = mountUniverse(host);
+      }
+      initialize();
+      document.addEventListener('astro:page-load', initialize);
+      document.addEventListener('astro:before-swap', () => { cleanup?.(); cleanup = undefined; });
+      window.addEventListener('pagehide', () => { cleanup?.(); cleanup = undefined; });
+      window.addEventListener('pageshow', (event) => { if (event.persisted) initialize(); });
+    </script>
+  </body>
+</html>

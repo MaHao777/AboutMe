@@ -1,0 +1,363 @@
+import {
+  AmbientLight, BufferGeometry, Color, DirectionalLight, Float32BufferAttribute,
+  FogExp2, HemisphereLight, Line, LineBasicMaterial, LineSegments, Mesh, PerspectiveCamera,
+  Points, PointsMaterial, Raycaster, Scene, SRGBColorSpace, Vector2, Vector3, WebGLRenderer,
+} from 'three';
+import { BlackHole } from './BlackHole';
+import { CameraController } from './CameraController';
+import { FlightController } from './FlightController';
+import { PlanetInfoPanel } from './PlanetInfoPanel';
+import { PlanetSystem } from './PlanetSystem';
+import { Spaceship } from './Spaceship';
+import { ROUTE_LENGTH, universeData } from './universeData';
+import type { ContentEntry, PlanetData } from './universeData';
+
+interface ExploreTarget {
+  entry: ContentEntry;
+  planet: PlanetData;
+  mesh: Mesh;
+  radius: number;
+  satellite: boolean;
+  highlight: (active: boolean) => void;
+}
+
+interface SceneLabel {
+  element: HTMLButtonElement;
+  target: ExploreTarget;
+  anchor: Vector3;
+}
+
+/** Owns the scene lifecycle. The full-screen route never uses browser scroll as state. */
+export function mountUniverse(host: HTMLElement) {
+  const canvas = host.querySelector<HTMLCanvasElement>('[data-universe-canvas]')!;
+  const error = host.querySelector<HTMLElement>('[data-scene-error]')!;
+  let renderer: WebGLRenderer;
+  try {
+    renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  } catch {
+    error.hidden = false; host.dataset.state = 'unavailable';
+    return () => {};
+  }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
+  renderer.outputColorSpace = SRGBColorSpace;
+  const scene = new Scene();
+  scene.background = new Color('#050811');
+  scene.fog = new FogExp2('#050811', .00165);
+  scene.add(new AmbientLight('#b3c5de', .65));
+  scene.add(new HemisphereLight('#bedbff', '#141c36', 1.4));
+  const key = new DirectionalLight('#ffecd3', 3.2);
+  scene.add(key, key.target);
+  const rig = new CameraController();
+  const flight = new FlightController(ROUTE_LENGTH);
+  const ship = new Spaceship(); scene.add(ship.group);
+  const blackHole = new BlackHole(); scene.add(blackHole.group);
+  const systems = universeData.map((data) => new PlanetSystem(data));
+  systems.forEach((system) => scene.add(system.planet.group));
+  addStarfield(scene); addRouteMarkers(scene);
+
+  const targets: ExploreTarget[] = [];
+  const labels: SceneLabel[] = [];
+  const labelLayer = host.querySelector<HTMLElement>('[data-scene-labels]')!;
+  systems.forEach((system) => {
+    const target: ExploreTarget = {
+      entry: system.data, planet: system.data, mesh: system.planet.mesh,
+      radius: system.data.radius, satellite: false,
+      highlight: (active) => system.planet.highlight(active),
+    };
+    targets.push(target);
+    addLabel(target);
+    system.satellites.forEach((satellite) => {
+      const target: ExploreTarget = {
+        entry: satellite.data, planet: system.data, mesh: satellite.mesh,
+        radius: satellite.data.radius, satellite: true,
+        highlight: (active) => satellite.highlight(active),
+      };
+      targets.push(target); addLabel(target);
+    });
+  });
+
+  function addLabel(target: ExploreTarget) {
+    const element = document.createElement('button');
+    element.type = 'button';
+    element.className = target.satellite ? 'scene-label satellite-label' : 'scene-label planet-label';
+    element.style.setProperty('--planet-color', target.planet.color);
+    const eyebrow = document.createElement('span'); eyebrow.className = 'label-index';
+    eyebrow.textContent = target.satellite ? '↗ 项目卫星' : `${target.planet.index} / ${target.planet.subtitle}`;
+    const title = document.createElement('strong'); title.textContent = target.entry.title;
+    const description = document.createElement('span'); description.className = 'label-description'; description.textContent = target.entry.description;
+    const hint = document.createElement('span'); hint.className = 'label-hint'; hint.textContent = '点击探索 ↗';
+    element.append(eyebrow, title, description, hint);
+    element.setAttribute('aria-label', `探索${target.entry.title}`);
+    element.addEventListener('click', () => explore(target));
+    element.addEventListener('pointerenter', () => setHover(target));
+    element.addEventListener('pointerleave', () => setHover(null));
+    labelLayer.append(element); labels.push({ element, target, anchor: new Vector3() });
+  }
+
+  let selected: ExploreTarget | null = null;
+  let hovered: ExploreTarget | null = null;
+  let focusedPosition: Vector3 | null = null;
+  let lastLoops = 0;
+  let width = 1, height = 1;
+  let frame = 0, lastTime = 0, time = 0, hudTime = 0;
+  let disposed = false;
+  let contextLost = false;
+  const abort = new AbortController();
+  const { signal } = abort;
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const raycaster = new Raycaster();
+  const pointer = new Vector2(2, 2);
+  let pointerInside = false;
+  let pointerDown: { x: number; y: number } | null = null;
+  const world = new Vector3();
+  const view = new Vector3();
+  const projected = new Vector3();
+  const labelDirection = new Vector3();
+  const occluderPosition = new Vector3();
+  const progress = host.querySelector<HTMLElement>('[data-progress-fill]')!;
+  const progressText = host.querySelector<HTMLElement>('[data-progress-text]')!;
+  const speed = host.querySelector<HTMLElement>('[data-flight-speed]')!;
+  const status = host.querySelector<HTMLElement>('[data-flight-status]')!;
+  const live = host.querySelector<HTMLElement>('[data-flight-live]')!;
+  const veil = host.querySelector<HTMLElement>('[data-transition]')!;
+  const transitionText = host.querySelector<HTMLElement>('[data-transition-text]')!;
+  const help = host.querySelector<HTMLElement>('[data-help-panel]')!;
+  const panelHost = host.querySelector<HTMLElement>('[data-info-panel]')!;
+  const routeButtons = Array.from(host.querySelectorAll<HTMLButtonElement>('[data-planet-nav]'));
+  const panel = new PlanetInfoPanel(panelHost, closePanel, (planet, id) => {
+    const target = targets.find((entry) => entry.planet.id === planet.id && entry.entry.id === id);
+    if (target) explore(target);
+  });
+
+  function setHover(target: ExploreTarget | null) {
+    if (hovered === target) return;
+    if (hovered !== selected) hovered?.highlight(false);
+    hovered = target; hovered?.highlight(true);
+    canvas.style.cursor = target ? 'pointer' : 'default';
+    host.querySelector<HTMLElement>('[data-hover-hint]')!.textContent = target ? `${target.entry.title} · 点击探索` : '';
+  }
+
+  function explore(target: ExploreTarget) {
+    if (flight.mode !== 'flight' && flight.mode !== 'exploring') return;
+    if (flight.mode === 'flight' && !flight.explore()) return;
+    selected?.highlight(false); setHover(null); selected = target; selected.highlight(true);
+    // A satellite opens its detail while retaining the whole parent system in view.
+    // Moving close to a far-side satellite would otherwise put the camera in its planet.
+    scene.updateMatrixWorld(true);
+    focusedPosition = new Vector3().fromArray(target.planet.position);
+    panel.show(target.planet, target.entry, target.satellite);
+    help.hidden = true;
+    host.dataset.exploring = 'true';
+    live.textContent = `正在探索${target.entry.title}，航行已暂停。`;
+  }
+
+  function closePanel() {
+    if (!selected) return;
+    selected.highlight(false);
+    selected = null; focusedPosition = null; panel.hide(); flight.resume();
+    host.dataset.exploring = 'false'; setHover(null);
+    live.textContent = '已退出探索，镜头返回飞船。';
+  }
+
+  function resize() {
+    width = host.clientWidth; height = host.clientHeight;
+    renderer.setSize(width, height, false);
+    rig.camera.aspect = width / Math.max(1, height); rig.camera.updateProjectionMatrix();
+  }
+  const resizeObserver = new ResizeObserver(resize); resizeObserver.observe(host); resize();
+
+  host.addEventListener('wheel', (event) => {
+    // Preserve native scrolling inside the panel, but never feed it into flight.
+    if (event.target instanceof Element && event.target.closest('[data-info-panel]')) return;
+    if (event.ctrlKey) return;
+    event.preventDefault();
+    flight.wheel(event.deltaY, event.deltaMode, height);
+  }, { passive: false, signal });
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      if (selected) closePanel(); else help.hidden = true;
+      return;
+    }
+    if (event.target instanceof Element && event.target.closest('input, textarea, select, [contenteditable], [data-info-panel]')) return;
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(event.key)) {
+      event.preventDefault(); flight.hold(event.key === 'ArrowDown' || event.key === 'PageDown' ? 1 : -1);
+    }
+    if (event.code === 'Space' && !(event.target instanceof Element && event.target.closest('button, a'))) {
+      event.preventDefault(); flight.stop();
+    }
+  }, { signal });
+  window.addEventListener('keyup', (event) => {
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(event.key)) flight.hold(0);
+  }, { signal });
+  window.addEventListener('blur', () => { flight.stop(); pointerInside = false; setHover(null); }, { signal });
+  canvas.addEventListener('pointermove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1);
+    pointerInside = true;
+  }, { passive: true, signal });
+  canvas.addEventListener('pointerleave', () => { pointerInside = false; setHover(null); }, { signal });
+  canvas.addEventListener('pointerdown', (event) => { pointerDown = { x: event.clientX, y: event.clientY }; }, { signal });
+  canvas.addEventListener('pointerup', (event) => {
+    if (!pointerDown || Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y) > 6) return;
+    pointerDown = null;
+    const rect = canvas.getBoundingClientRect();
+    pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1);
+    const target = pick(); if (target) explore(target);
+  }, { signal });
+  canvas.addEventListener('webglcontextlost', (event) => {
+    event.preventDefault(); contextLost = true; cancelAnimationFrame(frame); flight.stop();
+    error.hidden = false; host.dataset.state = 'unavailable';
+  }, { signal });
+  host.querySelector('[data-restart]')!.addEventListener('click', () => { help.hidden = true; flight.restart(); }, { signal });
+  host.querySelector('[data-toggle-help]')!.addEventListener('click', () => {
+    help.hidden = !help.hidden;
+    host.querySelector('[data-toggle-help]')!.setAttribute('aria-expanded', String(!help.hidden));
+  }, { signal });
+  routeButtons.forEach((button) => button.addEventListener('click', () => {
+    const target = targets.find((entry) => !entry.satellite && entry.planet.id === button.dataset.planetNav);
+    if (target) explore(target);
+  }, { signal }));
+  document.addEventListener('visibilitychange', () => {
+    flight.stop(); lastTime = 0;
+    if (document.hidden) cancelAnimationFrame(frame);
+    else if (!disposed && !contextLost) frame = requestAnimationFrame(render);
+  }, { signal });
+
+  function pick() {
+    if (flight.mode !== 'flight' && flight.mode !== 'exploring') return null;
+    raycaster.setFromCamera(pointer, rig.camera);
+    const hits = raycaster.intersectObjects(targets.map((target) => target.mesh), false);
+    const hit = hits.find((entry) => entry.distance < 110);
+    return hit ? targets.find((target) => target.mesh === hit.object) ?? null : null;
+  }
+
+  function updateLabels(camera: PerspectiveCamera) {
+    for (const label of labels) {
+      label.target.mesh.getWorldPosition(world);
+      view.copy(world).applyMatrix4(camera.matrixWorldInverse);
+      const distance = camera.position.distanceTo(world);
+      const exploringThisSystem = selected?.planet.id === label.target.planet.id;
+      const near = label.target.satellite ? distance < 47 : distance < 105;
+      const visibleMode = flight.mode === 'flight' || (flight.mode === 'exploring' && exploringThisSystem);
+      // Label anchors sit above their own sphere, in world space, so perspective is real.
+      label.anchor.copy(world); label.anchor.y += label.target.radius + (label.target.satellite ? .6 : 1.5);
+      projected.copy(label.anchor).project(camera);
+      const x = (projected.x * .5 + .5) * width;
+      const y = (-projected.y * .5 + .5) * height;
+      const labelWidth = label.target.satellite ? 140 : 238;
+      const coveredByPanel = !!selected && x > width - Math.min(410, width * .42) - labelWidth / 2;
+      const labelHeight = label.target.satellite ? 48 : 102;
+      let hidden = !visibleMode || !near || view.z > -2 || projected.z > 1 || x < labelWidth / 2 + 8 || x > width - labelWidth / 2 - 8 || y < 100 + labelHeight || y > height - 145 || coveredByPanel;
+      if (!hidden && label.target.satellite) {
+        labelDirection.copy(world).sub(camera.position).normalize();
+        // DOM labels must respect the planet's 3D occlusion, just like its satellites.
+        hidden = targets.some((other) => {
+          if (other.satellite) return false;
+          other.mesh.getWorldPosition(occluderPosition).sub(camera.position);
+          const alongRay = occluderPosition.dot(labelDirection);
+          const perpendicularSq = occluderPosition.lengthSq() - alongRay * alongRay;
+          return alongRay > 0 && alongRay < distance && perpendicularSq < other.radius * other.radius;
+        });
+      }
+      label.element.hidden = hidden;
+      if (!hidden) {
+        label.element.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-100%)`;
+        label.element.style.opacity = String(Math.min(1, (110 - distance) / 25));
+      }
+    }
+  }
+
+  function updateHud() {
+    const percent = Math.round(flight.flightProgress * 100);
+    progress.style.transform = `scaleX(${flight.flightProgress})`;
+    progressText.textContent = `${String(percent).padStart(2, '0')}%`;
+    speed.textContent = `${Math.abs(flight.velocity).toFixed(1)}`;
+    const stateText = flight.mode === 'exploring' ? '探索中 · 航行暂停' : flight.mode === 'returning' ? '镜头归位中' : flight.mode === 'departing' ? '进入事件视界' : flight.mode === 'arriving' ? '新的航程' : flight.velocity < -.1 ? '反向航行' : flight.velocity > .1 ? '向前航行' : '悬停 · 等待滚轮输入';
+    status.textContent = stateText;
+    host.dataset.state = flight.mode;
+    host.dataset.progress = flight.flightProgress.toFixed(5);
+    host.dataset.velocity = flight.velocity.toFixed(3);
+    host.dataset.loops = String(flight.loops);
+    const nearest = universeData.reduce((a, b) => Math.abs(-a.position[2] - flight.distance) < Math.abs(-b.position[2] - flight.distance) ? a : b);
+    routeButtons.forEach((button) => {
+      const data = universeData.find((entry) => entry.id === button.dataset.planetNav)!;
+      button.dataset.passed = String(flight.distance > -data.position[2]);
+      button.setAttribute('aria-current', String(nearest.id === data.id));
+      button.disabled = flight.mode !== 'flight';
+    });
+    host.querySelector<HTMLButtonElement>('[data-restart]')!.disabled = flight.mode !== 'flight';
+  }
+
+  function render(timestamp: number) {
+    if (disposed || contextLost || document.hidden) return;
+    const dt = lastTime ? Math.min(.05, (timestamp - lastTime) / 1000) : 1 / 60;
+    lastTime = timestamp; time += dt; hudTime += dt;
+    flight.update(dt);
+    if (flight.loops !== lastLoops) {
+      rig.snap(0); ship.update(0, 0, time, motion.matches); lastLoops = flight.loops;
+      live.textContent = '已穿过黑洞，回到宇宙起点。';
+    }
+    ship.update(flight.distance, flight.velocity, time, motion.matches);
+    rig.update(dt, flight.distance, flight.velocity, focusedPosition && selected ? { position: focusedPosition, radius: selected.planet.radius } : null);
+    key.position.set(-25, 28, -flight.distance + 35); key.target.position.set(0, 0, -flight.distance - 50);
+    const animate = !motion.matches && flight.mode !== 'exploring';
+    systems.forEach((system) => system.update(dt, animate));
+    if (!motion.matches) blackHole.update(dt);
+    renderer.render(scene, rig.camera);
+    if (pointerInside) setHover(pick());
+    updateLabels(rig.camera);
+    if (hudTime > .08) { updateHud(); hudTime = 0; }
+    veil.style.opacity = String(flight.transitionOpacity);
+    veil.hidden = flight.transitionOpacity === 0;
+    transitionText.textContent = flight.mode === 'departing' ? '穿越事件视界' : '回到起点 · 继续探索';
+    frame = requestAnimationFrame(render);
+  }
+
+  host.dataset.state = 'flight'; updateHud(); frame = requestAnimationFrame(render);
+  return () => {
+    if (disposed) return;
+    disposed = true; cancelAnimationFrame(frame); abort.abort(); resizeObserver.disconnect();
+    panel.dispose(); labelLayer.replaceChildren();
+    const geometries = new Set<BufferGeometry>();
+    const materials = new Set<import('three').Material>();
+    scene.traverse((object) => {
+      if (object instanceof Mesh || object instanceof Points || object instanceof Line) {
+        geometries.add(object.geometry);
+        for (const material of Array.isArray(object.material) ? object.material : [object.material]) materials.add(material);
+      }
+    });
+    geometries.forEach((geometry) => geometry.dispose()); materials.forEach((material) => material.dispose());
+    // Keep a retained canvas reusable on Astro page-load and bfcache restoration.
+    // Geometry/material buffers and renderer caches are explicitly released above.
+    scene.clear(); renderer.dispose();
+  };
+}
+
+function addStarfield(scene: Scene) {
+  const positions: number[] = [];
+  const colors: number[] = [];
+  let seed = 777;
+  const random = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+  for (let i = 0; i < 2800; i++) {
+    let x = (random() - .5) * 450;
+    const y = (random() - .5) * 280;
+    if (Math.abs(x) < 22 && Math.abs(y) < 14) x += x < 0 ? -25 : 25;
+    positions.push(x, y, 110 - random() * 850);
+    const brightness = .28 + random() * .55;
+    colors.push(brightness * .85, brightness * .92, brightness);
+  }
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
+  scene.add(new Points(geometry, new PointsMaterial({ size: .23, sizeAttenuation: true, vertexColors: true, transparent: true, opacity: .8 })));
+}
+
+function addRouteMarkers(scene: Scene) {
+  const vertices: number[] = [];
+  for (let z = 12; z > -ROUTE_LENGTH - 20; z -= 8) {
+    for (const x of [-3.3, 3.3]) vertices.push(x, -2.7, z, x, -2.7, z - 2.4);
+    if (z % 24 === 12) vertices.push(-.45, -2.7, z, .45, -2.7, z);
+  }
+  const geometry = new BufferGeometry(); geometry.setAttribute('position', new Float32BufferAttribute(vertices, 3));
+  scene.add(new LineSegments(geometry, new LineBasicMaterial({ color: '#77a4b8', transparent: true, opacity: .2 })));
+}
