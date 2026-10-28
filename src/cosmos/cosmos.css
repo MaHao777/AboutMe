@@ -32,7 +32,8 @@ button:focus-visible, a:focus-visible, canvas:focus-visible, [tabindex]:focus-vi
 .satellite-label strong { font-size: 12px; letter-spacing: .04em; }
 .satellite-label .label-description, .satellite-label .label-hint { display: none; }
 .satellite-label .label-index { font-size: 8px; }
-.info-panel { position: absolute; top: 111px; right: 3.5%; bottom: 68px; width: min(370px, 36%); z-index: 6; display: flex; flex-direction: column; isolation: isolate; }
+.info-panel { position: absolute; top: 111px; right: 3.5%; bottom: 20px; width: min(370px, 36%); z-index: 6; display: flex; flex-direction: column; isolation: isolate; transition: width .38s ease; }
+.info-panel[data-level="detail"] { width: min(1040px, 82%); }
 .panel-glass { position: absolute; inset: -28px -3.5vw -22px clamp(-220px, -15vw, -90px); pointer-events: none; z-index: -1; }
 /* Masks stay on the blur layers themselves; an ancestor mask would isolate their backdrop. */
 .glass-layer { position: absolute; inset: 0; mask-image: var(--glass-mask), linear-gradient(transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-composite: intersect; }
@@ -44,14 +45,45 @@ button:focus-visible, a:focus-visible, canvas:focus-visible, [tabindex]:focus-vi
 .panel-top button { background: transparent; border: 0; border-radius: 50%; width: 30px; height: 30px; font-size: 17px; padding: 0; color: #aebecd; }
 .panel-top button:hover { color: white; }
 .panel-top button:hover { background: #d7e8ff0c; }
-.panel-scroll { position: relative; flex: 1; min-height: 0; overflow: hidden; overscroll-behavior: contain; mask-image: linear-gradient(transparent, #000 30px, #000 calc(100% - 40px), transparent); }
-.panel-entry { position: absolute; inset: 0; padding: 38px 24px 48px; display: flex; flex-direction: column; justify-content: center; will-change: transform; }
+.panel-scroll { position: relative; flex: 1; min-height: 0; overflow: hidden; cursor: pointer; overscroll-behavior: contain; mask-image: linear-gradient(transparent, #000 30px, #000 calc(100% - 40px), transparent); }
+.panel-entry { position: absolute; inset: 0; padding: 24px 24px 32px; display: flex; flex-direction: column; justify-content: center; will-change: transform; }
+.panel-entry.has-detail { cursor: pointer; }
+.panel-entry.has-detail:hover .content-link { color: white; border-color: var(--planet-color); }
 .panel-entry[aria-hidden="true"] { pointer-events: none; }
 .panel-scroll h2 { font-size: 32px; font-weight: 400; letter-spacing: .05em; line-height: 1.5; margin: 0 0 13px; text-wrap: balance; }
 .panel-description { color: var(--planet-color); font-size: 13px; line-height: 1.9; margin: 0 0 28px; }
 .panel-content p { font-size: 13px; line-height: 2.1; color: #becbd9; margin: 0 0 18px; }
-.content-link { display: inline-block; color: #e0eaf2; font-size: 12px; margin: 4px 0 0; border-bottom: 1px solid #a0b3c071; padding-bottom: 5px; }
-.panel-satellites { padding: 12px 24px 20px; }
+.content-link { display: inline-block; color: #e0eaf2; font-size: 12px; margin: 4px 0 0; border: 0; background: none; border-bottom: 1px solid #a0b3c071; padding: 0 0 5px; }
+.panel-satellites { padding: 4px 24px 0; flex-shrink: 0; }
+.panel-detail { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.detail-back { align-self: flex-start; border: 0; background: none; color: #aab9c8; padding: 5px 24px 20px; font-size: 12px; }
+.detail-back:hover { color: white; }
+.detail-scroll { min-height: 0; flex: 1; overflow-y: auto; overflow-x: hidden; overflow-anchor: none; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #99b9cd44 transparent; padding: 16px 24px 48px; mask-image: linear-gradient(transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+.info-panel[data-level="detail"] > .panel-scroll, .info-panel[data-level="detail"] > .panel-satellites { display: none; }
+.info-panel[data-level="detail"] .panel-glass { left: -150px; }
+.info-panel[data-level="detail"] .glass-layer-soft { background: #07101c99; --glass-mask: linear-gradient(90deg, transparent, #000 22%, #000 90%, transparent); }
+.cosmos-detail-document { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.65fr); gap: 36px; animation: detail-reveal .4s ease both; }
+.cosmos-detail-heading { align-self: start; position: sticky; top: 0; }
+.cosmos-detail-heading h2 { font-size: clamp(24px, 2.6vw, 36px); line-height: 1.5; font-weight: 400; margin: 14px 0 22px; }
+.cosmos-detail-document p, .cosmos-detail-document li { color: #bdcad8; font-size: 13px; line-height: 2; }
+.cosmos-detail-heading .detail-kicker, .cosmos-detail-heading .detail-result { color: var(--planet-color); }
+.cosmos-detail-heading time, .cosmos-detail-document small { color: #90a6bb; font-size: 11px; line-height: 1.9; }
+.cosmos-detail-document h2, .cosmos-detail-document h3 { font-weight: 500; line-height: 1.6; }
+.cosmos-detail-main > h2, .cosmos-prose h2 { font-size: 19px; margin: 32px 0 14px; }
+.cosmos-detail-main h3 { font-size: 15px; margin: 0 0 8px; }
+.cosmos-detail-main ul { padding-left: 20px; }
+.cosmos-detail-main a { border-bottom: 1px solid #9fb7ce66; padding-bottom: 3px; font-size: 12px; }
+.cosmos-detail-main a:hover { color: var(--planet-color); }
+.cosmos-detail-document figure { margin: 26px 0; }
+.cosmos-detail-document img { display: block; width: 100%; height: auto; max-width: 100%; border-radius: 3px; }
+.cosmos-detail-document figcaption { font-size: 10px; color: #94a5b8; line-height: 1.9; margin-top: 10px; }
+.cosmos-detail-document table { width: 100%; border-collapse: collapse; font-size: 11px; line-height: 1.8; }
+.cosmos-detail-document th, .cosmos-detail-document td { border-bottom: 1px solid #a4bfd422; padding: 10px 5px; text-align: left; }
+.detail-tags, .detail-resources { display: flex; gap: 8px 16px; flex-wrap: wrap; margin: 20px 0; }
+.detail-tags span { color: #a5b6c7; font-size: 10px; }
+.detail-record { padding: 18px 0; border-bottom: 1px solid #b2c8df1a; }
+.detail-contact { display: grid; justify-items: start; gap: 22px; margin-top: 30px; }
+@keyframes detail-reveal { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 .satellite-entry { border: 0; border-bottom: 1px solid transparent; background: none; text-align: left; padding: 7px 0; margin: 0 16px 6px 0; font-size: 11px; color: #91a4b7; }
 .satellite-entry:hover, .satellite-entry[aria-pressed="true"] { color: var(--planet-color); border-bottom-color: var(--planet-color); }
 .transition-veil { position: absolute; inset: 0; z-index: 15; background: #020306; display: flex; flex-direction: column; gap: 25px; align-items: center; justify-content: center; pointer-events: all; }
@@ -63,18 +95,23 @@ button:focus-visible, a:focus-visible, canvas:focus-visible, [tabindex]:focus-vi
 .scene-error a { margin-top: 20px; font-size: 13px; text-decoration: underline; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 @media (max-width: 1100px) {
-  .info-panel { top: 105px; width: 34%; right: 3%; bottom: 68px; }
+  .info-panel { top: 105px; width: 34%; right: 3%; }
   .panel-entry { padding-left: 20px; padding-right: 20px; }
   .panel-scroll h2 { font-size: 27px; }
 }
 @media (max-height: 760px) {
   .cosmos-header { height: 75px; }
-  .info-panel { top: 92px; bottom: 68px; }
+  .info-panel { top: 92px; }
 }
 @media (max-width: 700px) {
   .brand-name, .brand-divider, .demo-badge { display: none; }
   .cosmos-header { height: 70px; }
-  .info-panel { top: 86px; right: 12px; bottom: 68px; width: 46%; }
+  .info-panel { top: 86px; right: 12px; bottom: 16px; width: 46%; }
+  .info-panel[data-level="detail"] { width: calc(100% - 24px); }
+  .cosmos-detail-document { grid-template-columns: 1fr; gap: 20px; }
+  .cosmos-detail-heading { position: static; }
+  .detail-scroll { padding-left: 18px; padding-right: 18px; }
+  .cosmos-detail-heading h2 { font-size: 26px; }
   .panel-entry { padding: 32px 14px 38px; }
   .panel-scroll h2 { font-size: 20px; }
   .panel-content p, .panel-description { font-size: 12px; }
@@ -82,4 +119,4 @@ button:focus-visible, a:focus-visible, canvas:focus-visible, [tabindex]:focus-vi
   .panel-satellites { padding-left: 14px; padding-right: 14px; }
   .panel-glass { right: -12px; left: -82px; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

@@ -11,6 +11,9 @@ export class SatelliteOrbitController {
   frontAngle = Math.PI / 2;
   private selected = -1;
   private clickTarget: number | null = null;
+  private wheelStart = 0;
+  private wheelElapsed = 0;
+  private wheelPending = false;
   private anchors: { angle: number; index: number }[];
 
   constructor(phases: readonly number[]) {
@@ -40,17 +43,19 @@ export class SatelliteOrbitController {
     this.frontAngle = frontAngle;
     this.selected = this.phases.length ? Math.max(0, Math.min(this.phases.length - 1, index)) : -1;
     if (this.selected >= 0) this.rotation = this.frontAngle - this.phases[this.selected];
-    this.targetRotation = this.rotation; this.clickTarget = null;
+    this.stop();
   }
 
   setFrontAngle(angle: number) {
     const difference = angle - this.frontAngle;
     this.frontAngle = angle; this.rotation += difference; this.targetRotation += difference;
+    this.wheelStart += difference;
   }
 
   select(index: number, immediate = false) {
     if (!this.active || !Number.isInteger(index) || index < 0 || index >= this.phases.length) return;
     this.targetRotation = this.rotation + signedAngle(this.frontAngle - this.phases[index] - this.rotation);
+    this.wheelPending = false;
     this.clickTarget = index;
     if (immediate) { this.rotation = this.targetRotation; this.selected = index; this.clickTarget = null; }
   }
@@ -61,18 +66,24 @@ export class SatelliteOrbitController {
     this.select(this.order[(current + Math.sign(direction) + this.order.length) % this.order.length], immediate);
   }
 
-  wheel(delta: number, deltaMode = 0, pageHeight = 900) {
+  wheel(delta: number, deltaMode = 0, pageHeight = 900, immediate = false) {
     if (!this.active || !this.phases.length || !Number.isFinite(delta) || delta === 0) return;
     const pixels = delta * (deltaMode === 1 ? 16 : deltaMode === 2 ? pageHeight : 1);
-    const previous = this.contentPosition;
-    this.rotation -= Math.max(-240, Math.min(240, pixels)) * .006;
-    this.targetRotation = this.rotation; this.clickTarget = null;
-    this.commitCrossing(previous);
+    const increment = -Math.max(-240, Math.min(240, pixels)) * .006;
+    // Accumulate matching detents; reversing discards the old unfinished direction.
+    if (this.clickTarget !== null || Math.sign(this.targetRotation - this.rotation) !== Math.sign(increment)) this.targetRotation = this.rotation;
+    this.targetRotation += increment;
+    this.wheelStart = this.rotation; this.wheelElapsed = 0;
+    this.wheelPending = true; this.clickTarget = null;
+    if (immediate) this.update(.12);
+  }
+
+  stop() {
+    this.targetRotation = this.rotation; this.clickTarget = null; this.wheelPending = false;
   }
 
   exit() {
-    this.active = false; this.targetRotation = this.rotation;
-    this.clickTarget = null;
+    this.active = false; this.stop();
   }
 
   private commitCrossing(previous: number) {
@@ -89,6 +100,15 @@ export class SatelliteOrbitController {
     if (!this.active) {
       if (animate) this.rotation += dt * .035;
       this.targetRotation = this.rotation;
+      return;
+    }
+    if (this.wheelPending) {
+      const previous = this.contentPosition;
+      this.wheelElapsed = Math.min(.12, this.wheelElapsed + Math.max(0, delta));
+      const fraction = this.wheelElapsed / .12;
+      this.rotation = this.wheelStart + (this.targetRotation - this.wheelStart) * (1 - (1 - fraction) ** 3);
+      if (fraction === 1) { this.rotation = this.targetRotation; this.wheelPending = false; }
+      this.commitCrossing(previous);
       return;
     }
     if (this.clickTarget === null) return;

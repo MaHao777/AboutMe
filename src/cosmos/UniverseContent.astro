@@ -1,0 +1,84 @@
+---
+import { render } from 'astro:content';
+import { getPublicProjects, getPublicNotes, formatDate } from '../lib/content';
+import { profile, experiences, interests, timeline } from '../data/profile';
+import { achievements } from '../data/achievements';
+import { scholarships, languageScores } from '../data/resume';
+import { links } from '../data/links';
+import { universeData, type ContentEntry } from './universeData';
+
+const [projects, notes] = await Promise.all([getPublicProjects(), getPublicNotes()]);
+const projectViews = await Promise.all(projects.map(async (project) => ({ project, ...(await render(project)) })));
+const catalog: Record<string, Partial<ContentEntry>> = {
+  milestones: { description: profile.introduction, body: [profile.school, profile.role] },
+  awards: { description: '竞赛、科研与学习中的阶段成果。', body: ['光电设计竞赛东部区赛一等奖 · 莙政基金入选 · OPC 优秀项目奖'] },
+  engineering: { description: '约四个月企业实践，从测试工具到车辆现场联调。', body: ['MQTT 模拟测试 · 机型适配 · ROS 2 消息中转'] },
+  music: { description: profile.personalIntroduction, body: ['音乐与钢琴 · 运动 · 摄影与影像 · 知识管理'] },
+  photography: { title: '生活与文字', description: interests.find((item) => item.number === '03')!.description, body: ['日常记录、原子笔记与智能助手使用分享。'] },
+  hello: { description: '光电、软件与新的合作方向。', body: [profile.location, profile.email ?? links.githubLabel] },
+};
+const projectEntries: Record<string, string> = {
+  wavefront: 'event-optics', fringe: 'fringe-lock', detection: 'traceformer', vehicle: 'vehicle-communication', luminamind: 'luminamind', wangdesk: 'wangdesk',
+};
+for (const [entryId, slug] of Object.entries(projectEntries)) {
+  const project = projects.find((item) => item.id === slug);
+  if (!project) throw new Error(`Missing public COSMOS project: ${slug}`);
+  catalog[entryId] = { description: project.data.description, body: [project.data.outcome], detailId: `project-${slug}` };
+}
+for (const planet of universeData) {
+  for (const entry of planet.satellites) {
+    if (!catalog[entry.id]) throw new Error(`Missing public COSMOS entry: ${entry.id}`);
+    catalog[entry.id].detailId ??= entry.id;
+  }
+}
+const serialized = JSON.stringify(catalog).replaceAll('<', '\\u003c');
+const statusLabels = { ongoing: '进行中', completed: '已完成', archived: '已归档' };
+---
+<script type="application/json" data-universe-content is:inline set:html={serialized}></script>
+
+{projectViews.map(({ project, Content }) => {
+  const data = project.data;
+  return <template data-content-detail={`project-${project.id}`}>
+    <article class="cosmos-detail-document">
+      <header class="cosmos-detail-heading"><p class="detail-kicker">{data.category} · {statusLabels[data.status]}</p><h2>{data.title}</h2><p class="detail-lede">{data.description}</p><p class="detail-result">{data.outcome}</p><time>{formatDate(data.date)}</time></header>
+      <div class="cosmos-detail-main">
+        <section class="detail-facts"><h3>我的贡献</h3><p>{data.role}</p><div class="detail-tags">{data.technologies.map((technology) => <span>{technology}</span>)}</div></section>
+        {data.cover && <figure><a href={data.cover} target="_blank" rel="noopener noreferrer"><img src={data.cover} alt={data.coverAlt} width={data.coverWidth} height={data.coverHeight} loading="lazy" /></a><figcaption>{data.coverCaption}</figcaption></figure>}
+        {data.highlights.length > 0 && <div class="detail-highlights">{data.highlights.map((highlight) => <section><h3>{highlight.title}</h3><p>{highlight.description}</p></section>)}</div>}
+        <div class="cosmos-prose"><Content /></div>
+        {data.gallery.map((item) => <figure><a href={item.src} target="_blank" rel="noopener noreferrer"><img src={item.src} alt={item.alt} loading="lazy" /></a><figcaption>{item.caption}</figcaption></figure>)}
+        <div class="detail-resources">{data.github && <a href={data.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}{data.paper && <a href={data.paper} target="_blank" rel="noopener noreferrer">论文 ↗</a>}{data.demo && <a href={data.demo} target="_blank" rel="noopener noreferrer">演示 ↗</a>}</div>
+      </div>
+    </article>
+  </template>;
+})}
+
+<template data-content-detail="milestones"><article class="cosmos-detail-document">
+  <header class="cosmos-detail-heading"><p class="detail-kicker">个人发展</p><h2>{profile.name}</h2><p class="detail-lede">{profile.introduction}</p><p>{profile.school}</p><p>{profile.location}</p></header>
+  <div class="cosmos-detail-main"><h2>一路走来</h2>{timeline.filter((item) => item.published).map((item) => <section class="detail-record"><small>{item.year}</small><h3>{item.title}</h3><p>{item.description}</p></section>)}<h2>科研与实践</h2>{experiences.filter((item) => item.published).map((item) => <section class="detail-record"><small>{item.period} · {item.place}</small><h3>{item.title}</h3><p>{item.description}</p><ul>{item.outcomes.map((outcome) => <li>{outcome}</li>)}</ul></section>)}</div>
+</article></template>
+
+<template data-content-detail="awards"><article class="cosmos-detail-document">
+  <header class="cosmos-detail-heading"><p class="detail-kicker">阶段成果</p><h2>竞赛与成果</h2><p class="detail-lede">科研、竞赛与学习中的记录。</p></header>
+  <div class="cosmos-detail-main">{achievements.filter((item) => item.published).map((item) => <section class="detail-record"><small>{item.year} · {item.result}</small><h3>{item.title}</h3><p>{item.detail}</p></section>)}<h2>奖学金</h2><ul>{scholarships.filter((item) => item.published).map((item) => <li>{item.period} · {item.title}</li>)}</ul><h2>语言能力</h2>{languageScores.filter((item) => item.published).map((item) => <p>{item.title} {item.score} · {item.dateLabel}</p>)}</div>
+</article></template>
+
+<template data-content-detail="engineering"><article class="cosmos-detail-document">
+  <header class="cosmos-detail-heading"><p class="detail-kicker">企业实践</p><h2>工程记录</h2><p class="detail-lede">从实现到验证，再到交付。</p></header>
+  <div class="cosmos-detail-main">{experiences.filter((item) => item.published && item.period === '实习经历').map((item) => <section><h2>{item.title}</h2><p>{item.place}</p><p>{item.description}</p><ul>{item.outcomes.map((outcome) => <li>{outcome}</li>)}</ul></section>)}<h2>从开发到联调</h2><p>明确通信接口、对齐现场状态并保留可复现日志，让问题更容易定位，也让协作更顺畅。</p></div>
+</article></template>
+
+<template data-content-detail="music"><article class="cosmos-detail-document">
+  <header class="cosmos-detail-heading"><p class="detail-kicker">工作之外</p><h2>生活拾页</h2><p class="detail-lede">{profile.personalIntroduction}</p></header>
+  <div class="cosmos-detail-main">{interests.filter((item) => item.published).map((item) => <section class="detail-record"><small>{item.number}</small><h3>{item.title}</h3><p>{item.description}</p></section>)}</div>
+</article></template>
+
+<template data-content-detail="photography"><article class="cosmos-detail-document">
+  <header class="cosmos-detail-heading"><p class="detail-kicker">生活与文字</p><h2>一些文字</h2><p class="detail-lede">日常、知识管理与工具实践。</p></header>
+  <div class="cosmos-detail-main">{notes.map((note) => <section class="detail-record"><small>{note.data.source} · {formatDate(note.data.date)}</small><h3>{note.data.title}</h3><p>{note.data.description}</p><a href={note.data.externalUrl ?? `/notes/${note.id}/`} target="_blank" rel="noopener noreferrer">阅读原文 ↗</a></section>)}</div>
+</article></template>
+
+<template data-content-detail="hello"><article class="cosmos-detail-document">
+  <header class="cosmos-detail-heading"><p class="detail-kicker">CONTACT</p><h2>打个招呼</h2><p class="detail-lede">交流想法与合作方向。</p></header>
+  <div class="cosmos-detail-main"><h2>{profile.name} · {profile.englishName}</h2><p>{profile.role}</p><p>{profile.school} · {profile.location}</p><div class="detail-contact">{profile.email && <a href={`mailto:${profile.email}`}>{profile.email} ↗</a>}<a href={links.github} target="_blank" rel="noopener noreferrer">GitHub · {links.githubLabel} ↗</a>{profile.resumeUrl && <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">个人简历 ↗</a>}</div></div>
+</article></template>

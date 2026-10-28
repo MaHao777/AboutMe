@@ -52,7 +52,8 @@ export function mountUniverse(host: HTMLElement) {
   const flight = new FlightController(ROUTE_LENGTH);
   const ship = new Spaceship(); scene.add(ship.group);
   const blackHole = new BlackHole(); scene.add(blackHole.group);
-  const systems = universeData.map((data) => new PlanetSystem(data));
+  const catalog = JSON.parse(host.querySelector('[data-universe-content]')?.textContent ?? '{}') as Record<string, Partial<ContentEntry>>;
+  const systems = universeData.map((data) => new PlanetSystem({ ...data, satellites: data.satellites.map((entry) => ({ ...entry, ...catalog[entry.id] })) }));
   systems.forEach((system) => scene.add(system.planet.group));
   addStarfield(scene); addRouteMarkers(scene);
 
@@ -125,7 +126,7 @@ export function mountUniverse(host: HTMLElement) {
   const panel = new PlanetInfoPanel(panelHost, closePanel, (planet, id) => {
     const target = targets.find((entry) => entry.planet.id === planet.id && entry.entry.id === id);
     if (target) explore(target);
-  });
+  }, () => { exploredSystem?.orbit.stop(); setHover(null); });
 
   function setHover(target: ExploreTarget | null) {
     if (hovered === target) return;
@@ -137,6 +138,7 @@ export function mountUniverse(host: HTMLElement) {
   }
 
   function explore(target: ExploreTarget) {
+    if (panel.isDetailOpen) return;
     if (flight.mode !== 'flight' && flight.mode !== 'exploring') return;
     if (flight.mode === 'flight' && !flight.explore()) return;
     const system = systems.find((system) => system.data.id === target.planet.id)!;
@@ -178,7 +180,7 @@ export function mountUniverse(host: HTMLElement) {
 
   function updateFocusFraming() {
     if (exploredSystem) {
-      focusPanelFraction = 1 - panelHost.offsetLeft / Math.max(1, width);
+      if (!panel.isDetailOpen) focusPanelFraction = 1 - panelHost.offsetLeft / Math.max(1, width);
       const direction = rig.focusViewDirection(exploredSystem.extent, focusPanelFraction);
       exploredSystem.orbit.setFrontAngle(orbitFrontAngle(exploredSystem.data.orbitOrientation, direction.toArray() as [number, number, number]));
       panel.resize();
@@ -208,20 +210,27 @@ export function mountUniverse(host: HTMLElement) {
     updateFocusFraming();
   }
   const resizeObserver = new ResizeObserver(resize); resizeObserver.observe(host); resize();
+  const panelResizeObserver = new ResizeObserver(updateFocusFraming); panelResizeObserver.observe(panelHost);
 
   host.addEventListener('wheel', (event) => {
-    // Every exploration surface, including the content panel, scrubs the same orbit.
     if (event.ctrlKey) return;
+    if (panel.isDetailOpen) {
+      // Only the second-level reader uses native scrolling; the orbit stays frozen.
+      if (!(event.target instanceof Element && event.target.closest('[data-detail-scroll]'))) event.preventDefault();
+      return;
+    }
     event.preventDefault();
-    if (exploredSystem) exploredSystem.orbit.wheel(event.deltaY, event.deltaMode, height);
+    if (exploredSystem) exploredSystem.orbit.wheel(event.deltaY, event.deltaMode, height, motion.matches);
     else flight.wheel(event.deltaY, event.deltaMode, height);
   }, { passive: false, signal });
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      if (panel.closeDetail()) return;
       if (selected) closePanel();
       return;
     }
     if (event.target instanceof Element && event.target.closest('input, textarea, select, [contenteditable]')) return;
+    if (panel.isDetailOpen) return;
     if (exploredSystem && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
       event.preventDefault(); exploredSystem.orbit.step(event.key === 'ArrowRight' ? 1 : -1, motion.matches); return;
     }
@@ -272,6 +281,7 @@ export function mountUniverse(host: HTMLElement) {
   }
 
   function updateLabels(camera: PerspectiveCamera) {
+    const topInset = host.querySelector<HTMLElement>('.cosmos-header')!.offsetHeight + 12;
     for (const label of labels) {
       label.target.mesh.getWorldPosition(world);
       view.copy(world).applyMatrix4(camera.matrixWorldInverse);
@@ -287,7 +297,7 @@ export function mountUniverse(host: HTMLElement) {
       const labelWidth = label.target.satellite ? 140 : 238;
       const coveredByPanel = !!selected && x > width - Math.min(410, width * .42) - labelWidth / 2;
       const labelHeight = label.target.satellite ? 48 : 102;
-      let hidden = !visibleMode || !near || view.z > -2 || projected.z > 1 || x < -20 || x > width + 20 || y < 85 + labelHeight || y > height - 45 || coveredByPanel;
+      let hidden = !visibleMode || !near || view.z > -2 || projected.z > 1 || Math.abs(projected.y) > 1.35 || x < -20 || x > width + 20 || coveredByPanel;
       if (!hidden && label.target.satellite) {
         labelDirection.copy(world).sub(camera.position).normalize();
         // DOM labels must respect the planet's 3D occlusion, just like its satellites.
@@ -302,7 +312,8 @@ export function mountUniverse(host: HTMLElement) {
       label.element.hidden = hidden;
       if (!hidden) {
         const labelX = Math.max(labelWidth / 2 + 12, Math.min(width - labelWidth / 2 - 12, x));
-        label.element.style.transform = `translate3d(${labelX}px,${y}px,0) translate(-50%,-100%)`;
+        const labelY = Math.max(topInset + labelHeight, Math.min(height - 45, y));
+        label.element.style.transform = `translate3d(${labelX}px,${labelY}px,0) translate(-50%,-100%)`;
         label.element.style.opacity = String(Math.min(1, (110 - distance) / 25));
       }
     }
@@ -353,7 +364,7 @@ export function mountUniverse(host: HTMLElement) {
   host.dataset.state = 'flight'; updateFlightState(); frame = requestAnimationFrame(render);
   return () => {
     if (disposed) return;
-    disposed = true; cancelAnimationFrame(frame); abort.abort(); resizeObserver.disconnect();
+    disposed = true; cancelAnimationFrame(frame); abort.abort(); resizeObserver.disconnect(); panelResizeObserver.disconnect();
     panel.dispose(); labelLayer.replaceChildren();
     const geometries = new Set<BufferGeometry>();
     const materials = new Set<import('three').Material>();

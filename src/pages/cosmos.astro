@@ -1,5 +1,6 @@
 ---
 import '../cosmos/cosmos.css';
+import UniverseContent from '../cosmos/UniverseContent.astro';
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -28,7 +29,12 @@ import '../cosmos/cosmos.css';
         <div class="panel-top"><span data-panel-eyebrow></span><button type="button" data-close-panel aria-label="关闭探索面板">✕</button></div>
         <div class="panel-scroll" tabindex="0" aria-label="项目内容，滚轮可同步切换卫星"></div>
         <nav class="panel-satellites" data-panel-satellites aria-label="选择卫星项目"></nav>
+        <section class="panel-detail" data-panel-detail hidden>
+          <button type="button" class="detail-back" data-detail-back>← 返回简介</button>
+          <div class="detail-scroll" data-detail-scroll tabindex="0" aria-label="项目完整内容"></div>
+        </section>
       </aside>
+      <UniverseContent />
 
       <div class="transition-veil" data-transition hidden><span class="transition-orbit" aria-hidden="true"></span><p data-transition-text>穿越事件视界</p></div>
       <section class="scene-error" data-scene-error hidden role="alert"><h1>暂时无法开启宇宙场景</h1><p>此 Demo 需要 WebGL 2。请使用开启硬件加速的桌面浏览器；如果场景中断，请刷新后重试。</p><a href="/cosmos/">重新载入</a><a href="/">返回个人网站 ↗</a></section>
