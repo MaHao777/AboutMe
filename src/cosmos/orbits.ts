@@ -1,9 +1,9 @@
-import type { PlanetData, SatelliteData } from './universeData';
+import type { OrbitOrientation, PlanetData, SatelliteData } from './universeData';
 
 export const PLANET_HALO_SCALE = 1.055;
 export const PLANET_RING_OUTER_SCALE = 1.55;
 export const SATELLITE_CLEARANCE = .75;
-const ORBIT_TILT = .4;
+const DEFAULT_ORIENTATION: OrbitOrientation = { tilt: .4, roll: 0 };
 
 export function planetVisualRadius(planet: Pick<PlanetData, 'radius' | 'ring'>) {
   return planet.radius * (planet.ring ? PLANET_RING_OUTER_SCALE : PLANET_HALO_SCALE);
@@ -16,8 +16,16 @@ export function satelliteOrbitRadius(
   return Math.max(satellite.orbit, planetVisualRadius(planet) + satellite.radius + SATELLITE_CLEARANCE);
 }
 
-/** Rotate a circle as a whole: tilting must never shrink its distance to the planet. */
-export function satelliteOrbitPosition(radius: number, angle: number): [number, number, number] {
-  const vertical = Math.sin(angle) * radius;
-  return [Math.cos(angle) * radius, vertical * Math.cos(ORBIT_TILT), vertical * Math.sin(ORBIT_TILT)];
+/** Rotate an XY plane rigidly; circles, satellites and the selection bracket share it. */
+export function orbitPlanePosition(x: number, y: number, orientation: OrbitOrientation): [number, number, number] {
+  const tiltedY = y * Math.cos(orientation.tilt);
+  return [
+    x * Math.cos(orientation.roll) - tiltedY * Math.sin(orientation.roll),
+    x * Math.sin(orientation.roll) + tiltedY * Math.cos(orientation.roll),
+    y * Math.sin(orientation.tilt),
+  ];
+}
+
+export function satelliteOrbitPosition(radius: number, angle: number, orientation = DEFAULT_ORIENTATION): [number, number, number] {
+  return orbitPlanePosition(Math.cos(angle) * radius, Math.sin(angle) * radius, orientation);
 }

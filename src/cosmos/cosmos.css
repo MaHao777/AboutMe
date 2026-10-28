@@ -32,23 +32,31 @@ button:focus-visible, a:focus-visible, canvas:focus-visible, [tabindex]:focus-vi
 .satellite-label strong { font-size: 12px; letter-spacing: .04em; }
 .satellite-label .label-description, .satellite-label .label-hint { display: none; }
 .satellite-label .label-index { font-size: 8px; }
-.status-dot { display: inline-block; width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: #a7d2cc; box-shadow: 0 0 7px #a7d2cc3b; }
-.info-panel { position: absolute; top: 111px; right: 3.5%; bottom: 68px; width: min(370px, 36%); z-index: 6; display: flex; flex-direction: column; background: #0a1221f2; border: 1px solid #7291ac3b; border-top: 2px solid var(--planet-color); border-radius: 3px; box-shadow: 0 20px 70px #0005; backdrop-filter: blur(15px); }
-.panel-top { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px solid #8dacc018; }
-.panel-top > span { font-family: Consolas, "Microsoft YaHei", monospace; font-size: 9px; letter-spacing: .08em; color: var(--planet-color); }
-.panel-top button { background: transparent; border: 0; font-size: 15px; padding: 4px 2px 4px 10px; color: #93a7b9; }
+.info-panel { position: absolute; top: 111px; right: 3.5%; bottom: 68px; width: min(370px, 36%); z-index: 6; display: flex; flex-direction: column; isolation: isolate; }
+.panel-glass { position: absolute; inset: -28px -3.5vw -22px -42px; pointer-events: none; z-index: -1; }
+/* Masks stay on the blur layers themselves; an ancestor mask would isolate their backdrop. */
+.glass-layer { position: absolute; inset: 0; mask-image: var(--glass-mask), linear-gradient(transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-composite: intersect; }
+.glass-layer-deep { backdrop-filter: blur(26px) saturate(125%); background: linear-gradient(100deg, #b5d8fa10, #08132388 35%, #142d4538); --glass-mask: linear-gradient(90deg, transparent, #000 12%, #000 30%, transparent 73%); }
+.glass-layer-soft { backdrop-filter: blur(12px); background: #07142120; --glass-mask: linear-gradient(90deg, transparent 15%, #000 38%, #000 52%, transparent 93%); }
+.glass-layer-clear { backdrop-filter: blur(3px); background: linear-gradient(135deg, #e0edff06, transparent 65%); --glass-mask: linear-gradient(90deg, transparent 40%, #000 70%, transparent); }
+.panel-top { padding: 10px 24px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.panel-top > span { font-family: Consolas, "Microsoft YaHei", monospace; font-size: 10px; letter-spacing: .12em; color: var(--planet-color); }
+.panel-top button { background: transparent; border: 0; border-radius: 50%; width: 30px; height: 30px; font-size: 17px; padding: 0; color: #aebecd; }
 .panel-top button:hover { color: white; }
-.panel-scroll { padding: 23px 23px 16px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #53667a transparent; }
-.panel-scroll h2 { font-size: 26px; font-weight: 400; letter-spacing: .06em; line-height: 1.5; margin: 0 0 10px; }
-.panel-description { color: var(--planet-color); font-size: 12px; line-height: 1.9; margin: 0 0 24px; }
-.panel-content p { font-size: 12px; line-height: 2.1; color: #a9b8c8; margin: 0 0 15px; }
-.content-link { display: inline-block; color: #dbe8f0; font-size: 11px; margin: 0 0 20px; border-bottom: 1px solid #8197aa; padding-bottom: 4px; }
-.panel-satellites h3 { margin: 24px 0 12px; color: #8198ad; font-size: 10px; font-weight: 400; letter-spacing: .08em; }
-.satellite-entry { border: 1px solid #708ba02b; background: #8fa9c105; text-align: left; padding: 8px 10px; margin: 0 6px 8px 0; font-size: 11px; color: #c8d9e5; }
-.satellite-entry:hover, .satellite-entry[aria-pressed="true"] { border-color: var(--planet-color); background: #a0bfd00b; }
-.panel-note { color: #667e94; font-size: 10px; line-height: 1.8; margin-top: 23px; }
-.panel-bottom { margin-top: auto; padding: 13px 20px; border-top: 1px solid #8dacc018; font-size: 9px; color: #91a8b9; display: flex; align-items: center; gap: 7px; }
-.panel-bottom > span:last-child { margin-left: auto; color: #637f96; font-family: Consolas, "Microsoft YaHei", monospace; }
+.panel-top button:hover { background: #d7e8ff0c; }
+.panel-scroll { position: relative; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: none; mask-image: linear-gradient(transparent, #000 30px, #000 calc(100% - 40px), transparent); }
+.info-panel[data-motion="forward"] .panel-scroll, .info-panel[data-motion="backward"] .panel-scroll { overflow-y: hidden; }
+.panel-entry { min-height: 100%; padding: 38px 24px 48px; display: flex; flex-direction: column; justify-content: center; }
+.panel-entry-ghost { position: absolute; left: 0; right: 0; min-height: 0; pointer-events: none; }
+.panel-scroll h2 { font-size: 32px; font-weight: 400; letter-spacing: .05em; line-height: 1.5; margin: 0 0 13px; text-wrap: balance; }
+.panel-description { color: var(--planet-color); font-size: 13px; line-height: 1.9; margin: 0 0 28px; }
+.panel-content p { font-size: 13px; line-height: 2.1; color: #becbd9; margin: 0 0 18px; }
+.content-link { display: inline-block; color: #e0eaf2; font-size: 12px; margin: 4px 0 0; border-bottom: 1px solid #a0b3c071; padding-bottom: 5px; }
+.panel-satellites { padding: 12px 24px 20px; }
+.satellite-entry { border: 0; border-bottom: 1px solid transparent; background: none; text-align: left; padding: 7px 0; margin: 0 16px 6px 0; font-size: 11px; color: #91a4b7; }
+.satellite-entry:hover, .satellite-entry[aria-pressed="true"] { color: var(--planet-color); border-bottom-color: var(--planet-color); }
+.panel-bottom { padding: 0 24px 12px; font-size: 9px; line-height: 1.8; color: #8298ac; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.panel-bottom > span:last-child { white-space: nowrap; color: #849bae; font-family: Consolas, "Microsoft YaHei", monospace; }
 .transition-veil { position: absolute; inset: 0; z-index: 15; background: #020306; display: flex; flex-direction: column; gap: 25px; align-items: center; justify-content: center; pointer-events: all; }
 .transition-veil p { font-size: 12px; letter-spacing: .3em; color: #baae9a; }
 .transition-orbit { width: 70px; height: 70px; border: 1px solid #c8a16b; border-radius: 50%; box-shadow: 0 0 30px #d2a15e18; }
@@ -59,8 +67,8 @@ button:focus-visible, a:focus-visible, canvas:focus-visible, [tabindex]:focus-vi
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 @media (max-width: 1100px) {
   .info-panel { top: 105px; width: 34%; right: 3%; bottom: 68px; }
-  .panel-scroll { padding: 18px; }
-  .panel-scroll h2 { font-size: 22px; }
+  .panel-entry { padding-left: 20px; padding-right: 20px; }
+  .panel-scroll h2 { font-size: 27px; }
 }
 @media (max-height: 760px) {
   .cosmos-header { height: 75px; }
@@ -70,9 +78,13 @@ button:focus-visible, a:focus-visible, canvas:focus-visible, [tabindex]:focus-vi
   .brand-name, .brand-divider, .demo-badge { display: none; }
   .cosmos-header { height: 70px; }
   .info-panel { top: 86px; right: 12px; bottom: 68px; width: 46%; }
-  .panel-scroll { padding: 16px 14px; }
+  .panel-entry { padding: 32px 14px 38px; }
   .panel-scroll h2 { font-size: 20px; }
+  .panel-content p, .panel-description { font-size: 12px; }
   .panel-top, .panel-bottom { padding-left: 12px; padding-right: 12px; }
+  .panel-satellites { padding-left: 14px; padding-right: 14px; }
+  .panel-bottom { font-size: 8px; gap: 6px; }
+  .panel-glass { right: -12px; left: -24px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 .flight-hint { position: absolute; bottom: 24px; left: 16px; right: 16px; margin: 0; text-align: center; font-size: 12px; line-height: 1.8; color: #a3b4c5; pointer-events: none; text-shadow: 0 1px 6px #050811; }

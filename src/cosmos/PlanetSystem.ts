@@ -2,7 +2,7 @@ import { BufferGeometry, LineLoop, LineSegments, LineBasicMaterial, Vector3 } fr
 import { Planet } from './Planet';
 import { Satellite } from './Satellite';
 import type { PlanetData } from './universeData';
-import { satelliteOrbitPosition, satelliteOrbitRadius } from './orbits';
+import { orbitPlanePosition, satelliteOrbitPosition, satelliteOrbitRadius } from './orbits';
 import { SatelliteOrbitController } from './SatelliteOrbitController';
 
 export class PlanetSystem {
@@ -16,10 +16,10 @@ export class PlanetSystem {
     this.planet = new Planet(data);
     this.orbit = new SatelliteOrbitController(data.satellites.map((entry) => entry.phase));
     this.satellites = data.satellites.map((entry) => {
-      const satellite = new Satellite(entry, data.color, satelliteOrbitRadius(data, entry));
+      const satellite = new Satellite(entry, data.color, satelliteOrbitRadius(data, entry), data.orbitOrientation);
       this.planet.group.add(satellite.group);
       const points = Array.from({ length: 90 }, (_, i) =>
-        new Vector3(...satelliteOrbitPosition(satellite.orbitRadius, i / 90 * Math.PI * 2)),
+        new Vector3(...satelliteOrbitPosition(satellite.orbitRadius, i / 90 * Math.PI * 2, data.orbitOrientation)),
       );
       this.planet.group.add(new LineLoop(new BufferGeometry().setFromPoints(points), new LineBasicMaterial({ color: data.color, transparent: true, opacity: .1 })));
       return satellite;
@@ -33,7 +33,9 @@ export class PlanetSystem {
       right, .9, 0, right, -.9, 0, right, -.9, 0, right - .35, -.9, 0,
     ];
     this.selectionMarker = new LineSegments(
-      new BufferGeometry().setFromPoints(Array.from({ length: vertices.length / 3 }, (_, i) => new Vector3(...vertices.slice(i * 3, i * 3 + 3) as [number, number, number]))),
+      new BufferGeometry().setFromPoints(Array.from({ length: vertices.length / 3 }, (_, i) =>
+        new Vector3(...orbitPlanePosition(vertices[i * 3], vertices[i * 3 + 1], data.orbitOrientation)),
+      )),
       new LineBasicMaterial({ color: data.color, transparent: true, opacity: .65 }),
     );
     this.selectionMarker.visible = false;

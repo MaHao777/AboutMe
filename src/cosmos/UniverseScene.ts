@@ -160,7 +160,8 @@ export function mountUniverse(host: HTMLElement) {
     const target = targets.find((target) => target.planet.id === exploredSystem!.data.id && target.entry.id === entry.id)!;
     if (target === selected) return;
     setHover(null); selected?.highlight(false); selected = target; selected.highlight(true);
-    panel.show(target.planet, target.entry, target.satellite);
+    const direction = exploredSystem.orbit.targetRotation <= exploredSystem.orbit.rotation ? 1 : -1;
+    panel.show(target.planet, target.entry, target.satellite, direction);
     labels.forEach((label) => {
       const current = label.target === selected;
       label.element.dataset.selected = String(current);

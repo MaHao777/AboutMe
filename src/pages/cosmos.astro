@@ -24,14 +24,16 @@ import '../cosmos/cosmos.css';
       <div class="hover-hint" data-hover-hint aria-hidden="true"></div>
 
       <aside class="info-panel" data-info-panel role="dialog" aria-modal="false" aria-labelledby="planet-panel-title" hidden>
+        <div class="panel-glass" aria-hidden="true"><span class="glass-layer glass-layer-deep"></span><span class="glass-layer glass-layer-soft"></span><span class="glass-layer glass-layer-clear"></span></div>
         <div class="panel-top"><span data-panel-eyebrow></span><button type="button" data-close-panel aria-label="关闭探索面板">✕</button></div>
         <div class="panel-scroll" tabindex="0" aria-label="星球内容，可滚动阅读">
-          <h2 id="planet-panel-title" data-panel-title></h2><p class="panel-description" data-panel-description></p>
-          <div class="panel-content" data-panel-content></div>
-          <div class="panel-satellites" data-panel-satellites></div>
-          <p class="panel-note">场景上滚轮转动卫星，内容自动切换。<br />在此面板内滚动可阅读当前项目。</p>
+          <article class="panel-entry" data-panel-entry>
+            <h2 id="planet-panel-title" data-panel-title></h2><p class="panel-description" data-panel-description></p>
+            <div class="panel-content" data-panel-content></div>
+          </article>
         </div>
-        <div class="panel-bottom"><span class="status-dot"></span> 飞船已悬停<span>ESC 返回航行</span></div>
+        <nav class="panel-satellites" data-panel-satellites aria-label="选择卫星项目"></nav>
+        <div class="panel-bottom"><span>场景滚轮切换 · 面板滚轮阅读</span><span>ESC 返回</span></div>
       </aside>
 
       <p class="flight-hint" data-flight-hint>滚轮前后航行 · 点击星球探索 · Esc 返回</p>
