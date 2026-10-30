@@ -26,9 +26,10 @@ export class PlanetSystem {
     this.extent = Math.max(data.radius * 1.6, ...this.satellites.map((entry) => entry.orbitRadius + entry.data.radius)) + .7;
   }
 
-  update(dt: number, animate: boolean) {
-    if (animate) this.planet.update(dt);
-    this.orbit.update(dt, animate);
-    this.satellites.forEach((satellite) => satellite.update(this.orbit.rotation));
+  update(dt: number, animateOrbit: boolean, reducedMotion = false) {
+    // 阅读内容时只暂停自动公转，主星仍保持缓慢自转。
+    this.planet.update(dt, !reducedMotion, reducedMotion);
+    this.orbit.update(dt, animateOrbit);
+    this.satellites.forEach((satellite) => satellite.update(this.orbit.rotation, dt, reducedMotion));
   }
 }

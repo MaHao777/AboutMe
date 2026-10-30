@@ -1,0 +1,5 @@
+---
+interface Props { src: string; alt: string; caption: string; }
+const { src, alt, caption } = Astro.props;
+---
+<figure class="evidence-figure"><a href={src} target="_blank" rel="noopener noreferrer" aria-label={`查看大图：${alt}`}><img src={src} alt={alt} loading="lazy" decoding="async" /></a><figcaption>{caption}</figcaption></figure>

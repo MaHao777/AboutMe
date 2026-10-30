@@ -1,0 +1,14 @@
+<script>
+  document.addEventListener('click', async (event) => {
+    const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-copy-contact]') : null;
+    if (!button) return;
+    const status = button.parentElement?.querySelector<HTMLElement>('[data-copy-status]');
+    try {
+      if (!navigator.clipboard) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(button.dataset.copyContact ?? '');
+      if (status) status.textContent = '微信号已复制';
+    } catch {
+      if (status) status.textContent = '请长按或选中上方微信号复制';
+    }
+  });
+</script>

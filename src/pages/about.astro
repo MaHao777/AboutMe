@@ -1,0 +1,16 @@
+---
+import '../cosmos/cosmos.css';
+import UniverseContent from '../cosmos/UniverseContent.astro';
+import ContactActions from '../cosmos/ContactActions.astro';
+import BlackHoleMark from '../cosmos/BlackHoleMark.astro';
+import { universeData } from '../cosmos/universeData';
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="description" content="马浩的个人介绍：教育与获奖、科研与实习、音乐和篮球、微信公众号文章及联系方式。" /><meta name="theme-color" content="#050811" /><title>认识马浩 · COSMOS 阅读版</title><link rel="icon" href="/favicon.svg" type="image/svg+xml" /></head>
+  <body class="reading-page">
+    <header class="reading-header"><a class="cosmos-brand" href="/"><BlackHoleMark /> COSMOS</a><a href="/">进入宇宙 ↗</a></header>
+    <main class="reading-layout"><aside class="reading-nav" aria-label="个人介绍目录"><p class="reading-label">FIVE PLANETS / 17 SATELLITES</p><h1>马浩</h1><p>苏州大学 · 集萃行本班<br />大三在读</p><nav>{universeData.map((planet) => <div style={`--planet-color:${planet.color}`}><p><span>{planet.index}</span> {planet.title}</p>{planet.satellites.map((satellite) => <a href={`#${satellite.id}`}>{satellite.title}</a>)}</div>)}</nav></aside><div class="reading-content"><UniverseContent mode="reading" /></div></main>
+    <ContactActions />
+  </body>
+</html>

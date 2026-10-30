@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { FlightController } from '../src/cosmos/FlightController.ts';
+import { ARRIVAL_DURATION, DEPARTURE_DURATION, FlightController } from '../src/cosmos/FlightController.ts';
 
 const tick = (flight, seconds) => {
   for (let elapsed = 0; elapsed < seconds; elapsed += 1 / 120) flight.update(1 / 120);
@@ -46,7 +46,7 @@ test('black hole resets all input once behind the fade and permits another voyag
   const flight = new FlightController(328);
   flight.flightProgress = .999; flight.wheel(240); tick(flight, .1);
   assert.equal(flight.mode, 'departing');
-  for (let i = 0; i < 360 && flight.mode !== 'flight'; i++) {
+  for (let i = 0; i < 720 && flight.mode !== 'flight'; i++) {
     flight.wheel(240); flight.hold(1); flight.update(1 / 120);
   }
   assert.equal(flight.mode, 'flight');
@@ -60,15 +60,44 @@ test('black hole resets all input once behind the fade and permits another voyag
   assert.ok(flight.distance > 0);
 });
 
-test('manual restart ignores repeated trigger and fades before resetting', () => {
+test('manual restart ignores repeated triggers and resets only under the covered transit seam', () => {
   const flight = new FlightController(328);
   flight.flightProgress = .5; flight.restart(); tick(flight, .4);
   flight.restart();
   assert.equal(flight.flightProgress, .5);
-  assert.ok(flight.transitionOpacity > 0 && flight.transitionOpacity < 1);
-  tick(flight, 2);
+  assert.equal(flight.transitionOpacity, 0, 'entry is a rendered dive rather than an early black fade');
+  tick(flight, DEPARTURE_DURATION - .51);
+  assert.equal(flight.mode, 'departing');
+  assert.equal(flight.loops, 0);
+  assert.ok(flight.transitionOpacity > 0 && flight.transitionOpacity <= 1);
+  while (flight.mode === 'departing') flight.update(1 / 120);
+  assert.equal(flight.mode, 'arriving');
+  assert.equal(flight.transitionOpacity, 1);
+  assert.ok(flight.transitProgress >= .5 && flight.transitProgress < .54);
+  tick(flight, ARRIVAL_DURATION);
   assert.equal(flight.distance, 0);
   assert.equal(flight.loops, 1);
+});
+
+test('transit progress is monotonic over the dive, covered reset and emergence', () => {
+  const flight = new FlightController(328); flight.restart();
+  let previous = 0, resets = 0;
+  for (let i = 0; i < 600 && flight.mode !== 'flight'; i++) {
+    const loops = flight.loops;
+    flight.update(1 / 120);
+    if (flight.mode === 'flight') break;
+    assert.ok(flight.transitProgress >= previous);
+    if (flight.loops !== loops) {
+      resets++;
+      assert.equal(flight.transitionOpacity, 1);
+      assert.equal(flight.distance, 0);
+      assert.equal(flight.velocity, 0);
+    }
+    previous = flight.transitProgress;
+  }
+  assert.equal(resets, 1);
+  assert.equal(flight.mode, 'flight');
+  assert.equal(flight.transitProgress, 0);
 });
 
 test('distance integration is independent of frame rate', () => {

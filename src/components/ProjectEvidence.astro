@@ -1,9 +1,0 @@
----
-import { Plus } from '@lucide/astro';
-interface Props { src: string; alt: string; caption: string; label: string; width: number; height: number }
-const { src, alt, caption, label, width, height } = Astro.props;
----
-<details class="project-evidence">
-  <summary>{label}<Plus size={16} aria-hidden="true" /></summary>
-  <figure><a href={src} target="_blank" rel="noopener noreferrer"><img src={src} alt={alt} width={width} height={height} loading="lazy" /></a><figcaption>{caption}</figcaption></figure>
-</details>

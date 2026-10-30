@@ -1,0 +1,51 @@
+---
+import './cosmos.css';
+import UniverseContent from './UniverseContent.astro';
+import ContactActions from './ContactActions.astro';
+import BlackHoleMark from './BlackHoleMark.astro';
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="马浩的宇宙：苏州大学光电科学与工程学院，集萃行本班大三在读。探索基本信息、科研经历、实习经历、兴趣爱好与联系方式。" />
+    <meta name="theme-color" content="#050811" />
+    <title>马浩的宇宙 · COSMOS</title><link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="cosmos" data-cosmos data-state="loading" aria-label="马浩的宇宙">
+      <h1 class="sr-only">马浩 · 苏州大学 · 光电研究与软件开发</h1>
+      <canvas data-universe-canvas aria-label="滚轮或上下方向键前后航行，点击星球探索，左右键切换卫星，Esc 返回。" tabindex="0"></canvas>
+      <div class="scene-labels" data-scene-labels></div>
+      <header class="cosmos-header">
+        <a href="/" class="cosmos-brand" aria-label="COSMOS 首页"><BlackHoleMark /> COSMOS</a>
+        <a class="back-link" href="/about/">阅读版 ↗</a>
+      </header>
+      <aside class="info-panel" data-info-panel role="dialog" aria-modal="false" aria-labelledby="planet-panel-title" hidden>
+        <div class="panel-glass" aria-hidden="true"><span class="glass-layer glass-layer-deep"></span><span class="glass-layer glass-layer-soft"></span><span class="glass-layer glass-layer-clear"></span></div>
+        <div class="panel-top"><span data-panel-eyebrow></span><button type="button" data-close-panel aria-label="返回主轨道" title="返回主轨道">✕</button></div>
+        <div class="panel-scroll" tabindex="0" aria-label="内容简介，滚轮切换卫星，点击展开详情"></div>
+        <nav class="panel-satellites" data-panel-satellites aria-label="选择卫星"></nav>
+        <section class="panel-detail" data-panel-detail hidden><div class="detail-toolbar"><button type="button" class="detail-back" data-detail-back>← 返回一级</button><span class="detail-exit-hint">单击正文返回一级 · 点击左侧场景返回飞船</span></div><div class="detail-scroll" data-detail-scroll tabindex="0" aria-label="完整内容，单击正文返回一级"></div></section>
+      </aside>
+      <UniverseContent /><ContactActions />
+      <div class="transition-veil" data-transition hidden aria-hidden="true"></div>
+      <span class="sr-only">黑洞后方的粒子主题为无限进步与 NEVER STOP，每两分钟交替重组。</span>
+      <section class="scene-error" data-scene-error hidden role="alert"><h2>换一种方式，认识我的宇宙</h2><p>当前浏览器无法打开 3D 场景。阅读版包含全部简介、项目和证书。</p><a href="/about/">打开阅读版 ↗</a><a href="/">重新载入</a></section>
+      <span class="sr-only" data-flight-live aria-live="polite"></span>
+      <noscript><div class="scene-error"><h2>欢迎来到马浩的宇宙</h2><p>开启 JavaScript 后可以驾驶飞船，也可以直接阅读全部内容。</p><a href="/about/">打开阅读版 ↗</a></div></noscript>
+    </main>
+    <script>
+      import { mountUniverse } from './UniverseScene';
+      let cleanup: (() => void) | undefined;
+      function initialize() {
+        cleanup?.();
+        const host = document.querySelector<HTMLElement>('[data-cosmos]');
+        cleanup = host ? mountUniverse(host) : undefined;
+      }
+      initialize();
+      window.addEventListener('pagehide', () => { cleanup?.(); cleanup = undefined; });
+      window.addEventListener('pageshow', (event) => { if (event.persisted) initialize(); });
+    </script>
+  </body>
+</html>

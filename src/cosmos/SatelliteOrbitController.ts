@@ -1,4 +1,7 @@
 const TAU = Math.PI * 2;
+const INPUT_SETTLE_TIME = .12;
+const SNAP_IDLE_DELAY = .2;
+const SNAP_DURATION = .32;
 const signedAngle = (angle: number) => ((angle + Math.PI) % TAU + TAU) % TAU - Math.PI;
 
 /** One rotation for the entire system preserves the safe spacing between satellites. */
@@ -14,6 +17,13 @@ export class SatelliteOrbitController {
   private wheelStart = 0;
   private wheelElapsed = 0;
   private wheelPending = false;
+  private quietElapsed = 0;
+  private snapPending = false;
+  private snapIndex: number | null = null;
+  private snapStart = 0;
+  private snapElapsed = 0;
+  private immediateWheel = false;
+  private lastWheelIncrement = 0;
   private anchors: { angle: number; index: number }[];
 
   constructor(phases: readonly number[]) {
@@ -49,37 +59,46 @@ export class SatelliteOrbitController {
   setFrontAngle(angle: number) {
     const difference = angle - this.frontAngle;
     this.frontAngle = angle; this.rotation += difference; this.targetRotation += difference;
-    this.wheelStart += difference;
+    this.wheelStart += difference; this.snapStart += difference;
   }
 
   select(index: number, immediate = false) {
     if (!this.active || !Number.isInteger(index) || index < 0 || index >= this.phases.length) return;
     this.targetRotation = this.rotation + signedAngle(this.frontAngle - this.phases[index] - this.rotation);
-    this.wheelPending = false;
+    this.wheelPending = false; this.snapPending = false; this.snapIndex = null;
     this.clickTarget = index;
     if (immediate) { this.rotation = this.targetRotation; this.selected = index; this.clickTarget = null; }
   }
 
   step(direction: number, immediate = false) {
     if (!this.active || !this.phases.length || !direction) return;
-    const current = this.order.indexOf(this.clickTarget ?? this.selected);
+    const current = this.order.indexOf(this.clickTarget ?? this.snapIndex ?? this.selected);
     this.select(this.order[(current + Math.sign(direction) + this.order.length) % this.order.length], immediate);
   }
 
   wheel(delta: number, deltaMode = 0, pageHeight = 900, immediate = false) {
     if (!this.active || !this.phases.length || !Number.isFinite(delta) || delta === 0) return;
     const pixels = delta * (deltaMode === 1 ? 16 : deltaMode === 2 ? pageHeight : 1);
+    if (!Number.isFinite(pixels)) return;
     const increment = -Math.max(-240, Math.min(240, pixels)) * .006;
-    // Accumulate matching detents; reversing discards the old unfinished direction.
-    if (this.clickTarget !== null || Math.sign(this.targetRotation - this.rotation) !== Math.sign(increment)) this.targetRotation = this.rotation;
+    // New wheel input always owns the angle again, even halfway through a snap.
+    // Matching detents accumulate, while reversing discards old unfinished input.
+    if (this.clickTarget !== null || this.snapIndex !== null || Math.sign(this.targetRotation - this.rotation) !== Math.sign(increment)) this.targetRotation = this.rotation;
     this.targetRotation += increment;
     this.wheelStart = this.rotation; this.wheelElapsed = 0;
-    this.wheelPending = true; this.clickTarget = null;
-    if (immediate) this.update(.12);
+    this.wheelPending = true; this.clickTarget = null; this.snapIndex = null;
+    this.quietElapsed = 0; this.snapPending = true;
+    this.immediateWheel = immediate; this.lastWheelIncrement = increment;
+    if (immediate) {
+      const previous = this.contentPosition;
+      this.rotation = this.targetRotation; this.wheelPending = false;
+      this.commitCrossing(previous);
+    }
   }
 
   stop() {
     this.targetRotation = this.rotation; this.clickTarget = null; this.wheelPending = false;
+    this.snapPending = false; this.snapIndex = null; this.quietElapsed = 0; this.snapElapsed = 0;
   }
 
   exit() {
@@ -95,8 +114,26 @@ export class SatelliteOrbitController {
     if (after !== before) this.selected = this.order[((after % this.order.length) + this.order.length) % this.order.length];
   }
 
+  private beginSnap() {
+    let nearest = 0, difference = Infinity;
+    this.phases.forEach((phase, index) => {
+      const candidate = signedAngle(this.frontAngle - phase - this.rotation);
+      const nearer = Math.abs(candidate) < Math.abs(difference) - 1e-10;
+      const tiedInDirection = Math.abs(Math.abs(candidate) - Math.abs(difference)) < 1e-10 && Math.sign(candidate) === Math.sign(this.lastWheelIncrement);
+      if (nearer || tiedInDirection) { nearest = index; difference = candidate; }
+    });
+    this.snapPending = false;
+    this.snapStart = this.rotation; this.snapElapsed = 0;
+    this.targetRotation = this.rotation + difference;
+    this.snapIndex = nearest;
+    if (this.immediateWheel || Math.abs(difference) < 1e-10) {
+      this.rotation = this.targetRotation; this.selected = nearest; this.snapIndex = null;
+    }
+  }
+
   update(delta: number, animate = true) {
-    const dt = Math.max(0, Math.min(.05, delta));
+    const elapsed = Number.isFinite(delta) ? Math.max(0, delta) : 0;
+    const dt = Math.min(.05, elapsed);
     if (!this.active) {
       if (animate) this.rotation += dt * .035;
       this.targetRotation = this.rotation;
@@ -104,11 +141,31 @@ export class SatelliteOrbitController {
     }
     if (this.wheelPending) {
       const previous = this.contentPosition;
-      this.wheelElapsed = Math.min(.12, this.wheelElapsed + Math.max(0, delta));
-      const fraction = this.wheelElapsed / .12;
+      this.wheelElapsed = Math.min(INPUT_SETTLE_TIME, this.wheelElapsed + elapsed);
+      const fraction = this.wheelElapsed / INPUT_SETTLE_TIME;
       this.rotation = this.wheelStart + (this.targetRotation - this.wheelStart) * (1 - (1 - fraction) ** 3);
       if (fraction === 1) { this.rotation = this.targetRotation; this.wheelPending = false; }
       this.commitCrossing(previous);
+    }
+    let snapDelta = elapsed;
+    if (this.snapPending) {
+      this.quietElapsed += elapsed;
+      if (!this.wheelPending && this.quietElapsed >= SNAP_IDLE_DELAY) {
+        this.beginSnap();
+        // Only integrate time after the quiet threshold, including a long frame.
+        snapDelta = this.quietElapsed - SNAP_IDLE_DELAY;
+      }
+    }
+    if (this.snapIndex !== null) {
+      const previous = this.contentPosition;
+      this.snapElapsed = Math.min(SNAP_DURATION, this.snapElapsed + snapDelta);
+      const fraction = this.snapElapsed / SNAP_DURATION;
+      const eased = fraction * fraction * (3 - 2 * fraction);
+      this.rotation = this.snapStart + (this.targetRotation - this.snapStart) * eased;
+      this.commitCrossing(previous);
+      if (fraction === 1) {
+        this.rotation = this.targetRotation; this.selected = this.snapIndex; this.snapIndex = null;
+      }
       return;
     }
     if (this.clickTarget === null) return;

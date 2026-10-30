@@ -1,149 +1,71 @@
-# 马浩 · 个人网站
+# 马浩的宇宙 · COSMOS
 
-一个以 Astro 构建的静态个人主页，分为 [Professional](/src/pages/work.astro) 和 [Personal](/src/pages/life.astro) 两个方向。项目与文章通过 Astro Content Collections 管理，资料默认不发布。
+五颗星球，十七颗卫星。基于 Astro、TypeScript 和 Three.js 的个人网站。
+
+当前主版本为 **v1.0.0（2026-10-30）**，后续开发以 `main` 为基线。发行说明见 [CHANGELOG.md](CHANGELOG.md)；旧主页仅保留在 `archive/pre-cosmos-2026-10-30` 归档标签中。
 
 ## 本地运行
 
-需要 Node.js 22 或更新版本。项目首次开发使用 Node.js 24。
+需要 Node.js 22 或更新版本，当前验证使用 Node.js 24。
 
-```bash
+```powershell
 npm install
 npm run dev
 ```
 
-提交或部署前运行：
+`/` 为宇宙主页；`/cosmos/` 保留同一入口；`/about/` 为阅读版，包含相同的 17 组详情，不需要 JavaScript 或 WebGL。本地可用 `npm run dev -- --host 127.0.0.1 --port 4323` 在 `http://127.0.0.1:4323/` 启动开发服务。
 
-```bash
+## 内容结构
+
+| 星球 | 卫星 |
+| --- | --- |
+| 基本信息 | 教育信息、获奖信息、语言能力、综合能力 |
+| 科研经历 | 波前复原、条纹锁定、微弱目标检测 |
+| 实习经历 | 自动配置功能、自动化测试软件、ROS2 通讯节点 |
+| 兴趣爱好 | 音乐和钢琴、篮球、写作 |
+| 联系方式 | QQ、微信、GitHub、Gmail |
+
+点击星球进入一级简介；滚轮或左右方向键切换卫星；点击简介展开二级详情。滚轮跟手转动，停下后轻柔吸附到最近卫星。科研与实习简介按“问题—方法—成果”组织。详情中的滚轮只用于阅读，卫星和飞船暂停，主星继续缓慢自转。单击二级正文返回一级；点击内容面板左侧的场景，或右上角叉叉，从任一级直接返回飞船视角。链接、证书图片和复制按钮保持各自操作，文字拖选和触屏阅读不会触发返回。第一次 Esc 返回简介，再次 Esc 退出探索。飞行时滚轮或上下方向键前后移动，空格停止。触屏上下滑动使用同一航行/公转控制逻辑，长文保留原生滚动。
+
+航行区域已移除地面航道线。星球悬停只增加边缘柔光，并展开边缘渐隐的磨砂玻璃简介，表面颜色保持稳定；飞行时不显示卫星标签。黑洞采用外薄内厚的倾斜环形吸积盘、带峰谷变化的径向亮度和缓慢光流，透镜弧与盘面平滑衔接。黑洞后方的真实粒子文字在“无限进步”和“NEVER STOP”间每 120 秒散开重组一次。终点触发约 4 秒的俯冲、星流隧道和出口展开，复位发生在完全遮挡时。系统开启减少动态效果时不使用俯冲、翻转或星流，文字直接切换。
+
+粒子成字后也会轻微浮动、呼吸闪烁，并有流光扫过和少量粒子游离回归；开启减少动态效果时关闭这些动作。
+
+## 维护入口
+
+- `src/data/portfolio.ts`：17 组简介、奖项、成绩、技能证明、实习正文、联系方式。
+- `src/cosmos/universeData.ts`：五颗星球的归属、位置、材质颜色、轨道和卫星。
+- `src/cosmos/UniverseContent.astro`：17 份详情模板，同时供宇宙和阅读版使用。
+- `src/cosmos/CosmosPage.astro`：宇宙页面与生命周期。
+- `src/cosmos/PlanetInfoPanel.ts`：两级阅读、循环简介、焦点和阅读位置。
+- `src/content/projects/`：三项科研项目的完整正文及实验图说明。
+- `src/content/notes/`：三篇已公开公众号文章的标题、时间及原文链接。
+- `src/cosmos/cosmos.css`：宇宙、详情与阅读版的样式。
+
+科研与文章使用 `published: true` 过滤。TraceFormer 的 0.954117 是冻结完整系统在 24 序列上的本地验证独立复评结果；0.9338 是历史比赛提交截图中的成绩，二者不能混用。
+
+## 证书与素材
+
+`public/images/certificates/` 只包含展示副本。CET-4 / CET-6 已遮盖证件号、准考证号、报告编号、二维码及校验码；蓝桥杯证书已遮盖证件和证书号码。原始成绩 PDF 与原始个人文件不进入网站。副本由 `scripts/prepare-certificates.py` 生成，依赖 reportlab、pypdf、pypdfium2；按原文档坐标先覆盖，再只输出栅格预览。重新生成后需肉眼检查覆盖范围。
+
+学院与集萃行本班介绍附苏州大学官方来源。音乐详情展示已给定曲目的专辑封面，封面副本来自 Apple Music，并附原专辑链接；其版权属于原权利人。本地图片不依赖访客的外网连接。
+
+尚待本人补充：篮球实拍照片、更多喜欢的歌曲与封面、公众号名称/主页或二维码、自动配置功能的具体流程和截图，以及奖学金/三好学生的证书。当前篮球详情采用文字与装饰图形；未用图库照片冒充本人照片。自动配置仅展示现有记录支持的机型适配工作。
+
+## 旧版清理
+
+旧主版保留在 Git 标签 `archive/pre-cosmos-2026-10-30`，对应提交 `b00b5d4`。该版本只用于历史查阅；默认分支 `main` 和站点入口采用 COSMOS v1.0.0。
+
+已移除旧版 Professional / Personal、英文路由、旧组件、样式、无关项目内容与静态图，以及 MDX、Tailwind、Lucide 依赖。删除前含未提交变更的源码快照保存在本地 `output/archives/legacy-before-cosmos-20261028-200422.zip`；备份被 Git 忽略，也不会进入构建。原始事实底稿、materials、drafts 和历史设计记录不参与站点构建。
+
+## 检查与构建
+
+```powershell
+node --test scripts/cosmos-*.test.mjs
 npm run lint
 npm run check
 npm run build
+npm run preview -- --host 127.0.0.1 --port 4323
 ```
 
-构建结果位于 `dist/`。部署时设置 `SITE_URL` 为实际站点域名，例如 `SITE_URL=https://your-domain.example npm run build`。Windows PowerShell 可使用 `$env:SITE_URL='https://your-domain.example'; npm run build`。它用于生成 canonical 与 Open Graph 绝对地址。默认的 `https://example.com` 只供本地占位，正式发布前必须替换。
-
-## 目录
-
-```text
-src/
-  components/          公共导航、卡片、标题与页脚
-  content/projects/     项目 Markdown / MDX
-  content/notes/        文章 Markdown / MDX
-  content.config.ts     两个集合的 schema
-  data/                个人介绍、技能、奖项、链接
-  layouts/             公共 HTML、SEO、主题
-  pages/               路由页面
-  styles/              全局样式与响应式规则
-materials/             原始资料，不参与构建
-drafts/                等待检查的稿件，不参与构建
-public/                确认可公开的静态图片、favicon、OG 图
-```
-
-## 新增项目
-
-1. 在 `drafts/` 写草稿，核对项目名称、个人贡献、链接和公开权限。
-2. 在 `src/content/projects/` 建立 `.md` 或 `.mdx` 文件。文件名就是详情页 slug，例如 `my-project.mdx` 对应 `/projects/my-project/`。
-3. 填写 frontmatter，并保持 `published: false` 直到人工确认。示例：
-
-```yaml
----
-title: My Project
-description: 一句话介绍
-date: 2026-10-04
-role: 我的具体职责
-category: 研究与工程
-outcome: 最重要的一项已验证成果或交付
-order: 10
-highlights:
-  - title: 我的工作
-    description: 可展开查看的具体贡献
-technologies: [TypeScript, Astro]
-cover: /images/my-project.svg
-coverAlt: 说明图片的内容
-coverCaption: 标明这是实测图、软件截图还是流程示意
-github: https://github.com/your-name/my-project
-paper: https://example.com/paper
-demo: https://example.com/demo
-featured: false
-status: ongoing # ongoing / completed / archived
-published: false
----
-```
-
-`outcome` 必填，用于第一眼呈现项目结果；`order` 控制排序，数字小的靠前。`highlights` 用于卡片的原生展开区域。`cover`、`github`、`paper`、`demo` 可省略。正文建议包含问题、我的工作、解决方法、技术细节、成果与交付、学到的事。确认公开后改为 `published: true`；首页核心项目在 `src/data/stories.ts` 中选择，仍以项目的公开标记为准，其余公开项目进入「更多探索」。
-
-需要放实际结果图时，可以增加 `gallery`，每项包含 `src`、`alt`、`caption`。每张图必须说明实验范围，概念图不要写成实测曲线。
-
-## 信息层次与视觉
-
-网站保留 COSMOS「个人宇宙」身份，使用米白 `#F5F3EE`、深海军蓝 `#152638`、暖橙 `#DC774D` 的杂志式排版。首次访问默认浅色，之后记住手动选择；深色主题保留。共享样式在 `src/styles/editorial.css`，首页结构在 `src/pages/index.astro`，项目名称、直接摘要和封面配置在 `src/data/stories.ts`。
-
-页面保留清晰的标题、项目名、正文与主要链接，不使用装饰性英文眉题、图号或重复副标题。三个核心项目使用各自的概念封面，真实软件截图、验证片段和业务架构通过 `ProjectEvidence.astro` 的原生 `details` 展开；项目详情保留原图及完整说明。验证得分仍明确标注为完整系统本地验证结果。
-
-首页依次呈现与纸面融合的交互光场、整屏波前旗舰项目、错位排布的 TraceFormer 与车辆项目、横向更多作品、探索经历、生活与文字和联系入口。奖项与科研基金入选融入对应项目，不再单独重复一组结果。作品页使用同一组封面，保留全部项目、成果、经历、奖学金和技能资料。所有项目和文章仍经过公开标记过滤。
-
-`Journey.astro` 用原生 `details` 展示课程与竞赛、企业实践和当前研究的经历叙述，不再重复项目截图和技术交付。`LifeCollage.astro` 将已公开文章与音乐兴趣编成开放版面；随机阅读入口保留。没有用素材照片、虚构日记、选择动机或播放状态补充个人经历。生活页继续显示完整公开文章列表。
-
-`scripts/generate-project-art.mjs` 生成三张可复现的 SVG 概念封面：波前相位等值线、稀疏事件轨迹、车辆通信插画。运行 `node scripts/generate-project-art.mjs` 可重新生成。它们用于视觉表达，不代表实验采集、模型预测或实际车辆照片；图片替代文字明确区分。实际项目证据继续引用原有公开文件。
-
-TraceFormer 的 `0.954117` 是冻结完整系统在 24 序列验证集上的独立复评结果，不能改写成官方测试成绩。其实际图保存在 `public/images/traceformer-*.png`。
-
-2026 年 10 月 5 日从本人提供的校内实习期末汇报参考资料中选入四张原图：波前平台运行界面（`event-optics-interface.png`）、条纹锁定实验界面照片（`fringe-lock-experiment.jpg`）、完整 HUAV 模型结构图（`traceformer-architecture.png`）和历史比赛成绩截图（`traceformer-competition.png`）。前三张保留在对应项目详情；比赛截图放在 TraceFormer 图集，注明 2026 年 8 月 31 日提交记录与 0.9338 得分，不从局部列表推断最终名次，也不与本地验证成绩混用。详情页图片均可点击打开原图。原图内容保持不变，未复制专利文档、申报材料或原始证书。
-
-其余项目封面仍为流程或功能示意，并非软件截图或实测数据。可选的 `coverWidth` 和 `coverHeight` 应填写原图尺寸，用于预留封面空间。
-
-## 新增文章
-
-在 `src/content/notes/` 建立 `.md` 或 `.mdx` 文件，填写：
-
-```yaml
----
-title: 文章标题
-description: 简短摘要
-date: 2026-10-04
-category: 思考 # 思考 / 生活 / 技术 / 随笔
-readingMinutes: 3
-published: false
----
-```
-
-`readingMinutes` 可省略。请先从原始记录整理成独立文章，删去不适合公开的人名、位置、联系方式等信息，再显式改为 `published: true`。`example-unpublished.md` 和 `why-i-keep-notes.mdx` 是未发布示例，构建中不会出现。
-
-公众号等外部文章仍放在 `src/content/notes/`，另填写 `source: 微信公众号` 和 `externalUrl: https://...`。Personal 只展示标题与日期并直接打开原文，不生成空的本站详情页，也不复制公众号全文。当前三篇公众号文章已经按页面元数据核对标题和发表日期。
-
-## 中英文内容
-
-中文沿用 `/`、`/work/`、`/life/` 与 `/projects/<slug>/`，英文使用相同路径的 `/en/` 前缀。右上角切换到当前页面的另一语言版本，并保留查询参数和页内锚点；站内导航保持当前语言，直接刷新也可访问英文页。中文保留项目名及技术名的英文写法，项目正文的章节标题使用中文。
-
-页面与公共组件通过 `src/lib/i18n.ts` 选择语言；公开个人资料的英文译文集中在 `src/data/localized.ts`，发布标记来自原始资料。项目与文章的译文放在各自的 `en/` 子目录，使用同名文件及 `locale: en`，中英文版本的 `published` 标记应同步维护。项目正文、摘要、成果、职责、图片说明与替代文字均需翻译。示意封面的英文版使用 `public/images/project-*-en.svg`；实际照片、软件截图与模型图共用原图，说明与替代文字分别翻译。英文公众号列表展示译名，并标明链接指向中文原文。
-
-长文以成果、个人贡献、方法及当前进展为主；用 Markdown `**加粗**` 标记奖项、关键数据和交付成果。保留团队贡献归属、验证范围及尚未完成的工作，避免精简时扩大成果表述。
-
-## 修改个人资料
-
-- `src/data/profile.ts`：姓名、简介、经历、兴趣与时间轴。邮箱通过 `email` 设置，当前公开邮箱为 `2030985559@qq.com`。PDF 简历地址通过 `resumeUrl` 设置，未填写时不显示下载按钮。
-- `src/data/presentation.ts`：首页及两个入口页的短标题、标签。
-- `src/data/skills.ts`：按场景分组的技术能力。
-- `src/data/achievements.ts`：已确认可公开的成果。
-- 莙政基金记录已核对 2026 年入选名单中马浩的条目，正式课题名为「基于神经形态视觉的超高速波前感知技术」。成果栏、研究经历与波前项目详情同步展示，状态表述为项目入选。
-- `src/data/resume.ts`：展示于 Professional「奖项与成果」的奖学金与四六级成绩。大学奖学金按笔记保留“大一”阶段；两次集萃实习一等奖学金按本人确认合并展示，未补写未经确认的获奖日期。考试成绩与月份以成绩单为准，证明原图不放进 `public/`。
-- `src/data/links.ts`：GitHub 链接。
-
-这些结构化记录同样有 `published` 字段，页面只渲染标记为 `true` 的列表项。单例 `profile` 和 `links` 如果未标记公开，会直接中止构建，防止误发布。修改后建议检查实际构建输出。
-
-## 隐私与发布边界
-
-- `materials/` 和 `drafts/` 不在 Astro 的内容源或 `public/` 下，不会被静态构建复制。
-- `materials/diaries/` 被 `.gitignore` 整目录忽略；原始项目、奖项材料和草稿内容也默认忽略，避免误提交。
-- 现有 `个人介绍背景资料.md` 是事实底稿，已被 Git 忽略；它不是网站正文。
-- Content Collections 的 `published` 默认值是 `false`。列表与动态详情页都只读取 `published: true` 的条目。
-- 不要把私人文件放进 `public/`。`public/` 下的文件会原样进入最终站点。
-
-## 设计与实现
-
-使用 Astro 静态输出、TypeScript、Tailwind CSS 4、MDX 与 Lucide 图标。主题切换记住选择，`Motion.astro` 使用原生 IntersectionObserver 实现一次性滚动入场。首页的 `EventField.astro` 提供静态 SVG 和视图按钮，`src/lib/eventField.ts` 用 Canvas 2D 绘制可拨动的光点曲面，颜色跟随浅深主题。移动指针使曲面下陷并产生余波，点击触发向外传播的涟漪；事件视图以红蓝轨迹展示同一曲面的变化。它是交互示意，不是事件相机或物理仿真；这一说明写在无障碍描述中。
-
-渲染最多每秒 30 帧、8 个涟漪和 700 个事件点，位移做平滑限幅；离开视口或页面隐藏时暂停。触屏可点击，纵向滑动仍可滚动页面。键盘方向键移动扰动位置，空格或回车触发；减少动态效果时显示静态响应。JavaScript 不可用时保留 SVG，隐藏未启用的按钮。旧行星组件与纹理保留在仓库，当前页面不加载其场景。
-
-站内导航使用 Astro `ClientRouter`。主题、语言切换、事件点阵、随机阅读和栏目展开在每次客户端导航后重新绑定；离开首页时清理画布监听和动画帧。关闭 JavaScript 时仍可通过普通链接浏览网站、展开探索轨迹和阅读公开文章。可以使用 `npm run preview -- --host 127.0.0.1 --port 4322` 查看最近一次构建的效果。
-
-`HoverDisclosure.astro` 统一管理两个入口页下方的补充栏目：桌面鼠标移入展开、离开收回，使用原生 Web Animations API 平滑改变高度，并配合内容淡入、淡出与加号旋转。快速移入移出会从当前高度继续动画。触屏通过点击切换，键盘聚焦可展开并保持内部链接可用；系统开启减少动态效果时直接切换。未启用 JavaScript 时仍可使用原生 `details` 点击展开。
+构建结果是 `dist/` 下的三个静态页面及资源；部署时通过 `SITE_URL` 设置正式站点地址。空间交互与模块说明见 `docs/COSMOS.md`。

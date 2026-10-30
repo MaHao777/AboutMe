@@ -1,4 +1,10 @@
 export type FlightMode = 'flight' | 'exploring' | 'returning' | 'departing' | 'arriving';
+export const DEPARTURE_DURATION = 2.1;
+export const ARRIVAL_DURATION = 1.9;
+const smoothstep = (start: number, end: number, value: number) => {
+  const t = Math.max(0, Math.min(1, (value - start) / (end - start)));
+  return t * t * (3 - 2 * t);
+};
 
 /** Pure flight state; no scroll position or camera state is a second source of truth. */
 export class FlightController {
@@ -16,6 +22,11 @@ export class FlightController {
   constructor(routeLength: number) { this.routeLength = routeLength; }
 
   get distance() { return this.flightProgress * this.routeLength; }
+  get transitProgress() {
+    if (this.mode === 'departing') return Math.min(1, this.transitionTime / DEPARTURE_DURATION) * .5;
+    if (this.mode === 'arriving') return .5 + Math.min(1, this.transitionTime / ARRIVAL_DURATION) * .5;
+    return 0;
+  }
 
   wheel(delta: number, deltaMode = 0, pageHeight = 900) {
     if (this.mode !== 'flight' || !Number.isFinite(delta)) return;
@@ -46,7 +57,7 @@ export class FlightController {
   }
 
   private startLoop() {
-    this.stop(); this.mode = 'departing'; this.transitionTime = 0;
+    this.stop(); this.mode = 'departing'; this.transitionTime = 0; this.transitionOpacity = 0;
   }
 
   update(delta: number) {
@@ -60,14 +71,14 @@ export class FlightController {
     if (this.mode === 'departing' || this.mode === 'arriving') {
       this.transitionTime += dt;
       if (this.mode === 'departing') {
-        this.transitionOpacity = Math.min(1, this.transitionTime / .75);
-        if (this.transitionTime >= .85) {
+        this.transitionOpacity = smoothstep(.44, .49, this.transitProgress);
+        if (this.transitionTime >= DEPARTURE_DURATION) {
           this.flightProgress = 0; this.stop(); this.loops++;
-          this.mode = 'arriving'; this.transitionTime = 0;
+          this.mode = 'arriving'; this.transitionTime = 0; this.transitionOpacity = 1;
         }
       } else {
-        this.transitionOpacity = Math.max(0, 1 - this.transitionTime / .95);
-        if (this.transitionTime >= 1) { this.mode = 'flight'; this.transitionOpacity = 0; }
+        this.transitionOpacity = 1 - smoothstep(.51, .57, this.transitProgress);
+        if (this.transitionTime >= ARRIVAL_DURATION) { this.mode = 'flight'; this.transitionOpacity = 0; this.transitionTime = 0; }
       }
       return;
     }
